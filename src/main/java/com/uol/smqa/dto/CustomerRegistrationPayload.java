@@ -68,6 +68,9 @@ public class CustomerRegistrationPayload{
 	public String getConfirmPassword() {
 		return confirmPassword;
 	}
+	public CustomerRegistrationPayload() {
+		super();
+	}
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
