@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uol.smqa.dto.CustomerRegistrationPayload;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.service.CustomerService;
 
@@ -18,9 +17,8 @@ public class CustomerController {
 	private CustomerService customerService;
 	
 	@PostMapping("/register")
-	public Customer CustomerRegistration(@RequestBody CustomerRegistrationPayload customerRegistrationPayload) {
-		
-	return customerService.CustomerRegistration(customerRegistrationPayload);
+	public Customer CustomerRegistration(@RequestBody Customer customer) {
+	return this.customerService.CustomerRegistration(customer);
 	}
 
 }
