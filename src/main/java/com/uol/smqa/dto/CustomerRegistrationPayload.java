@@ -1,50 +1,22 @@
-package com.uol.smqa.model;
+package com.uol.smqa.dto;
 
 import java.time.LocalDate;
 
 import com.uol.smqa.Enum.Gender;
 
-import jakarta.persistence.*;
+public class CustomerRegistrationPayload{
 
-@Entity
-public class Customer{
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "customer_id",nullable = false)
-	private int customerId;
-	
-	@Column(name = "customer_name",nullable = false)
+
 	private String name;
-	
-	@Column(name = "customer_email",nullable = false)
 	private String email;
-	
-	@Column(name = "dob",nullable = false)
 	private LocalDate dob;
-	
-	@Column(name = "gender",nullable = false)
 	private Gender gender;
-	
-	@Column(name = "contact_number",nullable = false)
 	private String contactNumber;
-	
-	@Column(name = "is_member",nullable = false)
 	private Boolean isMember;
-	
-	@Column(name = "is_notification_on",nullable = false)
 	private Boolean isNotificationOn;
+	private String password;
+	private String confirmPassword;
 	
-	
-	public Customer() {
-		super();
-	}
-	public int getCustomerId() {
-		return customerId;
-	}
-	public void setCustomerId(int customerId) {
-		this.customerId = customerId;
-	}
 	public String getName() {
 		return name;
 	}
@@ -87,8 +59,19 @@ public class Customer{
 	public void setIsNotificationOn(Boolean isNotificationOn) {
 		this.isNotificationOn = isNotificationOn;
 	}
-	
-	
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
 	
 	
 }
