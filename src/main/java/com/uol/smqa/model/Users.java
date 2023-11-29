@@ -4,6 +4,7 @@ import org.hibernate.type.TrueFalseConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -32,6 +34,7 @@ public class Users {
 	@Column(name = "username",nullable = false,unique = true)
 	private String username;
 	
+	@NotNull(message = "Password Required!")
 	@Column(name = "password",nullable = false)
 	private String password;
 	
