@@ -38,4 +38,15 @@ public class EventService {
 		return this.eventRepository.save(event);
 	}
 
+	public String deleteEvent(int eventId) {
+		Event event = this.eventRepository.findById(eventId);
+
+		if (event != null) 
+		{	this.eventRepository.delete(event);
+		return "Event: "+eventId+" deleted Successfully!";}
+		else {
+			return "Event not found!";
+		}
+	}
+
 }
