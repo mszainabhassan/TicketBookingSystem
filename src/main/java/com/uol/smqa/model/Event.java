@@ -1,3 +1,4 @@
+// Event.java
 package com.uol.smqa.model;
 
 import java.time.LocalDateTime;
@@ -25,8 +26,9 @@ public class Event {
     @Column(name = "event_date_time", nullable = false)
     private LocalDateTime eventDateTime;
 
-    @Column(name = "event_type", nullable = false)
-    private String eventType;
+    @ManyToOne
+    @JoinColumn(name = "event_type_id", nullable = false)
+    private EventType eventType;
 
     @Column(name = "seats_available")
     private Integer seatsAvailable;
@@ -77,11 +79,11 @@ public class Event {
         this.eventDateTime = eventDateTime;
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 
