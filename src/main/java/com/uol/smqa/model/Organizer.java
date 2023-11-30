@@ -25,8 +25,8 @@ public class Organizer {
 	@Column(name = "organizer_name",nullable = false)
 	private String name;
 	
-	@Column(name = "organization_name",nullable = false	)
-	private String org_name;
+	@Column(name = "organization_name",nullable = false)
+	private String orgName;
 	
 	@Column(name = "organizer_email",nullable = false,unique = true)
 	private String email;
@@ -66,12 +66,12 @@ public class Organizer {
 		this.name = name;
 	}
 
-	public String getorg_name() {
-		return org_name;
+	public String getOrgName() {
+		return orgName;
 	}
-
-	public void setorg_name(String org_name) {
-		org_name = org_name;
+	
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
 	}
 
 	public String getEmail() {
@@ -118,3 +118,7 @@ public class Organizer {
 	
 
 }
+
+
+
+
