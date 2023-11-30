@@ -4,7 +4,9 @@ import java.security.PublicKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,5 +33,9 @@ public class AdminController {
 	public List<Event> getAllEvents(){
 		return this.eventService.getAllEvents();
 	}
-	 
+	
+	@PostMapping("/createEvent")
+	public Event createEvent(@RequestBody Event event) {
+		return this.eventService.createEvent(event);
+	}
 }

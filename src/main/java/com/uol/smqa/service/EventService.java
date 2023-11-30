@@ -30,4 +30,8 @@ public class EventService {
 		return this.eventRepository.findAll();
 	}
 
+	public Event createEvent(Event event) {
+		return this.eventRepository.save(event);
+	}
+
 }
