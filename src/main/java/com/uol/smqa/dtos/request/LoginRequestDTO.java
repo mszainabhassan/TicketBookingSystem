@@ -1,7 +1,6 @@
-package com.uol.smqa.dtos;
+package com.uol.smqa.dtos.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class LoginDTO {
+public class LoginRequestDTO {
 
     @NotBlank(message = "The username field is required")
     @Pattern(regexp = ".+@.+\\..+", message = "Invalid email format")
