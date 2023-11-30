@@ -1,5 +1,7 @@
 package com.uol.smqa.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,10 @@ public class EventService {
 		} else {
 			return "Event Id not present!";
 		}
+	}
+
+	public List<Event> getAllEvents() {
+		return this.eventRepository.findAll();
 	}
 
 }

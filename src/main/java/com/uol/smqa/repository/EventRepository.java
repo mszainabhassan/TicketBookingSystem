@@ -8,4 +8,5 @@ import com.uol.smqa.model.Event;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 	Event findById(int eventId);
+	
 }
