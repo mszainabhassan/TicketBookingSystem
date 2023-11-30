@@ -34,4 +34,8 @@ public class EventService {
 		return this.eventRepository.save(event);
 	}
 
+	public Event updateEvent(Event event) {
+		return this.eventRepository.save(event);
+	}
+
 }

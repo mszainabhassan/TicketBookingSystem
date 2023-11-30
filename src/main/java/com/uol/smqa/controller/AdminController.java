@@ -38,4 +38,9 @@ public class AdminController {
 	public Event createEvent(@RequestBody Event event) {
 		return this.eventService.createEvent(event);
 	}
+	
+	@PutMapping("/updateEvent")
+	public Event updateEvent(@RequestBody Event event) {
+		return this.eventService.updateEvent(event);
+	}
 }
