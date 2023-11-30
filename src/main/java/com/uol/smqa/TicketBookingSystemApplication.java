@@ -25,8 +25,7 @@ public class TicketBookingSystemApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		Optional<Users> adminUser = usersService.findByEmail("admin@tbs.com");
-		if (!adminUser.isPresent()) {
+		if (!usersRepository.existsByUsername("admin@tbs.com")) {
 			Users admin = new Users();
 			admin.setUsername("admin@tbs.com");
 			admin.setPassword(passwordEncoder.encode("password"));
