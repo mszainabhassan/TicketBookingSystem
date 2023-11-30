@@ -2,6 +2,7 @@ package com.uol.smqa.service.impl;
 
 import com.uol.smqa.dtos.request.PasswordResetRequestDTO;
 import com.uol.smqa.dtos.response.PasswordResetResponseDto;
+import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.PasswordResetHistory;
 import com.uol.smqa.model.Users;
@@ -21,6 +22,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     public PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
         Users user = usersService.findByEmail(passwordResetRequestDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User with email does not exist"));
+        if (!user.isActive()) throw new AuthorizationException("User is not authorized to carry out action");
         createPasswordResetHistory(user);
         usersService.updateUserPassword(user, passwordResetRequestDTO.getPassword());
         return PasswordResetResponseDto.builder()

@@ -3,6 +3,7 @@ package com.uol.smqa.controller;
 import com.uol.smqa.dtos.request.PasswordResetRequestDTO;
 import com.uol.smqa.dtos.response.LoginResponseDTO;
 import com.uol.smqa.dtos.response.PasswordResetResponseDto;
+import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.service.PasswordResetService;
 import com.uol.smqa.validators.PasswordResetValidator;
@@ -44,8 +45,11 @@ public class PasswordResetController {
             return new ResponseEntity<>(PasswordResetResponseDto.builder()
                     .message(ex.getMessage())
                     .build(), HttpStatus.NOT_FOUND);
-        }
-        catch (Exception ex) {
+        } catch (AuthorizationException ex) {
+            return new ResponseEntity<>(PasswordResetResponseDto.builder()
+                    .message(ex.getMessage())
+                    .build(), HttpStatus.FORBIDDEN);
+        } catch (Exception ex) {
             return new ResponseEntity<>(PasswordResetResponseDto.builder()
                     .message("An unexpected error occurred while resetting user password")
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);
