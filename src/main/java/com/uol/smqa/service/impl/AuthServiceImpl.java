@@ -34,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDTO loginUser(String userName, String password) throws AuthenticationException {
         try {
             Users user = usersService.findByEmail(userName).orElseThrow(() -> new AuthenticationException(INVALID_LOGIN_CREDENTIALS_MESSAGE));
+            if (!user.isActive()) throw new AuthenticationException("User is inactive. Kindly contact admin");
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             String jwtToken = jwtUtils.generateJwtToken(authenticate);
