@@ -3,6 +3,7 @@ package com.uol.smqa.controller;
 import java.security.PublicKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,5 +43,10 @@ public class AdminController {
 	@PutMapping("/updateEvent")
 	public Event updateEvent(@RequestBody Event event) {
 		return this.eventService.updateEvent(event);
+	}
+	
+	@DeleteMapping("/deleteEvent")
+	public String updateEvent(@RequestParam Integer eventId) {
+		return this.eventService.deleteEvent(eventId);
 	}
 }
