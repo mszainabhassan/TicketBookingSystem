@@ -38,6 +38,10 @@ public class Users {
 	 @OneToOne(cascade = CascadeType.ALL)
 	 @JoinColumn(name = "user_id", referencedColumnName = "customer_id", unique = true)
 	 private Customer customer;
+	 
+	 @OneToOne(cascade = CascadeType.ALL)
+	 @JoinColumn(name = "user_id", referencedColumnName = "organizer_id", unique = true)
+	 private Organizer organizer;
 
 	public int getUserId() {
 		return userId;

@@ -20,5 +20,10 @@ public class CustomerController {
 	public Customer CustomerRegistration(@RequestBody Customer customer) {
 	return this.customerService.CustomerRegistration(customer);
 	}
+	
+	
+	
+	
+	
 
 }
