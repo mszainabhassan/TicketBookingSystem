@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.service.OrganizerService;
+import com.uol.smqa.model.Users;
 @RestController
 @RequestMapping("/organizer")
 public class OrganizerController {
@@ -15,6 +16,7 @@ public class OrganizerController {
 	
 	@PostMapping("/register")
 	public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
+		
 		return this.organizerService.OrganizerRegistration(organizer);
 	}
 }

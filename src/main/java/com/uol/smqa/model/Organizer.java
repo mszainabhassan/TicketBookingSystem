@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.Set;
 @Entity
 public class Organizer {
 	
@@ -20,7 +20,7 @@ public class Organizer {
 	private int organizerId;
 	
 	@OneToOne(mappedBy = "organizer", cascade = CascadeType.ALL)
-    private Users users;
+	 private Users users;
 	
 	@Column(name = "organizer_name",nullable = false)
 	private String name;
@@ -54,9 +54,9 @@ public class Organizer {
 	public Users getUsers() {
 		return users;
 	}
-
 	public void setUsers(Users users) {
 		this.users = users;
+				
 	}
 	public String getName() {
 		return name;

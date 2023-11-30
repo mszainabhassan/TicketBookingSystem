@@ -1,23 +1,17 @@
 package com.uol.smqa.model;
 
-import org.hibernate.type.TrueFalseConverter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "users")
 @Entity
@@ -35,13 +29,13 @@ public class Users {
 	@Column(name = "password",nullable = false)
 	private String password;
 	
-	 @OneToOne(cascade = CascadeType.ALL)
-	 @JoinColumn(name = "user_id", referencedColumnName = "customer_id", unique = true)
-	 private Customer customer;
-	 
-	 @OneToOne(cascade = CascadeType.ALL)
-	 @JoinColumn(name = "user_id", referencedColumnName = "organizer_id", unique = true)
-	 private Organizer organizer;
+	 @OneToOne
+	    @JoinColumn(name = "customer_id")
+	    private Customer customer;
+
+	    @OneToOne
+	    @JoinColumn(name = "organizer_id")
+	    private Organizer organizer;
 
 	public int getUserId() {
 		return userId;
@@ -66,14 +60,17 @@ public class Users {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	@JsonIgnore
+
 	public Customer getCustomer() {
 		return customer;
 	}
-
-	
-
-	
-	
-
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	public Organizer getOrganizer() {
+		return organizer;
+	}
+	public void setOrganizer(Organizer organizer) {
+		this.organizer = organizer;
+	}
 }
