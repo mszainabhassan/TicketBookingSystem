@@ -1,14 +1,17 @@
 package com.uol.smqa.controller;
 
+import java.security.PublicKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uol.smqa.model.Event;
 import com.uol.smqa.service.EventService;
-
-import jakarta.websocket.server.PathParam;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -24,5 +27,9 @@ public class AdminController {
 		return this.eventService.ChangeEventStatus(eventId, status);
 
 	}
-
+	@GetMapping("/getAllEvents")
+	public List<Event> getAllEvents(){
+		return this.eventService.getAllEvents();
+	}
+	 
 }
