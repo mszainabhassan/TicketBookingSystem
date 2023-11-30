@@ -36,6 +36,7 @@ public class Users {
 	
 	@NotNull(message = "Password Required!")
 	@Column(name = "password",nullable = false)
+	@JsonIgnore
 	private String password;
 	
 	 @OneToOne(cascade = CascadeType.ALL)
