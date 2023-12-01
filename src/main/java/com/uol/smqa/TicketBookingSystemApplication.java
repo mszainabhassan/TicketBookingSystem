@@ -4,7 +4,6 @@ import com.uol.smqa.model.Users;
 import com.uol.smqa.repository.UsersRepository;
 import com.uol.smqa.service.UsersService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,12 +25,11 @@ public class TicketBookingSystemApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		Optional<Users> adminUser = usersService.findByEmail("admin@tbs.com");
-		if (!adminUser.isPresent()) {
+		if (!usersRepository.existsByUsername("admin@tbs.com")) {
 			Users admin = new Users();
 			admin.setUsername("admin@tbs.com");
 			admin.setPassword(passwordEncoder.encode("password"));
-
+			admin.setActive(true);
 			usersRepository.save(admin);
 		}
 

@@ -1,5 +1,6 @@
 package com.uol.smqa.model;
 
+import lombok.*;
 import org.hibernate.type.TrueFalseConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,11 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "users")
 @Entity
@@ -38,6 +34,9 @@ public class Users {
 	@Column(name = "password",nullable = false)
 	@JsonIgnore
 	private String password;
+
+	@Column(name = "is_active", nullable = true)
+	private boolean isActive = true;
 	
 	 @OneToOne(cascade = CascadeType.ALL)
 	 @JoinColumn(name = "user_id", referencedColumnName = "customer_id", unique = true)
@@ -71,9 +70,6 @@ public class Users {
 		return customer;
 	}
 
-	
-
-	
 	
 
 }
