@@ -2,6 +2,7 @@
 package com.uol.smqa.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,6 +40,9 @@ public class Event {
     @Column(name = "event_frequency", nullable = false)
     private String eventFrequency;
 
+    @OneToMany(mappedBy = "event")
+    private List<CustomerBookEvent> bookedCustomers;
+    
     public int getEventId() {
         return eventId;
     }
@@ -98,11 +102,17 @@ public class Event {
     public Boolean getIsLimitedSeats() {
         return isLimitedSeats;
     }
+    
 
     public void setIsLimitedSeats(Boolean isLimitedSeats) {
         this.isLimitedSeats = isLimitedSeats;
     }
-
+    public List<CustomerBookEvent> getBookedCustomers() {
+        return bookedCustomers;
+    }
+    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
+        this.bookedCustomers = bookedCustomers;
+    }
     public String getEventFrequency() {
         return eventFrequency;
     }
