@@ -36,11 +36,11 @@ public class OrganizerController {
     @PostMapping("/createEvent")
     public Event createEvent(@RequestBody Event event) {
         // Save EventType first
-        EventType.TypeName typeName = event.getEventType().getTypeName();
-        EventType savedEventType = eventTypeService.createEventType(typeName);
+   //EventType.TypeName typeName = event.getEventType().getTypeName();
+   //     EventType savedEventType = eventTypeService.createEventType(typeName);
 
         // Set EventType in Event and Save Event
-        event.setEventType(savedEventType);
+    //    event.setEventType(savedEventType);
         return eventService.createEvent(event);
     }
 }

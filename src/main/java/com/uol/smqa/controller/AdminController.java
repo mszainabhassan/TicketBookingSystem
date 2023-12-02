@@ -1,43 +1,37 @@
 package com.uol.smqa.controller;
-import java.security.PublicKey;
+
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
+import org.springframework.web.bind.annotation.*;
 
 import com.uol.smqa.model.EventType;
-import com.uol.smqa.service.AdminService;
+import com.uol.smqa.service.EventTypeService;
 
-
+@RestController
+@RequestMapping("/admin")
 public class AdminController {
-	@Autowired
-	private AdminService adminService;
-	@GetMapping("/eventtypes")
-    public List<EventType> getAllEventTypes() { 
-        return adminService.getAllEventTypes();
+    @Autowired
+    private EventTypeService eventTypeService;
+
+    @GetMapping("/eventtypes")
+    public List<EventType> getAllEventTypes() {
+        return eventTypeService.getAllEventTypes();
     }
 
     @PostMapping("/eventtype")
-    public void addEventType(@RequestBody EventType type) {
-    	adminService.addEventType(type);
+    public void addEventType(@RequestBody EventType eventType) {
+        eventTypeService.addEventType(eventType);
     }
 
     @PutMapping("/eventtype/{id}")
-    public EventType updateEventType(@PathVariable Long id, 
-            @RequestBody EventType type) {
-       
-        return adminService.updateEventType(id, type);
+    public EventType updateEventType(@PathVariable Long id, @RequestBody EventType eventType) {
+        return eventTypeService.updateEventType(id, eventType);
     }
 
-    @DeleteMapping("/eventtype/{id}") 
+    @DeleteMapping("/eventtype/{id}")
     public void deleteEventType(@PathVariable Long id) {
-        adminService.deleteEventType(id);
+        eventTypeService.deleteEventType(id);
     }
 }
