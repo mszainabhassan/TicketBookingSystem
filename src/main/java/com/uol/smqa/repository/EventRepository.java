@@ -13,5 +13,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 	Event findById(int eventId);
 
 	List<Event> findAllByOrganizer(Organizer organizer);
+
+
+	void deleteByEventIdAndOrganizer(int eventId, Organizer organizer);
 	
 }

@@ -2,6 +2,7 @@ package com.uol.smqa.service;
 
 import java.util.List;
 
+import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Organizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,15 @@ public class EventService {
 	public List<Event> getAllEventsByOrganizerId(int organizerId) {
 		Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 		return this.eventRepository.findAllByOrganizer(organizer);
+	}
+
+
+	public void deleteEventByOrganizerId(int eventId, int organizerId) {
+		Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+		Event event = eventRepository.findById(eventId);
+		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
+		if (event.getOrganizer() != organizer) throw new AuthorizationException("You can not delete an event that does not belong to you");
+		this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
 	}
 
 	public Event createEvent(Event event) {

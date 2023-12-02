@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,6 +37,27 @@ public class OrganizerController {
         } catch (Exception ex) {
             return new ResponseEntity<>(BaseApiResponseDTO.builder()
                     .message("An error occurred while retrieving events for organizer")
+                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @DeleteMapping("/events/{eventId}")
+    public ResponseEntity<?> deleteEvent(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) {
+
+        try {
+            this.eventService.deleteEventByOrganizerId(eventId, organizerId);
+            return new ResponseEntity<>(BaseApiResponseDTO.builder()
+                    .message("Successfully deleted event")
+                    .build(), HttpStatus.NO_CONTENT);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(BaseApiResponseDTO.builder()
+                    .message(ex.getMessage())
+                    .build(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(BaseApiResponseDTO.builder()
+                    .message("An error occurred while deleting events for organizer")
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
