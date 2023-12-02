@@ -12,7 +12,8 @@ import com.uol.smqa.repository.UsersRepository;
 @RequiredArgsConstructor
 public class CustomerService{
 
-	private final PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private CustomerRepository customerRepository;
