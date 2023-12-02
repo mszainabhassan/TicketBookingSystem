@@ -1,5 +1,10 @@
 package com.uol.smqa.controller;
-
+import com.uol.smqa.service.OrganizerServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
@@ -8,7 +13,6 @@ import com.uol.smqa.model.Event;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.service.EventService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -27,6 +31,9 @@ public class OrganizerController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private OrganizerServiceInterface organizerService;
 
     @GetMapping("/events")
     public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {
@@ -107,4 +114,10 @@ public class OrganizerController {
 
     }
 
+
+	@PostMapping("/register")
+	public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
+
+		return this.organizerService.OrganizerRegistration(organizer);
+	}
 }
