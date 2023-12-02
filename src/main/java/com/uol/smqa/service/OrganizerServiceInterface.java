@@ -5,6 +5,7 @@ import com.uol.smqa.model.Organizer;
 import java.util.Optional;
 
 
-public interface OrganizerService {
+public interface OrganizerServiceInterface {
      Optional<Organizer> findById(int organizerId);
+
 }

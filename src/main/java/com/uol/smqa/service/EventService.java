@@ -23,7 +23,7 @@ public class EventService {
 	private EventRepository eventRepository;
 
 	@Autowired
-	private OrganizerService organizerService;
+	private OrganizerServiceInterface organizerService;
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
