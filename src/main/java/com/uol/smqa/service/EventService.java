@@ -1,8 +1,13 @@
 package com.uol.smqa.service;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
+import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Organizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +54,20 @@ public class EventService {
 		if (event.getOrganizer() != organizer) throw new AuthorizationException("You can not delete an event that does not belong to you");
 		this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
 	}
+
+	public void validateEventUpdateRequest(int eventId, Event eventToUpdate) {
+		List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
+		if (eventToUpdate.getEventFrequency() != null && !eventFrequencies.contains(eventToUpdate.getEventFrequency())) {
+			throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
+		}
+		Organizer organizer = organizerService.findById(eventToUpdate.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+		Event event = eventRepository.findById(eventId);
+		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
+		if (event.getOrganizer() != organizer) throw new AuthorizationException("You can not update an event that does not belong to you");
+
+		if (event.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("You can not update an event that has passed");
+	}
+
 
 	public Event createEvent(Event event) {
 		return this.eventRepository.save(event);

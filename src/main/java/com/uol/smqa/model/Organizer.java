@@ -18,4 +18,19 @@ public class Organizer {
     public List<Event> events;
 
 
+    public int getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(int organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
 }
