@@ -1,10 +1,9 @@
 package com.uol.smqa.model;
 
-import org.hibernate.type.TrueFalseConverter;
+import org.springframework.web.jsf.FacesContextUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,11 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "users")
 @Entity
@@ -39,8 +34,14 @@ public class Users {
 	private String password;
 	
 	 @OneToOne(cascade = CascadeType.ALL)
-	 @JoinColumn(name = "user_id", referencedColumnName = "customer_id", unique = true)
+	 @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
 	 private Customer customer;
+	 
+	 @OneToOne(cascade = CascadeType.ALL)
+	 @JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")
+	 private Organizer organizer;
+	 
+	
 
 	public int getUserId() {
 		return userId;
@@ -70,9 +71,34 @@ public class Users {
 		return customer;
 	}
 
+	public Organizer getOrganizer() {
+		return organizer;
+	}
+
+	public void setOrganizer(Organizer organizer) {
+		this.organizer = organizer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
 	
 
-	
-	
+//	public Integer getOrganizerId() {
+//		return organizerId;
+//	}
+//
+//	public void setOrganizerId(Integer organizerId) {
+//		this.organizerId = organizerId;
+//	}
+//
+//	public Integer getCustomerId() {
+//		return customerId;
+//	}
+//
+//	public void setCustomerId(Integer customerId) {
+//		this.customerId = customerId;
+//	}
 
 }
