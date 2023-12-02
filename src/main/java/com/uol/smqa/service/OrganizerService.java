@@ -1,5 +1,10 @@
 package com.uol.smqa.service;
 
-public class OrganizerService {
+import com.uol.smqa.model.Organizer;
 
+import java.util.Optional;
+
+
+public interface OrganizerService {
+     Optional<Organizer> findById(int organizerId);
 }
