@@ -2,6 +2,8 @@ package com.uol.smqa.service;
 
 import java.util.List;
 
+import com.uol.smqa.exceptions.ResourceNotFoundException;
+import com.uol.smqa.model.Organizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,9 @@ public class EventService {
 
 	@Autowired
 	private EventRepository eventRepository;
+
+	@Autowired
+	private OrganizerService organizerService;
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
@@ -28,6 +33,11 @@ public class EventService {
 
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
+	}
+
+	public List<Event> getAllEventsByOrganizerId(int organizerId) {
+		Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+		return this.eventRepository.findAllByOrganizer(organizer);
 	}
 
 	public Event createEvent(Event event) {
