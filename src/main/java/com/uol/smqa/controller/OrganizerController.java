@@ -1,5 +1,7 @@
 package com.uol.smqa.controller;
 import com.uol.smqa.service.OrganizerServiceInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +14,6 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.service.EventService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -26,9 +27,9 @@ import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 
 @RestController
 @RequestMapping("/organizer")
-@Slf4j
 public class OrganizerController {
 
+    private static final Logger log = LoggerFactory.getLogger(OrganizerController.class);
     @Autowired
     private EventService eventService;
 
@@ -40,18 +41,12 @@ public class OrganizerController {
 
         try {
             List<Event> organizerList = this.eventService.getAllEventsByOrganizerId(organizerId);
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("Successfully retrieved all organizers")
-                    .data(organizerList)
-                    .build(), HttpStatus.OK);
+
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully retrieved all organizers",  organizerList, null), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("An error occurred while retrieving events for organizer")
-                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while retrieving events for organizer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -62,33 +57,21 @@ public class OrganizerController {
 
         try {
             if (bindingResult.hasErrors())  {
-                return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                        .message("One or more validation errors occurred")
-                        .errors(getErrorMessages(bindingResult))
-                        .build(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new BaseApiResponseDTO("One or more validation errors occurred", null, getErrorMessages(bindingResult))
+                        , HttpStatus.BAD_REQUEST);
             }
             eventService.validateEventUpdateRequest(eventId, event);
             this.eventService.updateEvent(event);
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("Successfully updated event")
-                    .build(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully updated event"), HttpStatus.NO_CONTENT);
         } catch (BadRequestException ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (AuthorizationException ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("An error occurred while updating events for organizer")
-                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while updating events for organizer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -99,17 +82,12 @@ public class OrganizerController {
 
         try {
             this.eventService.deleteEventByOrganizerId(eventId, organizerId);
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("Successfully deleted event")
-                    .build(), HttpStatus.NO_CONTENT);
+
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted event"), HttpStatus.NO_CONTENT);
         } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
-            return new ResponseEntity<>(BaseApiResponseDTO.builder()
-                    .message("An error occurred while deleting events for organizer")
-                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

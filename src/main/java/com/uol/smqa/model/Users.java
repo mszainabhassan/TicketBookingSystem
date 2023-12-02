@@ -30,7 +30,6 @@ public class Users {
 	
 	@NotNull(message = "Password Required!")
 	@Column(name = "password",nullable = false)
-	@JsonIgnore
 	private String password;
 
 	@Column(name = "is_active", nullable = true)

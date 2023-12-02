@@ -4,17 +4,17 @@ import com.uol.smqa.model.UserDetailsImpl;
 import com.uol.smqa.model.Users;
 import com.uol.smqa.repository.UsersRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
 
-    private final UsersRepository userRepository;
+    @Autowired
+    private UsersRepository userRepository;
 
     @Override
     @Transactional
