@@ -3,7 +3,9 @@ package com.uol.smqa.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.uol.smqa.Enum.EventFrequency;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity(name = "events")
 public class Event {
@@ -27,6 +29,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "event_type_id", nullable = false)
+    @NotNull(message = "Event type is required")
     private EventType eventType;
 
     @Column(name = "seats_available")
@@ -36,7 +39,8 @@ public class Event {
     private Boolean isLimitedSeats;
 
     @Column(name = "event_frequency", nullable = false)
-    private String eventFrequency;
+    @Enumerated(EnumType.STRING)
+    private EventFrequency eventFrequency;
 
     @Column
     public Boolean status;
@@ -112,11 +116,11 @@ public class Event {
         this.isLimitedSeats = isLimitedSeats;
     }
 
-    public String getEventFrequency() {
+    public EventFrequency getEventFrequency() {
         return eventFrequency;
     }
 
-    public void setEventFrequency(String eventFrequency) {
+    public void setEventFrequency(EventFrequency eventFrequency) {
         this.eventFrequency = eventFrequency;
     }
 

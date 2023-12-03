@@ -66,17 +66,26 @@ public class EventService {
 		this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
 	}
 
-	public void validateEventUpdateRequest(int eventId, Event eventToUpdate) {
+	public void validateEventCreationRequest(int eventId, Event eventRequest) {
+		validateEventRequest(eventRequest);
+	}
+
+	private void validateEventRequest(Event eventRequest) {
 		List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
-		if (eventToUpdate.getEventFrequency() != null && !eventFrequencies.contains(eventToUpdate.getEventFrequency())) {
+		if (eventRequest.getEventFrequency() != null && !eventFrequencies.contains(eventRequest.getEventFrequency())) {
 			throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
 		}
-		Organizer organizer = organizerService.findById(eventToUpdate.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+		organizerService.findById(eventRequest.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+
+		if (eventRequest.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("This event is in the past. Kindly check again");
+
+	}
+
+	public void validateEventUpdateRequest(int eventId, Event eventToUpdate) {
+		validateEventRequest(eventToUpdate);
 		Event event = eventRepository.findById(eventId);
 		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
-		if (event.getOrganizer() != organizer) throw new AuthorizationException("You can not update an event that does not belong to you");
-
-		if (event.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("You can not update an event that has passed");
+		if (event.getOrganizer().getOrganizerId() != eventToUpdate.getOrganizer().getOrganizerId()) throw new AuthorizationException("You can not update an event that does not belong to you");
 	}
 
 

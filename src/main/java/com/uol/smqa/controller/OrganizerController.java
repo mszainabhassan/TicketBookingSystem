@@ -63,14 +63,21 @@ public class OrganizerController {
     }
 
     @PostMapping("/createEvent")
-    public Event createEvent(@RequestBody Event event) {
+    public ResponseEntity<?> createEvent(@Validated @RequestBody Event event, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(BaseApiResponseDTO.builder()
+                    .message("One or more validation errors occurred")
+                    .errors(getErrorMessages(bindingResult))
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
         // Save EventType first
         EventType.TypeName typeName = event.getEventType().getTypeName();
         EventType savedEventType = eventTypeService.createEventType(typeName);
 
         // Set EventType in Event and Save Event
         event.setEventType(savedEventType);
-        return eventService.createEvent(event);
+        return new ResponseEntity<>(eventService.createEvent(event), HttpStatus.OK);
     }
 
 
