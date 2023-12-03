@@ -1,6 +1,5 @@
 package com.uol.smqa.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,6 @@ import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.UsersRepository;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerService{
 
 	@Autowired
