@@ -1,113 +1,127 @@
 // Event.java
 package com.uol.smqa.model;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Entity
-public class Event {
+@Entity(name = "events")
+public class Event implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_id")
-    private int eventId;
+		@Id
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		@Column(name = "event_id")
+		private int eventId;
 
-    @Column(name = "event_name", nullable = false)
-    private String eventName;
+		@Column(name = "event_name", nullable = false)
+		private String eventName;
 
-    @Column(name = "event_description", nullable = false)
-    private String eventDescription;
+		@Column(name = "event_description", nullable = false)
+		private String eventDescription;
 
-    @Column(name = "event_location", nullable = false)
-    private String eventLocation;
+		@Column(name = "event_location", nullable = false)
+		private String eventLocation;
 
-    @Column(name = "event_date_time", nullable = false)
-    private LocalDateTime eventDateTime;
+		@Column(name = "event_date_time", nullable = false)
+		private LocalDateTime eventDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_id", nullable = false)
-    private EventType eventType;
+		@Column(name = "seats_available")
+		private Integer seatsAvailable;
 
-    @Column(name = "seats_available")
-    private Integer seatsAvailable;
+		@Column(name = "is_limited_seats", nullable = false)
+		private Boolean isLimitedSeats;
 
-    @Column(name = "is_limited_seats", nullable = false)
-    private Boolean isLimitedSeats;
+		@Column(name = "event_frequency", nullable = false)
+		private String eventFrequency;
 
-    @Column(name = "event_frequency", nullable = false)
-    private String eventFrequency;
+		@Column
+		public Boolean status;
 
-    public int getEventId() {
-        return eventId;
-    }
+		@ManyToOne
+		@JoinColumn(name = "organizer_id", nullable = false)
+		private Organizer organizer;
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
-    }
+		public int getEventId() {
+			return eventId;
+		}
 
-    public String getEventName() {
-        return eventName;
-    }
+		public void setEventId(int eventId) {
+			this.eventId = eventId;
+		}
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
+		public String getEventName() {
+			return eventName;
+		}
 
-    public String getEventDescription() {
-        return eventDescription;
-    }
+		public void setEventName(String eventName) {
+			this.eventName = eventName;
+		}
 
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
+		public String getEventDescription() {
+			return eventDescription;
+		}
 
-    public String getEventLocation() {
-        return eventLocation;
-    }
+		public void setEventDescription(String eventDescription) {
+			this.eventDescription = eventDescription;
+		}
 
-    public void setEventLocation(String eventLocation) {
-        this.eventLocation = eventLocation;
-    }
+		public String getEventLocation() {
+			return eventLocation;
+		}
 
-    public LocalDateTime getEventDateTime() {
-        return eventDateTime;
-    }
+		public void setEventLocation(String eventLocation) {
+			this.eventLocation = eventLocation;
+		}
 
-    public void setEventDateTime(LocalDateTime eventDateTime) {
-        this.eventDateTime = eventDateTime;
-    }
+		public LocalDateTime getEventDateTime() {
+			return eventDateTime;
+		}
 
-    public EventType getEventType() {
-        return eventType;
-    }
+		public void setEventDateTime(LocalDateTime eventDateTime) {
+			this.eventDateTime = eventDateTime;
+		}
 
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
+		public Integer getSeatsAvailable() {
+			return seatsAvailable;
+		}
 
-    public Integer getSeatsAvailable() {
-        return seatsAvailable;
-    }
+		public void setSeatsAvailable(Integer seatsAvailable) {
+			this.seatsAvailable = seatsAvailable;
+		}
 
-    public void setSeatsAvailable(Integer seatsAvailable) {
-        this.seatsAvailable = seatsAvailable;
-    }
+		public Boolean getIsLimitedSeats() {
+			return isLimitedSeats;
+		}
 
-    public Boolean getIsLimitedSeats() {
-        return isLimitedSeats;
-    }
 
-    public void setIsLimitedSeats(Boolean isLimitedSeats) {
-        this.isLimitedSeats = isLimitedSeats;
-    }
+		public void setIsLimitedSeats(Boolean isLimitedSeats) {
+			this.isLimitedSeats = isLimitedSeats;
+		}
+		public String getEventFrequency() {
+			return eventFrequency;
+		}
 
-    public String getEventFrequency() {
-        return eventFrequency;
-    }
+		public void setEventFrequency(String eventFrequency) {
+			this.eventFrequency = eventFrequency;
+		}
 
-    public void setEventFrequency(String eventFrequency) {
-        this.eventFrequency = eventFrequency;
-    }
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	public Organizer getOrganizer() {
+		return organizer;
+	}
+
+	public void setOrganizer(Organizer organizer) {
+		this.organizer = organizer;
+	}
+
 }
