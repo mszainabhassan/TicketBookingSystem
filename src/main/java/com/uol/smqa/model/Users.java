@@ -36,6 +36,21 @@ public class Users {
 	 @OneToOne(cascade = CascadeType.ALL)
 	 @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
 	 private Customer customer;
+	 @OneToOne(cascade = CascadeType.ALL)
+	 @JoinColumn(name = "user_id", referencedColumnName = "organizer_id", unique = true)
+	 private Organizer organizer;
+
+	public Organizer getOrganizer() {
+		return organizer;
+	}
+
+	public void setOrganizer(Organizer organizer) {
+		this.organizer = organizer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
 	 @OneToOne(cascade = CascadeType.ALL)
 	 @JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")

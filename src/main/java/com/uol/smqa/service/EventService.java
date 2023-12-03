@@ -1,10 +1,10 @@
 package com.uol.smqa.service;
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
@@ -36,6 +36,10 @@ public class EventService {
 			return "Event Id not present!";
 		}
 	}
+
+    public Event createEvent(Event event) {
+        return eventRepository.save(event);
+    }
 
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
@@ -87,5 +91,4 @@ public class EventService {
 			return "Event not found!";
 		}
 	}
-
 }
