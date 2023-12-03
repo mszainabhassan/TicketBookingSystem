@@ -10,6 +10,7 @@ import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/organizer")
@@ -23,13 +24,22 @@ public class OrganizerController {
 
     @PostMapping("/createEvent")
     public Event createEvent(@RequestBody Event event) {
-        // Save EventType first
-        EventType.TypeName typeName = event.getEventType().getTypeName();
-        EventType savedEventType = eventTypeService.createEventType(typeName);
+        String eventTypeName = event.getEventType().getTypeName();
+        Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
-        // Set EventType in Event and Save Event
-        event.setEventType(savedEventType);
-        return eventService.createEvent(event);
+        if (existingEventType.isPresent()) {
+            // If the event type exists, set it in the event
+            event.setEventType(existingEventType.get());
+        } else {
+            // If the event type does not exist, create a new one and set it in the event
+            EventType newEventType = new EventType();
+            newEventType.setTypeName(eventTypeName);
+            eventTypeService.addEventType(newEventType);
+            event.setEventType(newEventType);
+        }
+
+    	return eventService.createEvent(event);
+        
     }
 
     @GetMapping("/eventAnalytics/{eventId}")

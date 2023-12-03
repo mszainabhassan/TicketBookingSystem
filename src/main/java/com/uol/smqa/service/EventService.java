@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Event;
+import com.uol.smqa.model.EventType;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
@@ -20,6 +21,8 @@ public class EventService {
     
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private EventTypeService eventTypeService;
     
     @Autowired
     private CustomerBookEventRepository customerBookEventRepository;
@@ -43,8 +46,24 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
+        // Save EventType only if it doesn't exist
+        EventType eventType = event.getEventType();
+        Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventType.getTypeName());
+
+        if (existingEventType.isPresent()) {
+            // If the event type exists, set it in the event
+            event.setEventType(existingEventType.get());
+        } else {
+            // If the event type does not exist, create a new one and set it in the event
+            EventType newEventType = new EventType();
+            newEventType.setTypeName(eventType.getTypeName());
+            eventTypeService.addEventType(newEventType);
+            event.setEventType(newEventType);
+        }
+
         return eventRepository.save(event);
     }
+
 
     public int getNumberOfBookedUsers(Integer eventId) {
         Event event = getEventById(eventId);

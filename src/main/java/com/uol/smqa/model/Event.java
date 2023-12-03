@@ -28,8 +28,10 @@ public class Event {
     private LocalDateTime eventDateTime;
 
     @ManyToOne
-    @JoinColumn(name = "event_type_id", nullable = false)
+    @JoinColumn(name = "event_type", nullable = false)
     private EventType eventType;
+    
+    
 
     @Column(name = "seats_available")
     private Integer seatsAvailable;

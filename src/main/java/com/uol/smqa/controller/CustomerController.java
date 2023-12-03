@@ -27,7 +27,7 @@ public class CustomerController {
         return this.customerService.CustomerRegistration(customer);
     }
 
-    @GetMapping("/events")
+    @GetMapping("/events/")
     public List<CustomerBookEvent> getAllBookedEvents(@RequestParam int customerId) {
         Customer customer = this.customerService.getCustomerById(customerId);
         return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
