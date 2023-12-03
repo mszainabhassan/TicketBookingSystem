@@ -1,4 +1,7 @@
 package com.uol.smqa.controller;
+import com.uol.smqa.model.CustomerBookEvent;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.service.EventTypeService;
 import com.uol.smqa.service.OrganizerServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +38,9 @@ public class OrganizerController {
     @Autowired
     private OrganizerServiceInterface organizerService;
 
+    @Autowired
+    private EventTypeService eventTypeService;
+
     @GetMapping("/events")
     public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {
 
@@ -54,6 +60,35 @@ public class OrganizerController {
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @PostMapping("/createEvent")
+    public Event createEvent(@RequestBody Event event) {
+        // Save EventType first
+        EventType.TypeName typeName = event.getEventType().getTypeName();
+        EventType savedEventType = eventTypeService.createEventType(typeName);
+
+        // Set EventType in Event and Save Event
+        event.setEventType(savedEventType);
+        return eventService.createEvent(event);
+    }
+
+
+    @GetMapping("/eventAnalytics/{eventId}")
+    public String getEventAnalytics(@PathVariable Integer eventId) {
+        try {
+            // Get the event
+            Event event = eventService.getEventById(eventId);
+
+            // Get the number of users booked for the event
+            List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+            int numberOfBookedUsers = bookedCustomers.size();
+
+            // Return the analytics as a string (you can format it as needed)
+            return "Event Analytics for Event ID " + eventId + ": Number of Booked Users - " + numberOfBookedUsers;
+        } catch (Exception e) {
+            return "Error retrieving event analytics: " + e.getMessage();
+        }
     }
 
 

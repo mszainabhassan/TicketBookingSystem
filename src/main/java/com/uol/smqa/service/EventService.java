@@ -9,7 +9,11 @@ import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
+import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.Organizer;
+import com.uol.smqa.repository.CustomerBookEventRepository;
+import com.uol.smqa.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,13 @@ public class EventService {
 
 	@Autowired
 	private OrganizerServiceInterface organizerService;
+
+    @Autowired
+    private CustomerBookEventRepository customerBookEventRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
@@ -87,5 +98,36 @@ public class EventService {
 			return "Event not found!";
 		}
 	}
+
+    public Event bookEvent(Integer eventId, Integer customerId) {
+        Event event = getEventById(eventId);
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
+
+        CustomerBookEvent booking = new CustomerBookEvent();
+        booking.setCustomer(customer);
+        booking.setEvent(event);
+
+        customerBookEventRepository.save(booking);
+
+        // Update the list of booked customers in the event
+        List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+        bookedCustomers.add(booking);
+        event.setBookedCustomers(bookedCustomers);
+
+        return eventRepository.save(event);
+    }
+
+    public int getNumberOfBookedUsers(Integer eventId) {
+        Event event = getEventById(eventId);
+
+        // Get the number of booked customers for the event
+        List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+        return bookedCustomers.size();
+    }
+
+    public Event getEventById(Integer eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
+    }
 
 }
