@@ -21,8 +21,12 @@ import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 @RequestMapping("/auth/reset-password")
 public class PasswordResetController {
 
+    private final PasswordResetService passwordResetService;
+
     @Autowired
-    private PasswordResetService passwordResetService;
+    public PasswordResetController(PasswordResetService passwordResetService) {
+        this.passwordResetService = passwordResetService;
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder webDataBinder) {

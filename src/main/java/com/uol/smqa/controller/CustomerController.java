@@ -13,12 +13,17 @@ import com.uol.smqa.service.CustomerService;
 @RequestMapping("/customer")
 public class CustomerController {
 	
+
+	private final CustomerService customerService;
+
 	@Autowired
-	private CustomerService customerService;
+	public CustomerController(CustomerService customerService) {
+		this.customerService = customerService;
+	}
 	
 	@PostMapping("/register")
 	public Customer CustomerRegistration(@RequestBody Customer customer) {
-	return this.customerService.CustomerRegistration(customer);
+		return this.customerService.CustomerRegistration(customer);
 	}
 
 }

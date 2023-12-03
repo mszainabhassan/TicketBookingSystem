@@ -15,13 +15,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class PasswordResetServiceImpl implements PasswordResetService {
 
-    @Autowired
-    private UsersService usersService;
+    private final UsersService usersService;
+
+    private final PasswordResetHistoryRepository passwordResetHistoryRepository;
 
     @Autowired
-    private PasswordResetHistoryRepository passwordResetHistoryRepository;
+    public PasswordResetServiceImpl(UsersService usersService, PasswordResetHistoryRepository passwordResetHistoryRepository) {
+        this.usersService = usersService;
+        this.passwordResetHistoryRepository = passwordResetHistoryRepository;
+    }
 
 
+    @Override
     public PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
         Users user = usersService.findByEmail(passwordResetRequestDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User with email does not exist"));
         if (!user.isActive()) throw new AuthorizationException("User is not authorized to carry out action");

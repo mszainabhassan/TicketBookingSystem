@@ -25,14 +25,18 @@ import static com.uol.smqa.utils.Constants.SUCCESS_LOGIN_CREDENTIALS_MESSAGE;
 public class AuthServiceImpl implements AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
-    @Autowired
-    private UsersService usersService;
+    private final UsersService usersService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtils jwtUtils;
+    public AuthServiceImpl(UsersService usersService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+        this.usersService = usersService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+    }
 
 
     public LoginResponseDTO loginUser(String userName, String password) throws AuthenticationException {

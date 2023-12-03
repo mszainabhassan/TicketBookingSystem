@@ -22,8 +22,11 @@ import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 @RequestMapping(value = "/auth")
 public class AuthController {
 
+	private final AuthService authService;
 	@Autowired
-	private AuthService authService;
+	public AuthController(AuthService authService) {
+		this.authService = authService;
+	}
 	
 	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> loginUser(@Validated @RequestBody LoginRequestDTO loginDTO, BindingResult bindingResult) {

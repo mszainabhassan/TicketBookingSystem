@@ -13,14 +13,17 @@ import java.util.Optional;
 @Service
 public class OrganizerService implements OrganizerServiceInterface {
 
-	@Autowired
-	private OrganizerRepository organizerRepository;
+	private final OrganizerRepository organizerRepository;
+	private final UsersRepository usersRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private UsersRepository usersRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public OrganizerService(OrganizerRepository organizerRepository, UsersRepository usersRepository,
+							PasswordEncoder passwordEncoder) {
+		this.organizerRepository = organizerRepository;
+		this.usersRepository = usersRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
     @Override
 	public Organizer OrganizerRegistration(Organizer organizer) {

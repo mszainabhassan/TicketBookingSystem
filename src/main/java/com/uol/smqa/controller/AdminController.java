@@ -19,8 +19,12 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
+	private final EventService eventService;
+
 	@Autowired
-	private EventService eventService;
+	public AdminController(EventService eventService) {
+		this.eventService = eventService;
+	}
 
 	@PutMapping("/change_event_status")
 	public String ChangeEventStatus(@RequestParam(name = "eventId") Integer eventId,

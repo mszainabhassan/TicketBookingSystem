@@ -11,10 +11,16 @@ import java.util.Optional;
 @Service
 public class UsersService {
 
+    private final UsersRepository usersRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UsersService(UsersRepository usersRepository,
+    PasswordEncoder passwordEncoder) {
+        this.usersRepository = usersRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Optional<Users> findByEmail(String email) {
         return getUsersRepository().findByUsername(email);

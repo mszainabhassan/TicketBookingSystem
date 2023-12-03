@@ -30,11 +30,14 @@ import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 public class OrganizerController {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizerController.class);
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
+    private final OrganizerServiceInterface organizerService;
 
     @Autowired
-    private OrganizerServiceInterface organizerService;
+    public OrganizerController(EventService eventService, OrganizerServiceInterface organizerService) {
+        this.eventService = eventService;
+        this.organizerService = organizerService;
+    }
 
     @GetMapping("/events")
     public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {

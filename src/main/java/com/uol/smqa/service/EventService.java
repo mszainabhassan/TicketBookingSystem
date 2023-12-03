@@ -19,11 +19,15 @@ import com.uol.smqa.repository.EventRepository;
 @Service
 public class EventService {
 
-	@Autowired
-	private EventRepository eventRepository;
+	private final EventRepository eventRepository;
+	private final OrganizerServiceInterface organizerService;
 
 	@Autowired
-	private OrganizerServiceInterface organizerService;
+	public EventService(EventRepository eventRepository,
+						OrganizerServiceInterface organizerService) {
+		this.eventRepository = eventRepository;
+		this.organizerService = organizerService;
+	}
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);

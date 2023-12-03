@@ -10,13 +10,17 @@ import com.uol.smqa.repository.UsersRepository;
 @Service
 public class CustomerService{
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
+	private final CustomerRepository customerRepository;
+	private final UsersRepository usersRepository;
 
 	@Autowired
-	private CustomerRepository customerRepository;
-	@Autowired
-	private UsersRepository usersRepository;
+	public CustomerService(PasswordEncoder passwordEncoder, CustomerRepository customerRepository,
+						   UsersRepository usersRepository) {
+		this.passwordEncoder = passwordEncoder;
+		this.customerRepository = customerRepository;
+		this.usersRepository = usersRepository;
+	}
 
 	public Customer CustomerRegistration(Customer customer) {
 		customer.getUsers().setPassword(passwordEncoder.encode(customer.getUsers().getPassword()));
