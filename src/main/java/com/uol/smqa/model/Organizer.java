@@ -1,11 +1,14 @@
 package com.uol.smqa.model;
+import java.time.LocalDate;
+
 
 import jakarta.persistence.*;
 import com.uol.smqa.Enum.Gender;
 import java.util.List;
 import java.time.LocalDate;
-
-@Entity(name = "organizers")
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.uol.smqa.Enum.Gender;
+@Entity
 public class Organizer {
 
     @Id
@@ -121,3 +124,7 @@ public class Organizer {
         this.regNo = regNo;
     }
 }
+
+
+
+

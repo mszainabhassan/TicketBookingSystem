@@ -1,10 +1,10 @@
 package com.uol.smqa.service;
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
@@ -37,6 +37,10 @@ public class EventService {
 		}
 	}
 
+    public Event createEvent(Event event) {
+        return eventRepository.save(event);
+    }
+
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
 	}
@@ -68,11 +72,6 @@ public class EventService {
 		if (event.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("You can not update an event that has passed");
 	}
 
-
-	public Event createEvent(Event event) {
-		return this.eventRepository.save(event);
-	}
-
 	public Event updateEvent(Event event) {
 		return this.eventRepository.save(event);
 	}
@@ -87,5 +86,4 @@ public class EventService {
 			return "Event not found!";
 		}
 	}
-
 }

@@ -1,5 +1,5 @@
+// Event.java
 package com.uol.smqa.model;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -123,4 +123,5 @@ public class Event implements Serializable {
 	public void setOrganizer(Organizer organizer) {
 		this.organizer = organizer;
 	}
+
 }

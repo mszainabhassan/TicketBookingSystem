@@ -1,6 +1,7 @@
 package com.uol.smqa.controller;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,17 +11,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.uol.smqa.model.Event;
 import com.uol.smqa.service.EventService;
+import com.uol.smqa.service.EventTypeService;
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
+import com.uol.smqa.model.EventType;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+   @Autowired
+   private EventTypeService eventTypeService;
+  
+	  @Autowired
+	  private EventService eventService;
 
-	@Autowired
-	private EventService eventService;
+    @GetMapping("/eventtypes")
+    public List<EventType> getAllEventTypes() {
+        return eventTypeService.getAllEventTypes();
+    }
+
+    @PostMapping("/eventtype")
+    public void addEventType(@RequestBody EventType eventType) {
+        eventTypeService.addEventType(eventType);
+    }
+
+    @PutMapping("/eventtype/{id}")
+    public EventType updateEventType(@PathVariable Long id, @RequestBody EventType eventType) {
+        return eventTypeService.updateEventType(id, eventType);
+    }
+
+
 
 	@PutMapping("/change_event_status")
 	public String ChangeEventStatus(@RequestParam(name = "eventId") Integer eventId,
@@ -48,4 +70,10 @@ public class AdminController {
 	public String updateEvent(@RequestParam Integer eventId) {
 		return this.eventService.deleteEvent(eventId);
 	}
+  
+  @DeleteMapping("/eventtype/{id}")
+    public void deleteEventType(@PathVariable Long id) {
+        eventTypeService.deleteEventType(id);
+    }
+
 }
