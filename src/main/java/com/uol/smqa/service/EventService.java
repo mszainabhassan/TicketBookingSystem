@@ -1,10 +1,10 @@
 package com.uol.smqa.service;
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
@@ -48,6 +48,10 @@ public class EventService {
 		}
 	}
 
+    public Event createEvent(Event event) {
+        return eventRepository.save(event);
+    }
+
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
 	}
@@ -86,11 +90,6 @@ public class EventService {
 		Event event = eventRepository.findById(eventId);
 		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
 		if (event.getOrganizer().getOrganizerId() != eventToUpdate.getOrganizer().getOrganizerId()) throw new AuthorizationException("You can not update an event that does not belong to you");
-	}
-
-
-	public Event createEvent(Event event) {
-		return this.eventRepository.save(event);
 	}
 
 	public Event updateEvent(Event event) {

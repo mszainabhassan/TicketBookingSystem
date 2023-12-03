@@ -23,21 +23,36 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
+import com.uol.smqa.service.EventService;
+import com.uol.smqa.service.EventTypeService;
+import com.uol.smqa.service.OrganizerService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.uol.smqa.model.Event;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.model.Organizer;
+import com.uol.smqa.service.OrganizerService;
 
 @RestController
 @RequestMapping("/organizer")
 public class OrganizerController {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizerController.class);
+     @Autowired
+    private EventTypeService eventTypeService;
+    @Autowired
+	  private OrganizerService organizerService;
     @Autowired
     private EventService eventService;
-
-    @Autowired
-    private OrganizerServiceInterface organizerService;
 
     @Autowired
     private EventTypeService eventTypeService;
@@ -148,4 +163,18 @@ public class OrganizerController {
 
 		return this.organizerService.OrganizerRegistration(organizer);
 	}
+
+  
+	
+
+    @PostMapping("/createEvent")
+    public Event createEvent(@RequestBody Event event) {
+        // Save EventType first
+   //EventType.TypeName typeName = event.getEventType().getTypeName();
+   //     EventType savedEventType = eventTypeService.createEventType(typeName);
+
+        // Set EventType in Event and Save Event
+    //    event.setEventType(savedEventType);
+        return eventService.createEvent(event);
+    }
 }
