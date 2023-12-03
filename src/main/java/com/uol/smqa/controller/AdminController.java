@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.service.EventService;
+import com.uol.smqa.service.EventTypeService;
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.uol.smqa.model.EventType;
 

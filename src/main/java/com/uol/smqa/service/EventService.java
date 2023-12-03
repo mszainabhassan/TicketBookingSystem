@@ -72,11 +72,6 @@ public class EventService {
 		if (event.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("You can not update an event that has passed");
 	}
 
-
-	public Event createEvent(Event event) {
-		return this.eventRepository.save(event);
-	}
-
 	public Event updateEvent(Event event) {
 		return this.eventRepository.save(event);
 	}
