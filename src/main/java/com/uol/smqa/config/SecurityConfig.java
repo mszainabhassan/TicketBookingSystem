@@ -2,15 +2,11 @@ package com.uol.smqa.config;
 
 import com.uol.smqa.filters.AuthTokenFilter;
 import com.uol.smqa.utils.JwtUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,11 +20,13 @@ import static jakarta.servlet.DispatcherType.FORWARD;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailService;
-    private final JwtUtils jwtUtils;
+    @Autowired
+    private UserDetailsService userDetailService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     private static final String[] AUTH_WHITELIST = { "/auth/**", "/auth/reset-password/**", "/customer/register",
         "/organizer/register"

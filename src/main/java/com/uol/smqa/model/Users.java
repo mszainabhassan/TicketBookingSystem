@@ -1,6 +1,5 @@
 package com.uol.smqa.model;
 
-import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -17,7 +16,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Table(name = "users")
 @Entity
-@Data
 public class Users {
 	
 	@Id
@@ -30,7 +28,6 @@ public class Users {
 	
 	@NotNull(message = "Password Required!")
 	@Column(name = "password",nullable = false)
-	@JsonIgnore
 	private String password;
 
 	@Column(name = "is_active", nullable = true)
@@ -88,4 +85,12 @@ public class Users {
 		this.customer = customer;
 	}
 
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
+	}
 }

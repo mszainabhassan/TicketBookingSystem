@@ -66,7 +66,7 @@ public class EventService {
 		this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
 	}
 
-	public void validateEventCreationRequest(int eventId, Event eventRequest) {
+	public void validateEventCreationRequest(Event eventRequest) {
 		validateEventRequest(eventRequest);
 	}
 

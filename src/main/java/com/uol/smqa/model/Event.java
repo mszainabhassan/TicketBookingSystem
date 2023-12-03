@@ -39,8 +39,7 @@ public class Event {
     private Boolean isLimitedSeats;
 
     @Column(name = "event_frequency", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EventFrequency eventFrequency;
+    private String eventFrequency;
 
     @Column
     public Boolean status;
@@ -116,11 +115,11 @@ public class Event {
         this.isLimitedSeats = isLimitedSeats;
     }
 
-    public EventFrequency getEventFrequency() {
+    public String getEventFrequency() {
         return eventFrequency;
     }
 
-    public void setEventFrequency(EventFrequency eventFrequency) {
+    public void setEventFrequency(String eventFrequency) {
         this.eventFrequency = eventFrequency;
     }
 
