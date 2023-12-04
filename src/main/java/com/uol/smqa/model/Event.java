@@ -4,17 +4,22 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "events")
+@Entity(name = "event")
 public class Event implements Serializable {
 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@Column(name = "event_id")
 		private int eventId;
+		
+		@OneToMany(mappedBy = "event")
+		private List<WishList> wishlists;
 
 		@Column(name = "event_name", nullable = false)
 		private String eventName;
@@ -116,6 +121,7 @@ public class Event implements Serializable {
 		this.status = status;
 	}
 
+	@JsonIgnore
 	public Organizer getOrganizer() {
 		return organizer;
 	}
