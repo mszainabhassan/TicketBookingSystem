@@ -1,6 +1,5 @@
 package com.uol.smqa.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +11,6 @@ public class Admin {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database
     private Long id;
-
 
 }
 

@@ -1,4 +1,5 @@
 package com.uol.smqa.service;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +45,3 @@ public class EventTypeService {
 	    return eventTypeRepository.findByTypeName(typeName);
 	}
 }
-

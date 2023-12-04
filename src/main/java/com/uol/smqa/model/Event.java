@@ -1,13 +1,12 @@
-// Event.java
 package com.uol.smqa.model;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.uol.smqa.Enum.EventFrequency;
 import jakarta.persistence.*;
-import lombok.*;
 
-@Entity
+
+@Entity(name = "events")
 public class Event {
 
     @Id
@@ -28,7 +27,8 @@ public class Event {
     private LocalDateTime eventDateTime;
 
     @ManyToOne
-    @JoinColumn(name = "event_type", nullable = false)
+    @JoinColumn(name = "event_type_name", nullable = false)
+    
     private EventType eventType;
     
     
@@ -42,9 +42,16 @@ public class Event {
     @Column(name = "event_frequency", nullable = false)
     private String eventFrequency;
 
+    @Column
+    public Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id", nullable = false)
+    private Organizer organizer;
+
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
-    
+
     public int getEventId() {
         return eventId;
     }
@@ -104,17 +111,11 @@ public class Event {
     public Boolean getIsLimitedSeats() {
         return isLimitedSeats;
     }
-    
 
     public void setIsLimitedSeats(Boolean isLimitedSeats) {
         this.isLimitedSeats = isLimitedSeats;
     }
-    public List<CustomerBookEvent> getBookedCustomers() {
-        return bookedCustomers;
-    }
-    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
-        this.bookedCustomers = bookedCustomers;
-    }
+
     public String getEventFrequency() {
         return eventFrequency;
     }
@@ -122,4 +123,28 @@ public class Event {
     public void setEventFrequency(String eventFrequency) {
         this.eventFrequency = eventFrequency;
     }
+
+    public List<CustomerBookEvent> getBookedCustomers() {
+        return bookedCustomers;
+    }
+    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
+        this.bookedCustomers = bookedCustomers;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public Organizer getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(Organizer organizer) {
+        this.organizer = organizer;
+    }
+
 }
