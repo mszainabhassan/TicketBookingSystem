@@ -57,7 +57,7 @@ public class OrganizerController {
 
 
    @PostMapping("/createEvent")
-    public Event createEvent(@RequestBody Event event) {
+    public ResponseEntity<?> createEvent(@RequestBody Event event) {
         String eventTypeName = event.getEventType().getTypeName();
         Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
@@ -66,13 +66,10 @@ public class OrganizerController {
             event.setEventType(existingEventType.get());
         } else {
             // If the event type does not exist, create a new one and set it in the event
-            EventType newEventType = new EventType();
-            newEventType.setTypeName(eventTypeName);
-            eventTypeService.addEventType(newEventType);
-            event.setEventType(newEventType);
+           return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
         }
-
-    	return eventService.createEvent(event);
+        return new ResponseEntity(eventService.createEvent(event), HttpStatus.CREATED);
+    	
     	}
         
 

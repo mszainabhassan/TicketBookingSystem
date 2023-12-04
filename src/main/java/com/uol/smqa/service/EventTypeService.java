@@ -11,7 +11,7 @@ public class EventTypeService {
    @Autowired
    private EventTypeRepository eventTypeRepository;
    public EventType addEventType(EventType eventType) {
-       eventTypeRepository.save(eventType);
+     eventType =  eventTypeRepository.save(eventType);
        return eventType;
    }
    public Optional<EventType> getEventTypeById(Long id) {

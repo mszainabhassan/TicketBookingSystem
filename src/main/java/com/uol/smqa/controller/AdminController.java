@@ -40,8 +40,8 @@ public class AdminController {
     }
 
     @PostMapping("/eventtype")
-    public void addEventType(@RequestBody EventType eventType) {
-        eventTypeService.addEventType(eventType);
+    public EventType addEventType(@RequestBody EventType eventType) {
+       return eventTypeService.addEventType(eventType);
     }
 
     @PutMapping("/eventtype/{id}")
