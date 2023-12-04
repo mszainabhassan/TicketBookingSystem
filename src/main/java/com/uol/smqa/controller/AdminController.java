@@ -1,5 +1,13 @@
 package com.uol.smqa.controller;
 
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.service.EventTypeService;
+
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +31,6 @@ import com.uol.smqa.model.EventType;
 public class AdminController {
    @Autowired
    private EventTypeService eventTypeService;
-  
 	  @Autowired
 	  private EventService eventService;
 
@@ -33,8 +40,8 @@ public class AdminController {
     }
 
     @PostMapping("/eventtype")
-    public void addEventType(@RequestBody EventType eventType) {
-        eventTypeService.addEventType(eventType);
+    public EventType addEventType(@RequestBody EventType eventType) {
+       return eventTypeService.addEventType(eventType);
     }
 
     @PutMapping("/eventtype/{id}")
@@ -76,4 +83,8 @@ public class AdminController {
         eventTypeService.deleteEventType(id);
     }
 
+
 }
+
+
+

@@ -7,17 +7,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Entity(name = "event")
+
+@Entity(name = "events")
 public class Event implements Serializable {
 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@Column(name = "event_id")
 		private int eventId;
-		
+
 		@OneToMany(mappedBy = "event")
 		private List<WishList> wishlists;
 
@@ -33,8 +32,15 @@ public class Event implements Serializable {
 		@Column(name = "event_date_time", nullable = false)
 		private LocalDateTime eventDateTime;
 
-		@Column(name = "seats_available")
-		private Integer seatsAvailable;
+    @ManyToOne
+    @JoinColumn(name = "event_type_name", nullable = false)
+
+    private EventType eventType;
+
+
+
+    @Column(name = "seats_available")
+    private Integer seatsAvailable;
 
 		@Column(name = "is_limited_seats", nullable = false)
 		private Boolean isLimitedSeats;
@@ -49,9 +55,12 @@ public class Event implements Serializable {
 		@JoinColumn(name = "organizer_id", nullable = false)
 		private Organizer organizer;
 
-		public int getEventId() {
-			return eventId;
-		}
+    @OneToMany(mappedBy = "event")
+    private List<CustomerBookEvent> bookedCustomers;
+
+    public int getEventId() {
+        return eventId;
+    }
 
 		public void setEventId(int eventId) {
 			this.eventId = eventId;
@@ -89,9 +98,17 @@ public class Event implements Serializable {
 			this.eventDateTime = eventDateTime;
 		}
 
-		public Integer getSeatsAvailable() {
-			return seatsAvailable;
-		}
+    public EventType getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public Integer getSeatsAvailable() {
+        return seatsAvailable;
+    }
 
 		public void setSeatsAvailable(Integer seatsAvailable) {
 			this.seatsAvailable = seatsAvailable;
@@ -113,9 +130,16 @@ public class Event implements Serializable {
 			this.eventFrequency = eventFrequency;
 		}
 
-	public Boolean getStatus() {
-		return status;
-	}
+    public List<CustomerBookEvent> getBookedCustomers() {
+        return bookedCustomers;
+    }
+    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
+        this.bookedCustomers = bookedCustomers;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
 
 	public void setStatus(Boolean status) {
 		this.status = status;

@@ -1,7 +1,46 @@
+// CustomerBookEvent.java
 package com.uol.smqa.model;
 
-public class CustomerBookEvent {
-	//This class is association between customer and events as customer can book 
-	//multiple events and one event can be booked by multiple customers.
+import jakarta.persistence.*;
 
+@Entity
+public class CustomerBookEvent {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "booking_id")
+    private Long bookingId;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event; 
+    // Constructors, getters, and setters
+
+    public Long getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Long bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }
