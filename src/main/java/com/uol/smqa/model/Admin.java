@@ -10,35 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-@Entity
-public class Admin implements Serializable {
+//@Entity
+public class Admin  {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "customer_id", nullable = false)
-	private int CustomerId;
-
-	@Column(nullable = false)
-	private Boolean isActive;
-
-	public Admin() {
-		super();
-	}
-
-	public int getCustomerId() {
-		return CustomerId;
-	}
-
-	public void setCustomerId(int customerID) {
-		CustomerId = customerID;
-	}
-	public Boolean getStatus() {
-		return isActive;
-	}
-
-	public void isActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
 	
 	
 
