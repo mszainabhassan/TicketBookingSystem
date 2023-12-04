@@ -43,18 +43,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uol.smqa.model.Discount;
 import com.uol.smqa.service.OrganizerService;
 
-@RestController
-@RequestMapping("/organizer")
-public class OrganizerController {
+
 	
-	@Autowired
-	private OrganizerService organizerService;
 	
-	@PostMapping("/set_discount")
-	public Discount setDiscount(@RequestBody Discount discount) {
-		return this.organizerService.setDiscount(null, 0);
-		
-	}
 
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
@@ -74,6 +65,12 @@ public class OrganizerController {
     private EventService eventService;
 
 
+    @PostMapping("/set_discount")
+	public Discount setDiscount(@RequestBody Discount discount) {
+		return this.organizerService.setDiscount(discount);
+		
+	}
+    
    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {
         String eventTypeName = event.getEventType().getTypeName();

@@ -43,8 +43,7 @@ public class Users {
 
 	@NotNull(message = "Password Required!")
 
-	@Column(name = "password",nullable = false)
-//	@JsonIgnore
+
 
 
 	@Column(name = "password", nullable = false)
@@ -143,17 +142,7 @@ public class Users {
 
 	}
 
-	public boolean isActive() {
 
-		return isActive;
-
-	}
-
-	public void setActive(boolean active) {
-
-		isActive = active;
-
-	}
 
 
 }

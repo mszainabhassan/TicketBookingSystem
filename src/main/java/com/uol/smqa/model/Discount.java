@@ -28,21 +28,22 @@ public class Discount implements Serializable{
 	@Column(name = "discount_value", nullable = false)
 	private int discountValue = 0;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	 @JoinColumn(name = "discount_id", referencedColumnName = "event_id", unique = true)
-	 private List<Event> events;
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "discount")
+	private Event event;
+	
+	/*
+	 * @OneToMany(cascade = CascadeType.ALL)
+	 * 
+	 * @JoinColumn(name = "discount_id", referencedColumnName = "event_id", unique =
+	 * true) private List<Event> events;
+	 */
+
 
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	 @JoinColumn(name = "discount_id", referencedColumnName = "organizer_id", unique = true)
-	 private List<Discount> discounts;
 	
 	
-
-	    @OneToMany(mappedBy = "discount_id", cascade = CascadeType.ALL)
-	    private List<Discount> discounts1;
-	
-	
+	    @OneToMany(mappedBy = "discount" , cascade = CascadeType.ALL)
+		private List<Event> events;
 	
 	
 	

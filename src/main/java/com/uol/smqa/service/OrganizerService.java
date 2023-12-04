@@ -7,22 +7,6 @@ import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Discount;
 import com.uol.smqa.repository.DiscountRepository;
 
-@Service
-public class OrganizerService {
-
-	@Autowired
-	private DiscountRepository discountRepository;
-	
-	public Discount setDiscount(String discountCode, int discountValue) {
-		
-		Discount discount  = new Discount();
-		discount.setDiscountCode(discountCode);
-		discount.setDiscountValue(discountValue);
-		return this.discountRepository.save(discount);
-		
-	}
-	
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +18,7 @@ import com.uol.smqa.repository.OrganizerRepository;
 import com.uol.smqa.repository.UsersRepository;
 
 @Service
+
 public class OrganizerService implements OrganizerServiceInterface {
 
 	@Autowired
@@ -44,7 +29,11 @@ public class OrganizerService implements OrganizerServiceInterface {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
+	
+	@Autowired
+	private DiscountRepository discountRepository;
+	
+	
     @Override
 	public Organizer OrganizerRegistration(Organizer organizer) {
 		organizer.getUsers().setPassword(passwordEncoder.encode(organizer.getUsers().getPassword()));
@@ -62,4 +51,12 @@ public class OrganizerService implements OrganizerServiceInterface {
         return organizerRepository.findById(organizerId);
     }
 
+	
+	
+	public Discount setDiscount(Discount discount) {
+	
+		return this.discountRepository.save(discount);
+		
+	}
+    
 }

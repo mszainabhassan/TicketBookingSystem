@@ -95,14 +95,14 @@ public class AdminController {
 	
 	
 	
-	/*
-	 * @Autowired private OrganizerService organizerService;
-	 * 
-	 * @PostMapping("/admin_register_organizer")
-	 * 
-	 * public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
-	 * { return this.organizerService.OrganizerRegistration(organizer); }
-	 */
+	
+	  @Autowired private OrganizerService organizerService;
+	  
+	  @PostMapping("/admin_register_organizer")
+	  
+	  public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
+	  { return this.organizerService.OrganizerRegistration(organizer); }
+	 
 	
 	
 	
@@ -137,12 +137,6 @@ public class AdminController {
 	public String updateEvent(@RequestParam Integer eventId) {
 		return this.eventService.deleteEvent(eventId);
 	}
-
-
-}
-
-
-
 
 
   

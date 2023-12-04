@@ -37,7 +37,10 @@ public class Event implements Serializable {
 
     private EventType eventType;
 
-
+    @OneToOne
+    @JoinColumn(name="discount_id")
+    private Discount discount;
+    
 
     @Column(name = "seats_available")
     private Integer seatsAvailable;
