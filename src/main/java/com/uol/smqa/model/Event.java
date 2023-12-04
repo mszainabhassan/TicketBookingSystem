@@ -27,7 +27,7 @@ public class Event {
     private LocalDateTime eventDateTime;
 
     @ManyToOne
-    @JoinColumn(name = "event_type_id", nullable = false)
+    @JoinColumn(name = "event_type_name", nullable = false)
     private EventType eventType;
 
     @Column(name = "seats_available")

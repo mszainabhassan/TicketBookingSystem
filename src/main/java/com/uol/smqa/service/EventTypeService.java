@@ -14,8 +14,9 @@ public class EventTypeService {
     @Autowired
     private EventTypeRepository eventTypeRepository;
 
-    public void addEventType(EventType eventType) {
+    public String addEventType(EventType eventType) {
         eventTypeRepository.save(eventType);
+        return "Event type added successfully";
     }
 
     public Optional<EventType> getEventTypeById(Long id) {
@@ -44,7 +45,9 @@ public class EventTypeService {
         }
     }
 
-    public void deleteEventType(Long id) {
-        eventTypeRepository.deleteById(id);
+    public String deleteEventType(Long id) {
+       eventTypeRepository.deleteById(id);
+       return "Event type deleted successfully";
+        
     }
 }

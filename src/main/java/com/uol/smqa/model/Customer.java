@@ -1,4 +1,4 @@
-package com.uol.smqa.model;
+ package com.uol.smqa.model;
 
 import java.time.LocalDate;
 
@@ -22,7 +22,8 @@ public class Customer{
 	
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
-	
+
+
 	@Column(name = "customer_name",nullable = false)
 	private String name;
 	
