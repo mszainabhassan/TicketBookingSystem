@@ -9,6 +9,8 @@ import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.EventRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,5 +41,16 @@ public class CustomerBookEventService {
         booking.setEvent(event);
 
         customerBookEventRepository.save(booking);
+    }
+    public void cancelEventBooking(Long bookingId) {
+        CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+        Event event = booking.getEvent();
+        LocalDateTime currentDatetime = LocalDateTime.now();
+
+        if (event.getEventDateTime().isBefore(currentDatetime)) {
+            throw new RuntimeException("Cannot cancel booking for an event that has already occurred.");
+        }
+        customerBookEventRepository.delete(booking);
     }
 }

@@ -50,4 +50,13 @@ public class CustomerController {
 
         return "Event booked successfully!";
     }
+    @DeleteMapping("/cancelBooking/{bookingId}")
+    public String cancelBooking(@PathVariable Long bookingId) {
+        try {
+            customerBookEventService.cancelEventBooking(bookingId);
+            return "Booking canceled successfully!";
+        } catch (Exception e) {
+            return "Error canceling booking: " + e.getMessage();
+        }
+    }
 }
