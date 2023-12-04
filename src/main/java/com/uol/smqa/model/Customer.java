@@ -23,7 +23,6 @@ public class Customer{
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
 
-
 	@Column(name = "customer_name",nullable = false)
 	private String name;
 	
