@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +18,7 @@ public class Event implements Serializable {
 		@Column(name = "event_id")
 		private int eventId;
 		
-		@OneToMany(cascade = CascadeType.ALL)
-		@JoinColumn(name = "event_id",nullable = false)
+		@OneToMany(mappedBy = "event")
 		private List<WishList> wishlists;
 
 		@Column(name = "event_name", nullable = false)
@@ -120,6 +121,7 @@ public class Event implements Serializable {
 		this.status = status;
 	}
 
+	@JsonIgnore
 	public Organizer getOrganizer() {
 		return organizer;
 	}

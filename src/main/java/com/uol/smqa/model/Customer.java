@@ -24,8 +24,15 @@ public class Customer{
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "customer_id",nullable = false)
+	public List<WishList> getWishlists() {
+		return wishlists;
+	}
+
+	public void setWishlists(List<WishList> wishlists) {
+		this.wishlists = wishlists;
+	}
+
+	@OneToMany(mappedBy = "customer")
 	private List<WishList> wishlists;
 	
 	@Column(name = "customer_name",nullable = false)
