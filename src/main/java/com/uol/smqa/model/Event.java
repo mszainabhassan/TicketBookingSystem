@@ -8,13 +8,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "events")
+@Entity(name = "event")
 public class Event implements Serializable {
 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@Column(name = "event_id")
 		private int eventId;
+		
+		@OneToMany(cascade = CascadeType.ALL)
+		@JoinColumn(name = "event_id",nullable = false)
+		private List<WishList> wishlists;
 
 		@Column(name = "event_name", nullable = false)
 		private String eventName;
