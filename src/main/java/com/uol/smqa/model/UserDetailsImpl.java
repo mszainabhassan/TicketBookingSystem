@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -75,5 +74,14 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(Users user) {
         return new UserDetailsImpl(
                 user.getUserId(), user.getUsername(), user.getPassword(), true , new ArrayList<>());
+    }
+
+
+    public UserDetailsImpl(int id, String email, boolean isEnabled, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.email = email;
+        this.isEnabled = isEnabled;
+        this.password = password;
+        this.authorities = authorities;
     }
 }

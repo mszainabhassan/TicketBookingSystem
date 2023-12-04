@@ -9,15 +9,17 @@ import com.uol.smqa.model.Users;
 import com.uol.smqa.repository.PasswordResetHistoryRepository;
 import com.uol.smqa.service.PasswordResetService;
 import com.uol.smqa.service.UsersService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class PasswordResetServiceImpl implements PasswordResetService {
 
-    private final UsersService usersService;
-    private final PasswordResetHistoryRepository passwordResetHistoryRepository;
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private PasswordResetHistoryRepository passwordResetHistoryRepository;
 
 
     public PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
@@ -25,16 +27,13 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (!user.isActive()) throw new AuthorizationException("User is not authorized to carry out action");
         createPasswordResetHistory(user);
         usersService.updateUserPassword(user, passwordResetRequestDTO.getPassword());
-        return PasswordResetResponseDto.builder()
-                .message("Successfully reset user password")
-                .username(user.getUsername())
-                .build();
+
+        return new PasswordResetResponseDto("Successfully reset user password", user.getUsername());
     }
 
     private PasswordResetHistory createPasswordResetHistory(Users user) {
-        return passwordResetHistoryRepository.save(PasswordResetHistory.builder()
-                        .users(user)
-                .build());
+        new PasswordResetHistory(user);
+        return passwordResetHistoryRepository.save(new PasswordResetHistory(user));
     }
 
 

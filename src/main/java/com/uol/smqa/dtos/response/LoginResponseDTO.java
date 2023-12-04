@@ -1,18 +1,12 @@
 package com.uol.smqa.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import com.uol.smqa.model.Users;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginResponseDTO {
 
@@ -23,4 +17,63 @@ public class LoginResponseDTO {
     private String token;
 
     private Long expiresIn;
+
+    public LoginResponseDTO(String message) {
+        this.message = message;
+    }
+
+    public LoginResponseDTO(String message, List<String> errors) {
+        this.message = message;
+        this.errors = errors;
+    }
+
+
+    public LoginResponseDTO(String message, List<String> errors, Users user, String token, Long expiresIn) {
+        this.message = message;
+        this.errors = errors;
+        this.user = user;
+        this.token = token;
+        this.expiresIn = expiresIn;
+    }
+
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Long getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpiresIn(Long expiresIn) {
+        this.expiresIn = expiresIn;
+    }
 }

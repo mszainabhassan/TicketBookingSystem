@@ -2,7 +2,6 @@ package com.uol.smqa.utils;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.util.ArrayList;

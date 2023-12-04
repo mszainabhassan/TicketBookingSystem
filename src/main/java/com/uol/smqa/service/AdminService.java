@@ -1,4 +1,9 @@
 package com.uol.smqa.service;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 
 import java.util.Optional;
 
@@ -10,6 +15,10 @@ import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.OrganizerRepository;
 
+import com.uol.smqa.model.Admin;
+
+
+
 @Service
 public class AdminService {
 	
@@ -17,6 +26,7 @@ public class AdminService {
 	private CustomerRepository customerRepository;
 
 //private CustomerService customerService ;
+
 
 public Customer AdminCustomerRegistration(Customer customer) {
 	
@@ -65,5 +75,11 @@ public Customer AdminCustomerRegistration(Customer customer) {
 	
 	
 }
+
+
+
+}
+
+
 
 

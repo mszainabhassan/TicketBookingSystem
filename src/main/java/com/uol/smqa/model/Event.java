@@ -1,44 +1,157 @@
+// Event.java
 package com.uol.smqa.model;
-
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
+import jakarta.persistence.*;
+
+
+@Entity(name = "events")
 public class Event implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "event_id", nullable = false)
-	private int EventId;
+		@Id
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		@Column(name = "event_id")
+		private int eventId;
 
-	@Column(nullable = false)
-	private Boolean status;
+		@OneToMany(mappedBy = "event")
+		private List<WishList> wishlists;
 
-	public Event() {
-		super();
-	}
+		@Column(name = "event_name", nullable = false)
+		private String eventName;
 
-	public int getEventId() {
-		return EventId;
-	}
+		@Column(name = "event_description", nullable = false)
+		private String eventDescription;
 
-	public void setEventId(int eventId) {
-		EventId = eventId;
-	}
+		@Column(name = "event_location", nullable = false)
+		private String eventLocation;
 
-	public Boolean getStatus() {
-		return status;
-	}
+		@Column(name = "event_date_time", nullable = false)
+		private LocalDateTime eventDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "event_type_name", nullable = false)
+
+    private EventType eventType;
+
+
+
+    @Column(name = "seats_available")
+    private Integer seatsAvailable;
+
+		@Column(name = "is_limited_seats", nullable = false)
+		private Boolean isLimitedSeats;
+
+		@Column(name = "event_frequency", nullable = false)
+		private String eventFrequency;
+
+		@Column
+		public Boolean status;
+
+		@ManyToOne
+		@JoinColumn(name = "organizer_id", nullable = false)
+		private Organizer organizer;
+
+    @OneToMany(mappedBy = "event")
+    private List<CustomerBookEvent> bookedCustomers;
+
+    public int getEventId() {
+        return eventId;
+    }
+
+		public void setEventId(int eventId) {
+			this.eventId = eventId;
+		}
+
+		public String getEventName() {
+			return eventName;
+		}
+
+		public void setEventName(String eventName) {
+			this.eventName = eventName;
+		}
+
+		public String getEventDescription() {
+			return eventDescription;
+		}
+
+		public void setEventDescription(String eventDescription) {
+			this.eventDescription = eventDescription;
+		}
+
+		public String getEventLocation() {
+			return eventLocation;
+		}
+
+		public void setEventLocation(String eventLocation) {
+			this.eventLocation = eventLocation;
+		}
+
+		public LocalDateTime getEventDateTime() {
+			return eventDateTime;
+		}
+
+		public void setEventDateTime(LocalDateTime eventDateTime) {
+			this.eventDateTime = eventDateTime;
+		}
+
+    public EventType getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public Integer getSeatsAvailable() {
+        return seatsAvailable;
+    }
+
+		public void setSeatsAvailable(Integer seatsAvailable) {
+			this.seatsAvailable = seatsAvailable;
+		}
+
+		public Boolean getIsLimitedSeats() {
+			return isLimitedSeats;
+		}
+
+
+		public void setIsLimitedSeats(Boolean isLimitedSeats) {
+			this.isLimitedSeats = isLimitedSeats;
+		}
+		public String getEventFrequency() {
+			return eventFrequency;
+		}
+
+		public void setEventFrequency(String eventFrequency) {
+			this.eventFrequency = eventFrequency;
+		}
+
+    public List<CustomerBookEvent> getBookedCustomers() {
+        return bookedCustomers;
+    }
+    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
+        this.bookedCustomers = bookedCustomers;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	@JsonIgnore
+	public Organizer getOrganizer() {
+		return organizer;
+	}
+
+	public void setOrganizer(Organizer organizer) {
+		this.organizer = organizer;
 	}
 
 }
