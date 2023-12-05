@@ -3,25 +3,12 @@ package com.uol.smqa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
-
-import jakarta.persistence.Column;
-
-import jakarta.persistence.Entity;
-
-import jakarta.persistence.GeneratedValue;
-
-import jakarta.persistence.GenerationType;
-
-import jakarta.persistence.Id;
-
-import jakarta.persistence.JoinColumn;
-
-import jakarta.persistence.OneToOne;
-
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "users")
 
@@ -62,6 +49,10 @@ public class Users {
 	@JoinColumn(name = "organizer_id", referencedColumnName = "organizer_id")
 
 	private Organizer organizer;
+
+
+	@OneToMany
+	private List<EventReview> reviews = new ArrayList<>();
 
 	public int getUserId() {
 

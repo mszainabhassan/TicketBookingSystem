@@ -151,5 +151,4 @@ public class EventService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
     }
-
 }
