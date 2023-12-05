@@ -1,4 +1,4 @@
-package com.uol.smqa.model;
+ package com.uol.smqa.model;
 
 import java.time.LocalDate;
 

@@ -30,11 +30,15 @@ public class Event implements Serializable {
 	@Column(name = "event_location", nullable = false)
 	private String eventLocation;
 
+	@Column(name = "is_limited_seats", nullable = false)
+	private Boolean isLimitedSeats;
+
 	@Column(name = "event_date_time", nullable = false)
 	private LocalDateTime eventDateTime;
 
 	@Column(name = "seats_available")
 	private Integer seatsAvailable;
+
 
 	@Column(name = "no_of_priority_seats")
 	private Integer noOfPrioritySeats;
@@ -53,8 +57,6 @@ public class Event implements Serializable {
 	private EventType eventType;
 
 
-	@Column(name = "is_limited_seats", nullable = false)
-	private Boolean isLimitedSeats;
 
 	@Column(name = "event_frequency", nullable = false)
 	private String eventFrequency;
@@ -157,7 +159,7 @@ public class Event implements Serializable {
 		this.status = status;
 	}
 
-	@JsonIgnore
+@JsonIgnore
 	public Organizer getOrganizer() {
 		return organizer;
 	}
