@@ -14,9 +14,11 @@ public class EventType {
     @Column(name = "event_type_id")
     private Long id;
 
-    @Column(name = "event_type_name", unique = true, nullable = false)
+
+    @Column(name = "event_type_name", nullable = false, unique = true)
     private String typeName;
-    // Constructors, getters, and setters
+
+
 
     public Long getId() {
         return id;
@@ -26,12 +28,9 @@ public class EventType {
 		return typeName;
 	}
 
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
-	}
 
-	public void setId(Long id) {
-        this.id = id;
-    }	
-  
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
 }
