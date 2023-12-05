@@ -1,6 +1,8 @@
 package com.uol.smqa.controller;
 
 // CustomerController.java
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -31,14 +33,20 @@ import com.uol.smqa.service.WishListService;
 @RequestMapping("/customer")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
-    @Autowired
-    private CustomerBookEventService customerBookEventService;
+    private final CustomerBookEventService customerBookEventService;
+	private final WishListService wishlistService;
+	private final EventService eventService;
 
 	@Autowired
-	private WishListService wishlistService;
+	public CustomerController(CustomerService customerService, CustomerBookEventService customerBookEventService,
+							  WishListService wishlistService, EventService eventService) {
+		this.customerService = customerService;
+		this.customerBookEventService = customerBookEventService;
+		this.wishlistService = wishlistService;
+		this.eventService = eventService;
+	}
 
     @PostMapping("/register")
     public Customer customerRegistration(@RequestBody Customer customer) {
@@ -50,6 +58,11 @@ public class CustomerController {
         Customer customer = this.customerService.getCustomerById(customerId);
         return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
     }
+
+	@GetMapping("/all-events")
+	public List<Event> getAllEvents(CustomerEventsFilterSearchCriteria eventsFilterSearchCriteria) {
+		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);
+	}
      
     @PostMapping("/bookEvent")
     public String bookEvent(@RequestBody Map<String, Object> requestBody) {

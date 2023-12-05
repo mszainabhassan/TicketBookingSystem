@@ -2,10 +2,12 @@
 package com.uol.smqa.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 
@@ -18,7 +20,7 @@ public class Event implements Serializable {
 		private int eventId;
 
 		@OneToMany(mappedBy = "event")
-		private List<WishList> wishlists;
+		private List<WishList> wishlists = new ArrayList<>();
 
 		@Column(name = "event_name", nullable = false)
 		private String eventName;
@@ -32,15 +34,14 @@ public class Event implements Serializable {
 		@Column(name = "event_date_time", nullable = false)
 		private LocalDateTime eventDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_name", nullable = false)
-
-    private EventType eventType;
-
+		@ManyToOne
+		@JoinColumn(name = "event_type_id", nullable = false)
+		private EventType eventType;
 
 
-    @Column(name = "seats_available")
-    private Integer seatsAvailable;
+
+		@Column(name = "seats_available")
+		private Integer seatsAvailable;
 
 		@Column(name = "is_limited_seats", nullable = false)
 		private Boolean isLimitedSeats;
@@ -53,14 +54,15 @@ public class Event implements Serializable {
 
 		@ManyToOne
 		@JoinColumn(name = "organizer_id", nullable = false)
+		@JsonIgnoreProperties("events")
 		private Organizer organizer;
 
-    @OneToMany(mappedBy = "event")
-    private List<CustomerBookEvent> bookedCustomers;
+		@OneToMany(mappedBy = "event")
+		private List<CustomerBookEvent> bookedCustomers;
 
-    public int getEventId() {
-        return eventId;
-    }
+		public int getEventId() {
+			return eventId;
+		}
 
 		public void setEventId(int eventId) {
 			this.eventId = eventId;
@@ -98,15 +100,15 @@ public class Event implements Serializable {
 			this.eventDateTime = eventDateTime;
 		}
 
-    public EventType getEventType() {
-        return eventType;
-    }
+		public EventType getEventType() {
+			return eventType;
+		}
 
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
+		public void setEventType(EventType eventType) {
+			this.eventType = eventType;
+		}
 
-    public Integer getSeatsAvailable() {
+    	public Integer getSeatsAvailable() {
         return seatsAvailable;
     }
 
@@ -130,28 +132,27 @@ public class Event implements Serializable {
 			this.eventFrequency = eventFrequency;
 		}
 
-    public List<CustomerBookEvent> getBookedCustomers() {
-        return bookedCustomers;
-    }
-    public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
-        this.bookedCustomers = bookedCustomers;
-    }
+		public List<CustomerBookEvent> getBookedCustomers() {
+			return bookedCustomers;
+		}
+		public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
+			this.bookedCustomers = bookedCustomers;
+		}
 
-    public Boolean getStatus() {
+    	public Boolean getStatus() {
         return status;
     }
 
-	public void setStatus(Boolean status) {
+		public void setStatus(Boolean status) {
 		this.status = status;
 	}
 
-	@JsonIgnore
-	public Organizer getOrganizer() {
-		return organizer;
-	}
+		public Organizer getOrganizer() {
+			return organizer;
+		}
 
-	public void setOrganizer(Organizer organizer) {
-		this.organizer = organizer;
-	}
+		public void setOrganizer(Organizer organizer) {
+			this.organizer = organizer;
+		}
 
 }
