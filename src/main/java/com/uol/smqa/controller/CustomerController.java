@@ -5,13 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
@@ -68,7 +61,8 @@ public class CustomerController {
 
         return "Event booked successfully!";
     }
-	@PostMapping("/addEventInWishlist")
+    
+    @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
 		try {
@@ -95,4 +89,16 @@ public class CustomerController {
 	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId){
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
 	}
+	
+	@GetMapping("/getAnalytics")
+    public String getAnalytics(@RequestParam Integer customerId) {
+        try {
+         Integer numberOfBookedEventsInteger= this.customerService.getAnalytics(customerId);
+            return "Customer Analytics for CustomerId: " + customerId + "\n Number of Booked Events:  "+numberOfBookedEventsInteger;
+        } catch (Exception e) {
+            return "Error retrieving customer analytics: " + e.getMessage();
+        }
+    }
+
 }
+

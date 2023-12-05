@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.UsersRepository;
+import java.util.List;
 
 @Service
 public class CustomerService{
@@ -31,4 +33,11 @@ public class CustomerService{
 	        return customerRepository.findById(customerId)
 	                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
 	    }
+	public Integer getAnalytics(Integer customerId) {
+		   // Get the Customer
+        Customer customer = this.getCustomerById(customerId);
+        List<CustomerBookEvent> bookedEvents = customer.getBookedEvents();
+        int numberOfBookedEvents = bookedEvents.size();
+        return numberOfBookedEvents;
+	}
 }
