@@ -7,13 +7,17 @@ import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.CustomerBookEventRepository;
+import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.exceptions.ResourceNotFoundException;
+
 
 import java.util.List;
 
 @Service
 public class CustomerBookEventService {
-
+	@Autowired
+	private CustomerRepository CustomerRepository;
     @Autowired
     private CustomerBookEventRepository customerBookEventRepository;
 
@@ -40,4 +44,26 @@ public class CustomerBookEventService {
 
         customerBookEventRepository.save(booking);
     }
+    public void transferTicket(Long bookingId, int fromCustomerId, int toCustomerId) {
+        CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+
+        Customer fromCustomer = CustomerRepository.findById(fromCustomerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + fromCustomerId));
+
+        Customer toCustomer = CustomerRepository.findById(toCustomerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + toCustomerId));
+
+        // Check if the booking belongs to the fromCustomer
+        if (!booking.getCustomer().equals(fromCustomer)) {
+            throw new RuntimeException("Booking does not belong to the specified 'from' customer");
+        }
+
+        // Update the booking with the new customer
+        booking.setCustomer(toCustomer);
+        customerBookEventRepository.save(booking);
+    }
+
+
+
 }

@@ -117,7 +117,18 @@ public class CustomerController {
             return "Error retrieving customer analytics: " + e.getMessage();
         }
     }
-
+	 
+	@PostMapping("/transferticket")
+    public ResponseEntity<?> transferTicket(@RequestParam Long bookingId, @RequestParam int fromCustomerId, @RequestParam int toCustomerId) {
+        try {
+            customerBookEventService.transferTicket(bookingId, fromCustomerId, toCustomerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Booking transferred successfully", null, null), HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 

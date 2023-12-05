@@ -151,7 +151,7 @@ public class Event implements Serializable {
 		this.status = status;
 	}
 
-	@JsonIgnore
+@JsonIgnore
 	public Organizer getOrganizer() {
 		return organizer;
 	}
