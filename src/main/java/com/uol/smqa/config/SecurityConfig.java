@@ -50,8 +50,10 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    
         http.cors(c -> c.disable()).authorizeHttpRequests(auth ->
                         auth.dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
+                        		.requestMatchers("/**").permitAll()
                                 .requestMatchers("/customer/register").permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()

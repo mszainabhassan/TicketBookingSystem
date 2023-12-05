@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+
 @Entity
 public class Admin {
 	@Id
@@ -12,3 +13,8 @@ public class Admin {
     private Long id;
 
 }
+
+
+
+
+

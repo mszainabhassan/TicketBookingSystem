@@ -1,4 +1,7 @@
 package com.uol.smqa.controller;
+import com.uol.smqa.model.CustomerBookEvent;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.service.EventTypeService;
 import com.uol.smqa.service.OrganizerServiceInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 import com.uol.smqa.service.EventService;
@@ -51,6 +55,24 @@ public class OrganizerController {
     @Autowired
     private EventService eventService;
 
+
+   @PostMapping("/createEvent")
+    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+        String eventTypeName = event.getEventType().getTypeName();
+        Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
+
+        if (existingEventType.isPresent()) {
+            // If the event type exists, set it in the event
+            event.setEventType(existingEventType.get());
+        } else {
+            // If the event type does not exist, create a new one and set it in the event
+           return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(eventService.createEvent(event), HttpStatus.CREATED);
+    	
+    	}
+        
+
     @GetMapping("/events")
     public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {
 
@@ -64,6 +86,26 @@ public class OrganizerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while retrieving events for organizer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+  
+
+
+    @GetMapping("/eventAnalytics/{eventId}")
+    public String getEventAnalytics(@PathVariable Integer eventId) {
+        try {
+            // Get the event
+            Event event = eventService.getEventById(eventId);
+
+            // Get the number of users booked for the event
+            List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+            int numberOfBookedUsers = bookedCustomers.size();
+
+            // Return the analytics as a string (you can format it as needed)
+            return "Event Analytics for Event ID " + eventId + ": Number of Booked Users - " + numberOfBookedUsers;
+        } catch (Exception e) {
+            return "Error retrieving event analytics: " + e.getMessage();
+        }
     }
 
 
@@ -116,15 +158,4 @@ public class OrganizerController {
 
   
 	
-
-    @PostMapping("/createEvent")
-    public Event createEvent(@RequestBody Event event) {
-        // Save EventType first
-   //EventType.TypeName typeName = event.getEventType().getTypeName();
-   //     EventType savedEventType = eventTypeService.createEventType(typeName);
-
-        // Set EventType in Event and Save Event
-    //    event.setEventType(savedEventType);
-        return eventService.createEvent(event);
-    }
 }

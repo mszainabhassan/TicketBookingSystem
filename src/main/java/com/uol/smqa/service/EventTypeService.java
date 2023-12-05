@@ -2,21 +2,19 @@ package com.uol.smqa.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.uol.smqa.model.EventType;
 import com.uol.smqa.repository.EventTypeRepository;
-
 @Service
 public class EventTypeService {
+
     @Autowired
     private EventTypeRepository eventTypeRepository;
 
-    public String addEventType(EventType eventType) {
-        eventTypeRepository.save(eventType);
-        return "Event type added successfully";
+    public EventType addEventType(EventType eventType) {
+        return eventTypeRepository.save(eventType);
+       
     }
 
     public Optional<EventType> getEventTypeById(Long id) {
@@ -50,4 +48,9 @@ public class EventTypeService {
        return "Event type deleted successfully";
         
     }
+
+   public Optional<EventType> getEventTypeByName(String typeName) {
+	    return eventTypeRepository.findByTypeName(typeName);
+	}
+
 }

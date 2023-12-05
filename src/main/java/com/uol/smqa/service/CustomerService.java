@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.repository.CustomerRepository;
 
 import com.uol.smqa.model.CardDetails;
 
 import com.uol.smqa.repository.UsersRepository;
+import java.util.List;
 
 
 @Service
@@ -33,6 +35,7 @@ public class CustomerService{
 		usersRepository.save(customer.getUsers());
 		return customer2;
 	}
+
 	
 	  public Customer buyMembership(int customerId, CardDetails cardDetails) {
 	        
@@ -78,4 +81,16 @@ public class CustomerService{
 	        return cvv != null && cvv.matches("\\d{3}");
 	    }
 
+	 public Customer getCustomerById(int customerId) {
+	        return customerRepository.findById(customerId)
+	                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+	    }
+	public Integer getAnalytics(Integer customerId) {
+		   // Get the Customer
+        Customer customer = this.getCustomerById(customerId);
+        List<CustomerBookEvent> bookedEvents = customer.getBookedEvents();
+        int numberOfBookedEvents = bookedEvents.size();
+        return numberOfBookedEvents;
+	}
 }
+
