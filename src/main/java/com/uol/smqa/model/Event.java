@@ -35,6 +35,12 @@ public class Event implements Serializable {
 
 		@Column(name = "seats_available")
 		private Integer seatsAvailable;
+		
+		@Column(name = "no_of_priority_seats")
+		private Integer noOfPrioritySeats;
+		
+		@Column (name = "available_priority_seats")
+		private Integer availablePrioritySeatsInteger;
 
 		@Column(name = "is_limited_seats", nullable = false)
 		private Boolean isLimitedSeats;
@@ -129,5 +135,23 @@ public class Event implements Serializable {
 	public void setOrganizer(Organizer organizer) {
 		this.organizer = organizer;
 	}
+
+	public Integer getNoOfPrioritySeats() {
+		return noOfPrioritySeats;
+	}
+
+	public void setNoOfPrioritySeats(Integer noOfPrioritySeats) {
+		this.noOfPrioritySeats = noOfPrioritySeats;
+	}
+
+	public Integer getAvailablePrioritySeatsInteger() {
+		return availablePrioritySeatsInteger;
+	}
+
+	public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
+		this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+	}
+	
+	
 
 }
