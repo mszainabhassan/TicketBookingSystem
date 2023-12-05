@@ -59,4 +59,14 @@ public class CustomerController {
             return "Error canceling booking: " + e.getMessage();
         }
     }
+    @PostMapping("/provideRating/{bookingId}")
+    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating) {
+        try {
+            customerBookEventService.provideEventRating(bookingId, rating);
+            return "Rating provided successfully!";
+        } catch (Exception e) {
+            return "Error providing rating: " + e.getMessage();
+        }
+    }
+    
 }

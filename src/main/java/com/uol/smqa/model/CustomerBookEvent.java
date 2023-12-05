@@ -18,6 +18,11 @@ public class CustomerBookEvent {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event; 
+    
+    @Column(name = "rating")
+    private Integer rating;  
+    
+    
     // Constructors, getters, and setters
 
     public Long getBookingId() {
@@ -42,5 +47,12 @@ public class CustomerBookEvent {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }

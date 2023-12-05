@@ -52,5 +52,17 @@ public class CustomerBookEventService {
             throw new RuntimeException("Cannot cancel booking for an event that has already occurred.");
         }
         customerBookEventRepository.delete(booking);
+        
+    }
+    public void provideEventRating(Long bookingId, Integer rating) {
+    	if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating should be between 1 and 5.");
+        }
+
+        CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+        booking.setRating(rating);
+        customerBookEventRepository.save(booking);
     }
 }
