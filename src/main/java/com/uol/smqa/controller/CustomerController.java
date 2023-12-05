@@ -64,7 +64,6 @@ public class CustomerController {
 
         Customer customer = this.customerService.getCustomerById(customerId);
         customerBookEventService.bookEvent(eventId, customer);
-
         return "Event booked successfully!";
     }
     
@@ -111,8 +110,8 @@ public class CustomerController {
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {
-         Integer numberOfBookedEventsInteger= this.customerService.getAnalytics(customerId);
-            return "Customer Analytics for CustomerId: " + customerId + "\n Number of Booked Events:  "+numberOfBookedEventsInteger;
+        	 Map<String, Integer> map= this.customerService.getAnalytics(customerId);
+            return "Customer Analytics for CustomerId: " + customerId + "\n  "+map;
         } catch (Exception e) {
             return "Error retrieving customer analytics: " + e.getMessage();
         }
@@ -129,6 +128,15 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+	
+	@PostMapping(value = "/bookPriortyTicketForEvent")
+	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
+		
+		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
+       
+	}
+
+
 
 }
 

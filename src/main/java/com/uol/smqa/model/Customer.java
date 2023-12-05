@@ -24,6 +24,7 @@ public class Customer{
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "customer")
 	private List<CustomerBookEvent> bookedEvents;
 	

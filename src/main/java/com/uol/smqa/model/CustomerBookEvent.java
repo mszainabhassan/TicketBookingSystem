@@ -19,6 +19,9 @@ public class CustomerBookEvent {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event; 
     // Constructors, getters, and setters
+    
+    @Column(name = "is_priority_ticket" )
+    private Boolean isPriority=false;
 
     public Long getBookingId() {
         return bookingId;
@@ -43,4 +46,12 @@ public class CustomerBookEvent {
     public void setEvent(Event event) {
         this.event = event;
     }
+
+	public Boolean getIsPriority() {
+		return isPriority;
+	}
+
+	public void setIsPriority(Boolean isPriority) {
+		this.isPriority = isPriority;
+	}
 }
