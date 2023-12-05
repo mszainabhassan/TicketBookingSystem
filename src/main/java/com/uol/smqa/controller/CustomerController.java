@@ -58,7 +58,6 @@ public class CustomerController {
 
         Customer customer = this.customerService.getCustomerById(customerId);
         customerBookEventService.bookEvent(eventId, customer);
-
         return "Event booked successfully!";
     }
     
@@ -99,6 +98,14 @@ public class CustomerController {
             return "Error retrieving customer analytics: " + e.getMessage();
         }
     }
+	
+	@PostMapping(value = "/bookPriortyTicketForEvent")
+	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
+		
+		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
+       
+	}
+
 
 }
 
