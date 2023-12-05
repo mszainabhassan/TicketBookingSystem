@@ -92,8 +92,8 @@ public class CustomerController {
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {
-         Integer numberOfBookedEventsInteger= this.customerService.getAnalytics(customerId);
-            return "Customer Analytics for CustomerId: " + customerId + "\n Number of Booked Events:  "+numberOfBookedEventsInteger;
+        	 Map<String, Integer> map= this.customerService.getAnalytics(customerId);
+            return "Customer Analytics for CustomerId: " + customerId + "\n  "+map;
         } catch (Exception e) {
             return "Error retrieving customer analytics: " + e.getMessage();
         }
