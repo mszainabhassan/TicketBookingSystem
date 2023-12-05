@@ -1,6 +1,7 @@
 // Event.java
 package com.uol.smqa.model;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class Event implements Serializable {
 
 	@Column (name = "available_priority_seats")
 	private Integer availablePrioritySeatsInteger;
+	
+	@Column(name = "prority_seat_fees")
+	private Float prioritySeatFees; 
+	
+	@Column (name = "event_fees")
+	private Float eventFees;
 
 	@ManyToOne
 	@JoinColumn(name = "event_type_name", nullable = false)
@@ -59,6 +66,7 @@ public class Event implements Serializable {
 	@JoinColumn(name = "organizer_id", nullable = false)
 	private Organizer organizer;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "event")
 	private List<CustomerBookEvent> bookedCustomers;
 
@@ -170,8 +178,24 @@ public class Event implements Serializable {
 		return availablePrioritySeatsInteger;
 	}
 
+	public Float getPrioritySeatFees() {
+		return prioritySeatFees;
+	}
+
+	public void setPrioritySeatFees(Float prioritySeatFees) {
+		this.prioritySeatFees = prioritySeatFees+(eventFees/10);
+	}
+
 	public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
 		this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+	}
+
+	public Float getEventFees() {
+		return eventFees;
+	}
+
+	public void setEventFees(Float eventFees) {
+		this.eventFees = eventFees;
 	}
 
 
