@@ -20,7 +20,7 @@ public class Customer{
 	@Column(name = "customer_id")
 	private int customerId;
 	
-	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Users users;
 	
 	

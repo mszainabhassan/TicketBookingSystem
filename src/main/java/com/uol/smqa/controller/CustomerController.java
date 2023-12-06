@@ -2,13 +2,16 @@ package com.uol.smqa.controller;
 
 // CustomerController.java
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.uol.smqa.Enum.Gender;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.service.CustomerBookEventService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -34,22 +37,28 @@ public class CustomerController {
     }
      
     @PostMapping("/bookEvent")
-    public String bookEvent(@RequestBody Map<String, Object> requestBody) {
-    	if (!(requestBody.get("customerId") instanceof Integer)) {
-    		return "customerId should be an integer";
-    	}
-    	if (!(requestBody.get("eventId") instanceof Integer)) {
-    		return "eventId should be an integer";
-    	}
-    	int customerId = (Integer) requestBody.get("customerId");
-    	int eventId = (Integer) requestBody.get("eventId");
-
+    public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody) {
+        if (!(requestBody.get("customerId") instanceof Integer)) {
+            return ResponseEntity.badRequest().body("customerId should be an integer");
+        }
+        if (!(requestBody.get("eventId") instanceof Integer)) {
+            return ResponseEntity.badRequest().body("eventId should be an integer");
+        }
+        int customerId = (Integer) requestBody.get("customerId");
+        int eventId = (Integer) requestBody.get("eventId");
 
         Customer customer = this.customerService.getCustomerById(customerId);
-        customerBookEventService.bookEvent(eventId, customer);
+        Long bookingId;
 
-        return "Event booked successfully!";
+        try {
+            bookingId = customerBookEventService.bookEvent(eventId, customer);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+        return ResponseEntity.ok("Event booked successfully! Booking ID: " + bookingId);
     }
+
     @DeleteMapping("/cancelBooking/{bookingId}")
     public String cancelBooking(@PathVariable Long bookingId) {
         try {
@@ -68,5 +77,44 @@ public class CustomerController {
             return "Error providing rating: " + e.getMessage();
         }
     }
+    @GetMapping("/viewDetails/{customerId}")
+    public Customer viewCustomerDetails(@PathVariable int customerId) {
+        return customerService.getCustomerById(customerId);
+    }
+
+    @PostMapping("/updateDetails/{customerId}")
+    public String updateCustomerDetails(
+            @PathVariable int customerId,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            Customer existingCustomer = customerService.getCustomerById(customerId);
+
+            if (existingCustomer == null) {
+                return "Customer not found with ID: " + customerId;
+            }
+
+            
+            if (updates.containsKey("name")) {
+                existingCustomer.setName((String) updates.get("name"));
+            }
+
+            if (updates.containsKey("gender")) {
+                existingCustomer.setGender(Gender.valueOf((String) updates.get("gender")));
+            }
+
+            if (updates.containsKey("dob")) {
+                
+                existingCustomer.setDob(LocalDate.parse((String) updates.get("dob")));
+            }
+
+            customerService.updateCustomer(existingCustomer);
+            return "Customer details updated successfully!";
+        } catch (Exception e) {
+            return "Error updating customer details: " + e.getMessage();
+        }
+    }
+    
+    
+    
     
 }

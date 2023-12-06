@@ -26,7 +26,7 @@ public class CustomerBookEventService {
         return customerBookEventRepository.findByCustomer(customer);
     }
 
-    public void bookEvent(Integer eventId, Customer customer) {
+    public long bookEvent(Integer eventId, Customer customer) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
      // Check if the customer has already booked the event
@@ -39,8 +39,10 @@ public class CustomerBookEventService {
         CustomerBookEvent booking = new CustomerBookEvent();
         booking.setCustomer(customer);
         booking.setEvent(event);
+        CustomerBookEvent savedBooking = customerBookEventRepository.save(booking);
 
-        customerBookEventRepository.save(booking);
+        // Return the booking ID
+        return savedBooking.getBookingId();
     }
     public void cancelEventBooking(Long bookingId) {
         CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
