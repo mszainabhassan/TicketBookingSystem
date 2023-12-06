@@ -10,6 +10,8 @@ import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.OrganizerRepository;
 import com.uol.smqa.repository.UsersRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class OrganizerService implements OrganizerServiceInterface {
 
@@ -37,5 +39,16 @@ public class OrganizerService implements OrganizerServiceInterface {
     @Override
     public Optional<Organizer> findById(int organizerId) {
         return organizerRepository.findById(organizerId);
+    }
+    @Transactional
+    public boolean organizerExists(int organizerId) {
+        return organizerRepository.existsById(organizerId);
+    }
+
+    // Add the missing method hasEventCreationRequest
+    public boolean hasEventCreationRequest(int organizerId) {
+        // Your implementation logic to check if there's a valid event creation request
+        // For simplicity, let's assume you have a repository or service method to handle this
+        return true; // Replace this with your actual logic
     }
 }
