@@ -1,16 +1,13 @@
 package com.uol.smqa.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import com.uol.smqa.model.Users;
 
-import java.io.Serializable;
 import java.util.List;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class LoginResponseDTO {
 
     private String message;
@@ -20,7 +17,6 @@ public class LoginResponseDTO {
     private String token;
 
     private Long expiresIn;
-
 
     public LoginResponseDTO(String message) {
         this.message = message;

@@ -1,33 +1,61 @@
 package com.uol.smqa.service;
 
+
+
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.uol.smqa.model.Event;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.repository.EventRepository;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
+
+import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.Organizer;
+import com.uol.smqa.repository.CustomerBookEventRepository;
+import com.uol.smqa.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
 
+import static com.uol.smqa.dtos.request.specifications.EventSpecification.buildSearchPredicate;
+
 @Service
 public class EventService {
 
-	private final EventRepository eventRepository;
+
+    private final EventRepository eventRepository;
+    private final CustomerRepository customerRepository;
+    private final EventTypeService eventTypeService;
 	private final OrganizerServiceInterface organizerService;
+	private final CustomerBookEventRepository customerBookEventRepository;
+
 
 	@Autowired
 	public EventService(EventRepository eventRepository,
+						CustomerRepository customerRepository,
+						EventTypeService eventTypeService,
+						CustomerBookEventRepository customerBookEventRepository,
 						OrganizerServiceInterface organizerService) {
 		this.eventRepository = eventRepository;
 		this.organizerService = organizerService;
+		this.customerRepository = customerRepository;
+		this.eventTypeService = eventTypeService;
+		this.customerBookEventRepository = customerBookEventRepository;
 	}
+
+
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
@@ -41,8 +69,16 @@ public class EventService {
 		}
 	}
 
+    public Event createEvent(Event event) {
+        return eventRepository.save(event);
+    }
+
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
+	}
+
+	public List<Event> getAllEventsBySearchCriteria(CustomerEventsFilterSearchCriteria searchCriteria) {
+		 return this.eventRepository.findAll(buildSearchPredicate(searchCriteria));
 	}
 
 	public List<Event> getAllEventsByOrganizerId(int organizerId) {
@@ -59,22 +95,26 @@ public class EventService {
 		this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
 	}
 
-	public void validateEventUpdateRequest(int eventId, Event eventToUpdate) {
-		List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
-		if (eventToUpdate.getEventFrequency() != null && !eventFrequencies.contains(eventToUpdate.getEventFrequency())) {
-			throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
-		}
-		Organizer organizer = organizerService.findById(eventToUpdate.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
-		Event event = eventRepository.findById(eventId);
-		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
-		if (event.getOrganizer() != organizer) throw new AuthorizationException("You can not update an event that does not belong to you");
-
-		if (event.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("You can not update an event that has passed");
+	public void validateEventCreationRequest(Event eventRequest) {
+		validateEventRequest(eventRequest);
 	}
 
+	private void validateEventRequest(Event eventRequest) {
+		List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
+		if (eventRequest.getEventFrequency() != null && !eventFrequencies.contains(eventRequest.getEventFrequency())) {
+			throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
+		}
+		organizerService.findById(eventRequest.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 
-	public Event createEvent(Event event) {
-		return this.eventRepository.save(event);
+		if (eventRequest.getEventDateTime().isBefore(LocalDateTime.now())) throw new AuthorizationException("This event is in the past. Kindly check again");
+
+	}
+
+	public void validateEventUpdateRequest(int eventId, Event eventToUpdate) {
+		validateEventRequest(eventToUpdate);
+		Event event = eventRepository.findById(eventId);
+		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
+		if (event.getOrganizer().getOrganizerId() != eventToUpdate.getOrganizer().getOrganizerId()) throw new AuthorizationException("You can not update an event that does not belong to you");
 	}
 
 	public Event updateEvent(Event event) {
@@ -92,4 +132,34 @@ public class EventService {
 		}
 	}
 
+    public Event bookEvent(Integer eventId, Integer customerId) {
+        Event event = getEventById(eventId);
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
+
+        CustomerBookEvent booking = new CustomerBookEvent();
+        booking.setCustomer(customer);
+        booking.setEvent(event);
+
+        customerBookEventRepository.save(booking);
+
+        // Update the list of booked customers in the event
+        List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+        bookedCustomers.add(booking);
+        event.setBookedCustomers(bookedCustomers);
+
+        return eventRepository.save(event);
+    }
+
+    public int getNumberOfBookedUsers(Integer eventId) {
+        Event event = getEventById(eventId);
+
+        // Get the number of booked customers for the event
+        List<CustomerBookEvent> bookedCustomers = event.getBookedCustomers();
+        return bookedCustomers.size();
+    }
+
+    public Event getEventById(Integer eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
+    }
 }

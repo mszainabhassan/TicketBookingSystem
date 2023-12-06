@@ -1,7 +1,10 @@
 package com.uol.smqa.controller;
 
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.uol.smqa.model.EventType;
+import com.uol.smqa.service.EventTypeService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,21 +13,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.service.EventService;
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-	private final EventService eventService;
+   	private EventTypeService eventTypeService;
+   private final EventService eventService;
+
 
 	@Autowired
-	public AdminController(EventService eventService) {
+	public AdminController(EventService eventService,
+						   EventTypeService eventTypeService) {
 		this.eventService = eventService;
+		this.eventTypeService = eventTypeService;
 	}
+
+    @GetMapping("/eventtypes")
+    public List<EventType> getAllEventTypes() {
+        return eventTypeService.getAllEventTypes();
+    }
+
+    @PostMapping("/eventtype")
+    public EventType addEventType(@RequestBody EventType eventType) {
+       return eventTypeService.addEventType(eventType);
+    }
+
+    @PutMapping("/eventtype/{id}")
+    public EventType updateEventType(@PathVariable Long id, @RequestBody EventType eventType) {
+        return eventTypeService.updateEventType(id, eventType);
+    }
+
+
 
 	@PutMapping("/change_event_status")
 	public String ChangeEventStatus(@RequestParam(name = "eventId") Integer eventId,
@@ -33,6 +56,7 @@ public class AdminController {
 		return this.eventService.ChangeEventStatus(eventId, status);
 
 	}
+	@JsonIgnoreProperties("bookedCustomers")
 	@GetMapping("/getAllEvents")
 	public List<Event> getAllEvents(){
 		return this.eventService.getAllEvents();
@@ -52,4 +76,14 @@ public class AdminController {
 	public String updateEvent(@RequestParam Integer eventId) {
 		return this.eventService.deleteEvent(eventId);
 	}
+
+  @DeleteMapping("/eventtype/{id}")
+    public void deleteEventType(@PathVariable Long id) {
+        eventTypeService.deleteEventType(id);
+    }
+
+
 }
+
+
+
