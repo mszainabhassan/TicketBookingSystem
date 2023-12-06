@@ -9,4 +9,6 @@ public interface EventReviewService {
     List<EventReview> getAllEventsReviewsByOrganizer(int eventId, int organizerId);
 
     ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply);
+
+    ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply);
 }

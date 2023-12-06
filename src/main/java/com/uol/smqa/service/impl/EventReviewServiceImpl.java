@@ -50,7 +50,25 @@ public class EventReviewServiceImpl implements EventReviewService  {
         return this.reviewReplyRepository.save(reviewReply);
     }
 
+
+    @Override
+    public ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) {
+        validateEditEventReviewReply(reviewReply);
+        return this.reviewReplyRepository.save(reviewReply);
+    }
+
+    private void validateEditEventReviewReply(ReviewReply reviewReply) {
+        if (reviewReply.getId() == 0) {
+            throw new BadRequestException("Please provide a valid reply id to edit");
+        }
+        validateEventReviewReply(reviewReply.getReview().getId(), reviewReply);
+    }
+
     private void validateEventReviewReply(int reviewId, ReviewReply reviewReply) {
+        validateEventReviewReply(reviewReply);
+    }
+
+    private void validateEventReviewReply(ReviewReply reviewReply) {
         if (reviewReply.getUser() == null || reviewReply.getUser().getUserId() == 0) {
             throw new BadRequestException("Please provide a valid reply user");
         } else if (reviewReply.getReview() == null || reviewReply.getReview().getId() == 0) {
