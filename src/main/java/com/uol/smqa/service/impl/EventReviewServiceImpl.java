@@ -57,6 +57,17 @@ public class EventReviewServiceImpl implements EventReviewService  {
         return this.reviewReplyRepository.save(reviewReply);
     }
 
+    @Override
+    public void deleteReplyEventReviewsByOrganizer(int replyId, int organizerId) {
+        Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
+        ReviewReply reviewReply = reviewReplyRepository.findById(replyId).orElseThrow(() -> new ResourceNotFoundException("Reply with id does not exist"));
+        if (reviewReply.getUser() == null || reviewReply.getUser().getOrganizer() == null) {
+            throw new BadRequestException("Invalid reply. Kindly check again");
+        }
+        if (reviewReply.getUser().getOrganizer() != organizer) throw new BadRequestException("You can not delete a reply that does not belong to you");
+        reviewReplyRepository.delete(reviewReply);
+    }
+
     private void validateEditEventReviewReply(ReviewReply reviewReply) {
         if (reviewReply.getId() == 0) {
             throw new BadRequestException("Please provide a valid reply id to edit");

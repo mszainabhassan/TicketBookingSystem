@@ -11,4 +11,6 @@ public interface EventReviewService {
     ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply);
 
     ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply);
+
+    void deleteReplyEventReviewsByOrganizer(int replyId, int organizerId);
 }

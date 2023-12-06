@@ -181,7 +181,24 @@ public class OrganizerController {
 
         try {
             ReviewReply savedReply = this.eventReviewService.editReplyEventReviewsByOrganizer(reviewId, reviewReply);
-            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully replied to review", savedReply, null), HttpStatus.OK);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully updated review reply", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @DeleteMapping("/event-reviews/reply/{replyId}")
+    public ResponseEntity<?> deleteEventReviewReply(@PathVariable int replyId, @Validated @RequestParam int organizerId) {
+
+        try {
+            this.eventReviewService.deleteReplyEventReviewsByOrganizer(replyId, organizerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted review reply"), HttpStatus.NO_CONTENT);
         } catch (BadRequestException ex) {
             return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException ex) {
