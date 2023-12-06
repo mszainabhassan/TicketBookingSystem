@@ -1,3 +1,6 @@
+package com.uol.smqa.blackbox.randoop;
+
+import com.uol.smqa.blackbox.randoop.RegressionTest0;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

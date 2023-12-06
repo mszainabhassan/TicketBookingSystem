@@ -1,3 +1,5 @@
+package com.uol.smqa.blackbox.randoop;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

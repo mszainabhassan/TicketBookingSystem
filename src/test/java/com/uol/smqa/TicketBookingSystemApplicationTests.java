@@ -1,13 +1,16 @@
 package com.uol.smqa;
 
-import org.junit.jupiter.api.Test;
+import jakarta.transaction.Transactional;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
+@RunWith(SpringRunner.class)
+@Transactional
+@ActiveProfiles("test")
 public class TicketBookingSystemApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
 
 }
