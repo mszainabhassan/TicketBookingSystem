@@ -1,4 +1,4 @@
-package com.uol.smqa.model;
+ package com.uol.smqa.model;
 
 import java.time.LocalDate;
 
@@ -24,6 +24,19 @@ public class Customer{
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
 	
+	@JsonIgnore
+	@OneToMany(mappedBy = "customer")
+	private List<CustomerBookEvent> bookedEvents;
+	
+
+	public List<CustomerBookEvent> getBookedEvents() {
+		return bookedEvents;
+	}
+
+	public void setBookedEvents(List<CustomerBookEvent> bookedEvents) {
+		this.bookedEvents = bookedEvents;
+	}
+
 	public List<WishList> getWishlists() {
 		return wishlists;
 	}

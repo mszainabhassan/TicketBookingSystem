@@ -1,4 +1,3 @@
-// Event.java
 package com.uol.smqa.model;
 
 import java.io.Serializable;
@@ -7,7 +6,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 
@@ -34,14 +32,26 @@ public class Event implements Serializable {
     @Column(name = "event_date_time", nullable = false)
     private LocalDateTime eventDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_name", nullable = false)
-
-    private EventType eventType;
-
-
     @Column(name = "seats_available")
     private Integer seatsAvailable;
+
+
+    @Column(name = "no_of_priority_seats")
+    private Integer noOfPrioritySeats;
+
+    @Column(name = "available_priority_seats")
+    private Integer availablePrioritySeatsInteger;
+
+    @Column(name = "prority_seat_fees")
+    private Float prioritySeatFees;
+
+    @Column(name = "event_fees")
+    private Float eventFees;
+
+    @ManyToOne
+    @JoinColumn(name = "event_type_name", nullable = false)
+    private EventType eventType;
+
 
     @Column(name = "is_limited_seats", nullable = false)
     private Boolean isLimitedSeats;
@@ -54,9 +64,9 @@ public class Event implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = false)
-    @JsonIgnoreProperties("events")
     private Organizer organizer;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
 
@@ -156,5 +166,38 @@ public class Event implements Serializable {
     public void setOrganizer(Organizer organizer) {
         this.organizer = organizer;
     }
+
+    public Integer getNoOfPrioritySeats() {
+        return noOfPrioritySeats;
+    }
+
+    public void setNoOfPrioritySeats(Integer noOfPrioritySeats) {
+        this.noOfPrioritySeats = noOfPrioritySeats;
+    }
+
+    public Integer getAvailablePrioritySeatsInteger() {
+        return availablePrioritySeatsInteger;
+    }
+
+    public Float getPrioritySeatFees() {
+        return prioritySeatFees;
+    }
+
+    public void setPrioritySeatFees(Float prioritySeatFees) {
+        this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+    }
+
+    public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
+        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+    }
+
+    public Float getEventFees() {
+        return eventFees;
+    }
+
+    public void setEventFees(Float eventFees) {
+        this.eventFees = eventFees;
+    }
+
 
 }

@@ -24,11 +24,12 @@ public class EventReview {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    @JsonIgnoreProperties("reviews")
+    @JsonIgnoreProperties(value =  "organizer")
     private Event event;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("organizer")
     private Users user;
 
 
