@@ -25,13 +25,16 @@ public class CustomerService {
     private final PasswordEncoder passwordEncoder;
     private final CustomerRepository customerRepository;
     private final UsersRepository usersRepository;
+    private final CustomerBookEventRepository customerBookEventRepository;
 
     @Autowired
     public CustomerService(PasswordEncoder passwordEncoder, CustomerRepository customerRepository,
+                           CustomerBookEventRepository customerBookEventRepository,
                            UsersRepository usersRepository) {
         this.passwordEncoder = passwordEncoder;
         this.customerRepository = customerRepository;
         this.usersRepository = usersRepository;
+        this.customerBookEventRepository = customerBookEventRepository;
     }
 
     public Customer CustomerRegistration(Customer customer) {

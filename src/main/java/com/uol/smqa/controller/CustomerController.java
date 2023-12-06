@@ -1,5 +1,6 @@
 package com.uol.smqa.controller;
 
+import com.uol.smqa.model.*;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,20 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
-import com.uol.smqa.model.Customer;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.service.CustomerBookEventService;
 import com.uol.smqa.service.WishListService;
-import com.uol.smqa.model.CustomerBookEvent;
 
 import java.util.List;
 
-import com.uol.smqa.model.Event;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 
 import java.util.Map;
-
-import com.uol.smqa.model.WishList;
 
 @RestController
 @RequestMapping("/customer")
