@@ -7,7 +7,7 @@ import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.service.PasswordResetService;
 import com.uol.smqa.validators.PasswordResetValidator;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -19,10 +19,10 @@ import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
 
 @RestController
 @RequestMapping("/auth/reset-password")
-@RequiredArgsConstructor
 public class PasswordResetController {
 
-    private final PasswordResetService passwordResetService;
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @InitBinder
     public void initBinder(WebDataBinder webDataBinder) {
@@ -34,25 +34,17 @@ public class PasswordResetController {
 
         try {
             if (bindingResult.hasErrors()) {
-                return new ResponseEntity<>(LoginResponseDTO.builder()
-                        .message("One or more validation errors occurred")
-                        .errors(getErrorMessages(bindingResult))
-                        .build(), HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity<>(new LoginResponseDTO("One or more validation errors occurred", getErrorMessages(bindingResult)), HttpStatus.UNPROCESSABLE_ENTITY);
             }
             PasswordResetResponseDto passwordResetResponseDto = passwordResetService.initiateResetPassword(passwordResetRequestDTO);
             return new ResponseEntity<>(passwordResetResponseDto, HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(PasswordResetResponseDto.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.NOT_FOUND);
+
+            return new ResponseEntity<>(new PasswordResetResponseDto(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (AuthorizationException ex) {
-            return new ResponseEntity<>(PasswordResetResponseDto.builder()
-                    .message(ex.getMessage())
-                    .build(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new PasswordResetResponseDto(ex.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
-            return new ResponseEntity<>(PasswordResetResponseDto.builder()
-                    .message("An unexpected error occurred while resetting user password")
-                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new PasswordResetResponseDto(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

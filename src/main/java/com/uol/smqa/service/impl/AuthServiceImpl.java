@@ -1,14 +1,14 @@
 package com.uol.smqa.service.impl;
 
 import com.uol.smqa.dtos.response.LoginResponseDTO;
-import com.uol.smqa.model.UserDetailsImpl;
 import com.uol.smqa.model.Users;
 import com.uol.smqa.service.AuthService;
 import com.uol.smqa.service.UsersService;
-import com.uol.smqa.utils.Constants;
 import com.uol.smqa.utils.JwtUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,14 +21,18 @@ import javax.naming.AuthenticationException;
 import static com.uol.smqa.utils.Constants.INVALID_LOGIN_CREDENTIALS_MESSAGE;
 import static com.uol.smqa.utils.Constants.SUCCESS_LOGIN_CREDENTIALS_MESSAGE;
 
-@RequiredArgsConstructor
-@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UsersService usersService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
+    private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
 
     public LoginResponseDTO loginUser(String userName, String password) throws AuthenticationException {
@@ -39,13 +43,7 @@ public class AuthServiceImpl implements AuthService {
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             String jwtToken = jwtUtils.generateJwtToken(authenticate);
 
-            return LoginResponseDTO
-                    .builder()
-                    .message(SUCCESS_LOGIN_CREDENTIALS_MESSAGE)
-                    .token(jwtToken)
-                    .expiresIn(jwtUtils.convertJwtExpiryToMilliSeconds())
-                    .user(user)
-                    .build();
+            return new LoginResponseDTO(SUCCESS_LOGIN_CREDENTIALS_MESSAGE, null, user, jwtToken, jwtUtils.convertJwtExpiryToMilliSeconds());
         } catch (BadCredentialsException ex) {
             log.error("An error occurred while logging in user {}", ex.getMessage());
             throw new AuthenticationException(INVALID_LOGIN_CREDENTIALS_MESSAGE);

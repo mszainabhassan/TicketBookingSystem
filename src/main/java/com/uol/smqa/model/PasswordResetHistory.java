@@ -12,10 +12,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class PasswordResetHistory {
 
     @Id
@@ -28,12 +24,49 @@ public class PasswordResetHistory {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
-    @Builder.Default
     private Timestamp createdAt = Timestamp.from(Instant.now());
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    @Builder.Default
     private Timestamp updatedAt = Timestamp.from(Instant.now());
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public PasswordResetHistory() {
+    }
+
+    public PasswordResetHistory(Users users) {
+        this.users = users;
+    }
 }

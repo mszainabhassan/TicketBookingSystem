@@ -1,4 +1,4 @@
-package com.uol.smqa.model;
+ package com.uol.smqa.model;
 
 import java.time.LocalDate;
 
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uol.smqa.Enum.Gender;
 
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -22,6 +23,30 @@ public class Customer{
 	
 	@OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Users users;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "customer")
+	private List<CustomerBookEvent> bookedEvents;
+	
+
+	public List<CustomerBookEvent> getBookedEvents() {
+		return bookedEvents;
+	}
+
+	public void setBookedEvents(List<CustomerBookEvent> bookedEvents) {
+		this.bookedEvents = bookedEvents;
+	}
+
+	public List<WishList> getWishlists() {
+		return wishlists;
+	}
+
+	public void setWishlists(List<WishList> wishlists) {
+		this.wishlists = wishlists;
+	}
+
+	@OneToMany(mappedBy = "customer")
+	private List<WishList> wishlists;
 	
 	@Column(name = "customer_name",nullable = false)
 	private String name;
