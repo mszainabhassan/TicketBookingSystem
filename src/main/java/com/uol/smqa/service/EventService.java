@@ -3,11 +3,12 @@ package com.uol.smqa.service;
 
 
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.dtos.request.DiscountRequestDTO;
+import com.uol.smqa.dtos.response.DiscountResponseDTO;
+import com.uol.smqa.model.*;
+import com.uol.smqa.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.uol.smqa.model.Event;
-import com.uol.smqa.model.EventType;
-import com.uol.smqa.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -18,14 +19,6 @@ import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 
-import com.uol.smqa.model.Customer;
-import com.uol.smqa.model.CustomerBookEvent;
-import com.uol.smqa.model.Organizer;
-import com.uol.smqa.repository.CustomerBookEventRepository;
-import com.uol.smqa.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
 
@@ -35,23 +28,29 @@ import static com.uol.smqa.dtos.request.specifications.EventSpecification.buildS
 public class EventService {
 
 
-    @Autowired
-    private EventRepository eventRepository;
-    
-    @Autowired
-    private CustomerRepository customerRepository;
-    @Autowired
-    private EventTypeService eventTypeService;
+    private final EventRepository eventRepository;
+    private final CustomerRepository customerRepository;
+    private final EventTypeService eventTypeService;
+	private final OrganizerServiceInterface organizerService;
+    private final CustomerBookEventRepository customerBookEventRepository;
+	private final DiscountRepository discountRepository;
 
 
 	@Autowired
-	private OrganizerServiceInterface organizerService;
+	public EventService(EventRepository eventRepository, CustomerRepository customerRepository,
+						EventTypeService eventTypeService, OrganizerServiceInterface organizerService,
+						CustomerBookEventRepository customerBookEventRepository,
+						DiscountRepository discountRepository) {
+
+		this.eventRepository = eventRepository;
+		this.customerRepository = customerRepository;
+		this.eventTypeService = eventTypeService;
+		this.organizerService = organizerService;
+		this.customerBookEventRepository = customerBookEventRepository;
+		this.discountRepository = discountRepository;
+	}
 
 
-    @Autowired
-    private CustomerBookEventRepository customerBookEventRepository;
-
-   
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
@@ -158,4 +157,29 @@ public class EventService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
     }
+
+	public DiscountResponseDTO applyCouponCode(DiscountRequestDTO discountRequestDTO) {
+
+		Discount discount = discountRepository.findByEvent_EventIdAndDiscountCodeAndIsActive(discountRequestDTO.getEventId(),
+				discountRequestDTO.getCouponCode(), true).orElseThrow(() -> new ResourceNotFoundException("Invalid coupon code. Kindly check and try again"));
+
+		if (!discount.isActive() || discount.getEvent() == null) throw new ResourceNotFoundException("Invalid coupon code");
+		if (discount.getEvent().getEventFees()  == null) throw new BadRequestException("Invalid event fees. Kindly contact administrator");
+
+		Float discountAmount = computeDiscountAmount(discount, discount.getEvent());
+
+		discount.setActive(false);
+		discountRepository.save(discount);
+		return new DiscountResponseDTO("Successfully applied discount", discountAmount);
+	}
+
+	private Float computeDiscountAmount(Discount discount, Event event) {
+		switch (discount.getDiscountType()) {
+			case PERCENTAGE:
+				return event.getEventFees() * (discount.getDiscountValue() / 100.0f);
+			case FIXED_AMOUNT:
+			default:
+				return discount.getDiscountValue();
+		}
+	}
 }

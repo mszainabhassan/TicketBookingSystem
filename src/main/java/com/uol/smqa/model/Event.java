@@ -2,6 +2,7 @@ package com.uol.smqa.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -69,6 +70,9 @@ public class Event implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
+
+    @OneToMany(mappedBy = "event")
+    private List<Discount> discount = new ArrayList<>();
 
     public int getEventId() {
         return eventId;
@@ -200,4 +204,11 @@ public class Event implements Serializable {
     }
 
 
+    public List<Discount> getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(List<Discount> discount) {
+        this.discount = discount;
+    }
 }
