@@ -113,6 +113,13 @@ public class CustomerController {
             return "Error updating customer details: " + e.getMessage();
         }
     }
+    @GetMapping("/emailvalidation")
+    public ResponseEntity<String> validateEmail(
+            @RequestParam int customerId,
+            @RequestParam String email) {
+        return customerService.validateEmailFormat(customerId, email);
+    }
+
     
     
     
