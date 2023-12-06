@@ -1,8 +1,12 @@
 package com.uol.smqa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity(name="event_reviews")
@@ -20,11 +24,17 @@ public class EventReview {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
+    @JsonIgnoreProperties("reviews")
     private Event event;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+
+
+    @OneToMany(mappedBy = "review")
+    @JsonIgnoreProperties("review")
+    private List<ReviewReply> repliesList = new ArrayList<>();
 
 
     public int getId() {
@@ -75,6 +85,14 @@ public class EventReview {
         this.user = user;
     }
 
+
+    public List<ReviewReply> getRepliesList() {
+        return repliesList;
+    }
+
+    public void setRepliesList(List<ReviewReply> repliesList) {
+        this.repliesList = repliesList;
+    }
 
     public EventReview() {
     }

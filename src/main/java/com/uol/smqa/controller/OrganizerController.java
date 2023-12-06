@@ -158,6 +158,24 @@ public class OrganizerController {
     }
 
 
+
+    @PostMapping("/event-reviews/{reviewId}/reply")
+    public ResponseEntity<?> replyEventReviews(@Validated @PathVariable int reviewId, @Validated @RequestBody ReviewReply reviewReply) {
+
+        try {
+            ReviewReply savedReply = this.eventReviewService.replyEventReviewsByOrganizer(reviewId, reviewReply);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully replied to review", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
 	@PostMapping("/register")
 	public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
 
