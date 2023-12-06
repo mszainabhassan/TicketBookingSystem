@@ -6,6 +6,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import com.uol.smqa.model.Event;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer>, JpaSpecificationExecutor<Event> {
@@ -15,5 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Integer>, JpaSpeci
 
 
 	void deleteByEventIdAndOrganizer(int eventId, Organizer organizer);
-	
+
+	Optional<Event> findByEventIdAndOrganizer(int eventId, Organizer organizer);
+
 }

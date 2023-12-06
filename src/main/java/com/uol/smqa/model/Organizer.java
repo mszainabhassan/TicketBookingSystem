@@ -9,7 +9,7 @@ import java.util.List;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uol.smqa.Enum.Gender;
-@Entity(name = "organizers")
+@Entity
 public class Organizer {
 
     @Id
