@@ -2,6 +2,7 @@ package com.uol.smqa.service;
 
 
 
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Event;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
+
+import static com.uol.smqa.dtos.request.specifications.EventSpecification.buildSearchPredicate;
 
 @Service
 public class EventService {
@@ -68,6 +71,10 @@ public class EventService {
 
 	public List<Event> getAllEvents() {
 		return this.eventRepository.findAll();
+	}
+
+	public List<Event> getAllEventsBySearchCriteria(CustomerEventsFilterSearchCriteria searchCriteria) {
+		 return this.eventRepository.findAll(buildSearchPredicate(searchCriteria));
 	}
 
 	public List<Event> getAllEventsByOrganizerId(int organizerId) {
