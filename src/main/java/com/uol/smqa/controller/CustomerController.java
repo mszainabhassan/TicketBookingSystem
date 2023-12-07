@@ -23,11 +23,15 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
+
+import com.uol.smqa.model.Event;
+
 import com.uol.smqa.model.WishList;
 import com.uol.smqa.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.model.CardDetails;
 import com.uol.smqa.service.CustomerBookEventService;
@@ -65,16 +69,17 @@ public class CustomerController {
     }
 
     @GetMapping("/events")
-    public List<CustomerBookEvent> getAllBookedEvents(@RequestParam int customerId) {
-        Customer customer = this.customerService.getCustomerById(customerId);
-        return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
+    public List<Object[]> getAllUpcomingEvents() {
+		return this.customerBookEventService.getAllEvents();
     }
+
 
 	@GetMapping("/all-events")
 	public List<Event> getAllEvents(CustomerEventsFilterSearchCriteria eventsFilterSearchCriteria) {
 		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);
 	}
      
+
     @PostMapping("/bookEvent")
     public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody) {
         if (!(requestBody.get("customerId") instanceof Integer)) {
@@ -108,12 +113,12 @@ public class CustomerController {
         }
     }
     @PostMapping("/provideRating/{bookingId}")
-    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating) {
+    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating, @RequestParam String review) {
         try {
-            customerBookEventService.provideEventRating(bookingId, rating);
-            return "Rating provided successfully!";
+            customerBookEventService.provideEventRating(bookingId, rating,review);
+            return "Rating and review provided successfully!";
         } catch (Exception e) {
-            return "Error providing rating: " + e.getMessage();
+            return "Error providing rating and review: " + e.getMessage();
         }
     }
     @GetMapping("/viewDetails/{customerId}")
