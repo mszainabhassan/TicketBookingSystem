@@ -12,6 +12,8 @@ import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,7 +33,7 @@ public class CustomerBookEventService {
         return customerBookEventRepository.findByCustomer(customer);
     }
 
-    public void bookEvent(Integer eventId, Customer customer) {
+    public long bookEvent(Integer eventId, Customer customer) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
      // Check if the customer has already booked the event
@@ -44,7 +46,32 @@ public class CustomerBookEventService {
         CustomerBookEvent booking = new CustomerBookEvent();
         booking.setCustomer(customer);
         booking.setEvent(event);
+        CustomerBookEvent savedBooking = customerBookEventRepository.save(booking);
 
+        // Return the booking ID
+        return savedBooking.getBookingId();
+    }
+    public void cancelEventBooking(Long bookingId) {
+        CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+        Event event = booking.getEvent();
+        LocalDateTime currentDatetime = LocalDateTime.now();
+
+        if (event.getEventDateTime().isBefore(currentDatetime)) {
+            throw new RuntimeException("Cannot cancel booking for an event that has already occurred.");
+        }
+        customerBookEventRepository.delete(booking);
+        
+    }
+    public void provideEventRating(Long bookingId, Integer rating) {
+    	if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating should be between 1 and 5.");
+        }
+
+        CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+        booking.setRating(rating);
         customerBookEventRepository.save(booking);
     }
 

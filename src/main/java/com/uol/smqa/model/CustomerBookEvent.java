@@ -18,6 +18,14 @@ public class CustomerBookEvent {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event; 
+    
+    @Column(name = "rating")
+    private Integer rating; 
+    
+    @Column(name="ticket_count")
+    private Integer ticketCount;
+    
+    
     // Constructors, getters, and setters
     
     @Column(name = "is_priority_ticket" )
@@ -47,6 +55,22 @@ public class CustomerBookEvent {
         this.event = event;
     }
 
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+    public Integer getticketCount() {
+        return ticketCount;
+    }
+
+    public void setticketCount(Integer ticketCount) {
+        this.ticketCount = ticketCount;
+    }
+
+
 	public Boolean getIsPriority() {
 		return isPriority;
 	}
@@ -54,4 +78,5 @@ public class CustomerBookEvent {
 	public void setIsPriority(Boolean isPriority) {
 		this.isPriority = isPriority;
 	}
+
 }
