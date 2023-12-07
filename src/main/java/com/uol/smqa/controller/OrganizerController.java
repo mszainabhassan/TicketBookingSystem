@@ -16,12 +16,14 @@ import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.Organizer;
+import com.uol.smqa.service.AdminService;
 import com.uol.smqa.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 
 
 import java.util.List;
@@ -32,11 +34,19 @@ import com.uol.smqa.service.EventService;
 import com.uol.smqa.service.EventTypeService;
 import com.uol.smqa.service.OrganizerService;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.uol.smqa.model.Discount;
+import com.uol.smqa.service.OrganizerService;
+
+
+	
+	
 
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
@@ -54,8 +64,15 @@ public class OrganizerController {
 	  private OrganizerService organizerService;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private AdminService adminService;
 
-
+    @PostMapping("/set_discount")
+	public Discount setDiscount(@RequestBody Discount discount) {
+		return this.organizerService.setDiscount(discount);
+		
+	}
+    
    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {
         String eventTypeName = event.getEventType().getTypeName();
@@ -87,10 +104,6 @@ public class OrganizerController {
         }
 
     }
-
-  
-
-
     @GetMapping("/eventAnalytics/{eventId}")
     public String getEventAnalytics(@PathVariable Integer eventId) {
         try {
@@ -114,8 +127,7 @@ public class OrganizerController {
 
         try {
             if (bindingResult.hasErrors())  {
-                return new ResponseEntity<>(new BaseApiResponseDTO("One or more validation errors occurred", null, getErrorMessages(bindingResult))
-                        , HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new BaseApiResponseDTO("One or more validation errors occurred", null, getErrorMessages(bindingResult)) , HttpStatus.BAD_REQUEST);
             }
             eventService.validateEventUpdateRequest(eventId, event);
             this.eventService.updateEvent(event);
@@ -149,13 +161,33 @@ public class OrganizerController {
 
     }
 
-
 	@PostMapping("/register")
 	public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
 
 		return this.organizerService.OrganizerRegistration(organizer);
 	}
+	 @PostMapping("/requestEventCreation")
+	    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam int adminId) {
+	        try {
+	            // Validate the organizer's request
+	            if (event == null || event.getEventName() == null || event.getEventType() == null) {
+	                return new ResponseEntity<>(new BaseApiResponseDTO("Invalid event data"), HttpStatus.BAD_REQUEST);
+	            }
 
+	            // Check if the organizer exists (You may need to implement an organizerService for this)
+	            if (!organizerService.organizerExists(adminId)) {
+	                return new ResponseEntity<>(new BaseApiResponseDTO("Admin not found"), HttpStatus.NOT_FOUND);
+	            }
+
+	            // Notify the admin about the event creation request
+	            adminService.handleEventCreationRequest(event, adminId);
+
+	            return new ResponseEntity<>(new BaseApiResponseDTO("Event creation request sent to admin"), HttpStatus.OK);
+	        } catch (Exception e) {
+	            return new ResponseEntity<>(new BaseApiResponseDTO("Failed to send event creation request"), HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
   
+
 	
 }

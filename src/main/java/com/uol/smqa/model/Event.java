@@ -1,18 +1,24 @@
 package com.uol.smqa.model;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.uol.smqa.Enum.EventFrequency;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 
 @Entity(name = "events")
-public class Event {
+public class Event implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private int eventId;
+
+    @OneToMany(mappedBy = "event")
+    private List<WishList> wishlists;
 
     @Column(name = "event_name", nullable = false)
     private String eventName;
@@ -26,15 +32,32 @@ public class Event {
     @Column(name = "event_date_time", nullable = false)
     private LocalDateTime eventDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_name", nullable = false)
-    
-    private EventType eventType;
-    
-    
-
     @Column(name = "seats_available")
     private Integer seatsAvailable;
+
+
+    @OneToOne
+    @JoinColumn(name="discount_id")
+    private Discount discount;
+    
+
+    @Column(name = "no_of_priority_seats")
+    private Integer noOfPrioritySeats;
+
+    @Column(name = "available_priority_seats")
+    private Integer availablePrioritySeatsInteger;
+
+
+    @Column(name = "prority_seat_fees")
+    private Float prioritySeatFees;
+
+    @Column(name = "event_fees")
+    private Float eventFees;
+
+    @ManyToOne
+    @JoinColumn(name = "event_type_name", nullable = false)
+    private EventType eventType;
+
 
     @Column(name = "is_limited_seats", nullable = false)
     private Boolean isLimitedSeats;
@@ -49,9 +72,17 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     private Organizer organizer;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
-
+    @Override
+    public String toString() {
+    	return "Event{" +
+    			 " name='" + eventName + '\'' +
+    		        "location='" + eventLocation + '\'' +
+    		        " Description='" + eventDescription + '\'' +
+    		        "}";
+    }
     public int getEventId() {
         return eventId;
     }
@@ -112,6 +143,7 @@ public class Event {
         return isLimitedSeats;
     }
 
+
     public void setIsLimitedSeats(Boolean isLimitedSeats) {
         this.isLimitedSeats = isLimitedSeats;
     }
@@ -127,6 +159,7 @@ public class Event {
     public List<CustomerBookEvent> getBookedCustomers() {
         return bookedCustomers;
     }
+
     public void setBookedCustomers(List<CustomerBookEvent> bookedCustomers) {
         this.bookedCustomers = bookedCustomers;
     }
@@ -147,4 +180,39 @@ public class Event {
         this.organizer = organizer;
     }
 
+    public Integer getNoOfPrioritySeats() {
+        return noOfPrioritySeats;
+    }
+
+    public void setNoOfPrioritySeats(Integer noOfPrioritySeats) {
+        this.noOfPrioritySeats = noOfPrioritySeats;
+    }
+
+    public Integer getAvailablePrioritySeatsInteger() {
+        return availablePrioritySeatsInteger;
+    }
+
+    public Float getPrioritySeatFees() {
+        return prioritySeatFees;
+    }
+
+    public void setPrioritySeatFees(Float prioritySeatFees) {
+        this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+    }
+
+    public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
+        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+    }
+
+    public Float getEventFees() {
+        return eventFees;
+    }
+
+    public void setEventFees(Float eventFees) {
+        this.eventFees = eventFees;
+    }
+
+
 }
+
+
