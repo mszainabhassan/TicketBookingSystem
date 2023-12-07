@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class Admin {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database
-    private Long id;
+    private Long adminId;
 
 }
 
