@@ -85,6 +85,8 @@ public class AdminController {
 	}
 	
 	
+	
+	
 	@Autowired
 	private CustomerService customerService1;
 	@PostMapping("/admin_register_customer")
@@ -103,8 +105,16 @@ public class AdminController {
 	  public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
 	  { return this.organizerService.OrganizerRegistration(organizer); }
 	 
-	
-	
+	  
+	  
+	  @Autowired
+	  private AdminService adminService1;
+	  @PutMapping("/change_organizer_account_status")
+		
+		public String ChangeOrganizerStatus(@RequestParam Integer organizer_id, @RequestParam Boolean isActive) {
+			return this.adminService1.ChangeOrganizerStatus(organizer_id, isActive);
+			
+		}
 	
 	
 

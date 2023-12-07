@@ -7,5 +7,6 @@ import com.uol.smqa.model.Event;
 
 public interface DiscountRepository extends JpaRepository<Discount, Integer> {
 	Discount findById(int discountId);
+	boolean existsBydiscountCode(String discountCode);
 	
 }

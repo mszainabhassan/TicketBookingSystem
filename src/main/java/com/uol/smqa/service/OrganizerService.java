@@ -2,6 +2,7 @@ package com.uol.smqa.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.uol.smqa.model.Discount;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.OrganizerRepository;
 import com.uol.smqa.repository.UsersRepository;
+import com.uol.smqa.service.impl.DiscountCodeAlreadyExistsException;
 
 @Service
 
@@ -53,10 +55,38 @@ public class OrganizerService implements OrganizerServiceInterface {
 
 	
 	
-	public Discount setDiscount(Discount discount) {
-	
-		return this.discountRepository.save(discount);
-		
-	}
+	/*
+	 * public Discount setDiscount(Discount discount) {
+	 * 
+	 * return this.discountRepository.save(discount);
+	 * 
+	 * }
+	 */
     
+    
+    
+    public boolean checkIfDiscountCodeExists(String code) {
+        return discountRepository.existsBydiscountCode(code);
+    }
+    
+    
+    public Discount setDiscount(Discount discount) {
+    try {
+        // Check if the discount code already exists
+        if (discountRepository.existsBydiscountCode(discount.getDiscountCode())) {
+            // Throw a custom exception or use an existing exception type
+            throw new DiscountCodeAlreadyExistsException("Discount code already exists: " + discount.getDiscountCode());
+        }
+
+        // Save the discount if it doesn't exist
+        return this.discountRepository.save(discount);
+    } catch (DataIntegrityViolationException e) {
+        // Handle database integrity violation exception
+        throw new DiscountCodeAlreadyExistsException("Discount code already exists: " + discount.getDiscountCode(), e);
+    }
+}
+
+
+
+
 }

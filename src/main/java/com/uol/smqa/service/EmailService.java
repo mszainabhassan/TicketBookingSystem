@@ -18,7 +18,7 @@ public class EmailService {
     }
 
     public void sendEventNotification(String recipient, String eventName, String eventLocation, LocalDateTime eventTime) {
-        String subject = " Seats Await! Your Golden Ticket an exciting event is Ready for Grabs 🎫✨ ";
+        String subject = " Seats Await! Your Golden Ticket for an exciting event is Ready for Grabs 🎫✨ ";
         String body = String.format("Event Name: %s\nEvent Location: %s\nEvent Time: %s", eventName, eventLocation, eventTime);
 
         SendEmailRequest request = SendEmailRequest.builder()
