@@ -94,5 +94,9 @@ public class CustomerBookEventService {
 	    else {
 	    	return "SOLD OUT";
 	    }}
+	  public CustomerBookEvent getBookingById(Long bookingId) {
+	        return customerBookEventRepository.findById(bookingId)
+	                .orElse(null);
+	    }
 
 }

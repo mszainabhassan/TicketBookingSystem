@@ -148,7 +148,26 @@ public class CustomerController {
 		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
        
 	}
+	@GetMapping("/acknowledgeBooking")
+    public ResponseEntity<?> acknowledgeBooking(@RequestParam Long bookingId) {
+        try {
+            if (bookingId == null || bookingId <= 0) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Invalid booking ID"), HttpStatus.BAD_REQUEST);
+            }
 
+            CustomerBookEvent booking = customerBookEventService.getBookingById(bookingId);
+            if (booking == null) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Booking not found with ID: " + bookingId), HttpStatus.NOT_FOUND);
+            }
+
+            Event event = booking.getEvent();
+            String acknowledgmentMessage = "Thanks for booking! Event Details: " + event.toString();
+
+            return new ResponseEntity<>(new BaseApiResponseDTO(acknowledgmentMessage, null, null), HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while acknowledging booking"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

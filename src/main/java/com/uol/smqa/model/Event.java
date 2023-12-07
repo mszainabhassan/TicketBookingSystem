@@ -69,7 +69,14 @@ public class Event implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
-
+    @Override
+    public String toString() {
+    	return "Event{" +
+    			 " name='" + eventName + '\'' +
+    		        "location='" + eventLocation + '\'' +
+    		        " Description='" + eventDescription + '\'' +
+    		        "}";
+    }
     public int getEventId() {
         return eventId;
     }
