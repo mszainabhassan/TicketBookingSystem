@@ -27,7 +27,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
 
     @Override
-    public PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
+    public PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) throws Exception {
         Users user = usersService.findByEmail(passwordResetRequestDTO.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User with email does not exist"));
         if (!user.isActive()) throw new AuthorizationException("User is not authorized to carry out action");
         createPasswordResetHistory(user);

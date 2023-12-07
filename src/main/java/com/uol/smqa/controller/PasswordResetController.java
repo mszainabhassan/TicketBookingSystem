@@ -43,7 +43,6 @@ public class PasswordResetController {
             PasswordResetResponseDto passwordResetResponseDto = passwordResetService.initiateResetPassword(passwordResetRequestDTO);
             return new ResponseEntity<>(passwordResetResponseDto, HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
-
             return new ResponseEntity<>(new PasswordResetResponseDto(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (AuthorizationException ex) {
             return new ResponseEntity<>(new PasswordResetResponseDto(ex.getMessage()), HttpStatus.FORBIDDEN);

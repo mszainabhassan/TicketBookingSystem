@@ -125,6 +125,20 @@ public class Organizer {
     public void setRegNo(String regNo) {
         this.regNo = regNo;
     }
+
+
+    public Organizer(String name, String orgName, String email, LocalDate dob, Gender gender, String contactNumber, String regNo) {
+        this.name = name;
+        this.orgName = orgName;
+        this.email = email;
+        this.dob = dob;
+        this.gender = gender;
+        this.contactNumber = contactNumber;
+        this.regNo = regNo;
+    }
+
+    public Organizer() {
+    }
 }
 
 

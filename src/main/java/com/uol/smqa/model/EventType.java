@@ -39,5 +39,10 @@ public class EventType {
     }
 
 
+    public EventType() {
+    }
 
+    public EventType(String typeName) {
+        this.typeName = typeName;
+    }
 }

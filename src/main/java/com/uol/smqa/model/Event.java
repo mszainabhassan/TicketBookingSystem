@@ -200,4 +200,23 @@ public class Event implements Serializable {
     }
 
 
+    public Event(String eventName, String eventDescription, String eventLocation, LocalDateTime eventDateTime, Integer seatsAvailable, Integer noOfPrioritySeats, Integer availablePrioritySeatsInteger, Float prioritySeatFees, Float eventFees, EventType eventType, Boolean isLimitedSeats, String eventFrequency, Boolean status, Organizer organizer) {
+        this.eventName = eventName;
+        this.eventDescription = eventDescription;
+        this.eventLocation = eventLocation;
+        this.eventDateTime = eventDateTime;
+        this.seatsAvailable = seatsAvailable;
+        this.noOfPrioritySeats = noOfPrioritySeats;
+        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+        this.prioritySeatFees = prioritySeatFees;
+        this.eventFees = eventFees;
+        this.eventType = eventType;
+        this.isLimitedSeats = isLimitedSeats;
+        this.eventFrequency = eventFrequency;
+        this.status = status;
+        this.organizer = organizer;
+    }
+
+    public Event() {
+    }
 }

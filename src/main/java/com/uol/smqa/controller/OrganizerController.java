@@ -63,7 +63,7 @@ public class OrganizerController {
         }
         return new ResponseEntity(eventService.createEvent(event), HttpStatus.CREATED);
 
-    	}
+    }
 
 
 
