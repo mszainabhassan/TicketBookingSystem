@@ -19,6 +19,8 @@ import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.WishList;
 import com.uol.smqa.model.Event;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.model.CardDetails;
@@ -120,6 +122,40 @@ public class CustomerController {
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
 	}
 	
+
+	
+	@PostMapping("/bookMultipleTickets")
+	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) {
+	    List<String> errors = new ArrayList<>();
+
+	    for (Map<String, Object> ticketDetails : ticketDetailsList) {
+	        if (!(ticketDetails.get("customerId") instanceof Integer)) {
+	            errors.add("customerId should be an integer for one of the tickets");
+	        }
+	        if (!(ticketDetails.get("eventId") instanceof Integer)) {
+	            errors.add("eventId should be an integer for one of the tickets");
+	        }
+
+	        if (errors.isEmpty()) {
+	            int customerId = (Integer) ticketDetails.get("customerId");
+	            int eventId = (Integer) ticketDetails.get("eventId");
+
+	            Customer customer = this.customerService.getCustomerById(customerId);
+	            customerBookEventService.bookEvent(eventId, customer);
+	        }
+	    }
+
+	    if (!errors.isEmpty()) {
+	        return String.join(", ", errors);
+	    }
+
+	    return "Tickets booked successfully!";
+	}
+
+
+}
+
+
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {

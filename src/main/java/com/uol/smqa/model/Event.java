@@ -36,11 +36,17 @@ public class Event implements Serializable {
     private Integer seatsAvailable;
 
 
+    @OneToOne
+    @JoinColumn(name="discount_id")
+    private Discount discount;
+    
+
     @Column(name = "no_of_priority_seats")
     private Integer noOfPrioritySeats;
 
     @Column(name = "available_priority_seats")
     private Integer availablePrioritySeatsInteger;
+
 
     @Column(name = "prority_seat_fees")
     private Float prioritySeatFees;
@@ -208,3 +214,5 @@ public class Event implements Serializable {
 
 
 }
+
+

@@ -89,10 +89,13 @@ public class CustomerService{
 	        return cvv != null && cvv.matches("\\d{3}");
 	    }
 
+
 	 public Customer getCustomerById(int customerId) {
 	        return customerRepository.findById(customerId)
 	                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
 	    }
+
+  
 	public  Map<String, Integer>  getAnalytics(Integer customerId) {
 		   // Get the Customer
         Customer customer = this.getCustomerById(customerId);
@@ -107,5 +110,6 @@ public class CustomerService{
         
         return map;
 	}
+
 }
 
