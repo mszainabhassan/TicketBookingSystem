@@ -20,7 +20,10 @@ public class CustomerBookEvent {
     private Event event; 
     
     @Column(name = "rating")
-    private Integer rating;  
+    private Integer rating; 
+    
+    @Column(name="ticket_count")
+    private Integer ticketCount;
     
     
     // Constructors, getters, and setters
@@ -54,5 +57,12 @@ public class CustomerBookEvent {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+    public Integer getticketCount() {
+        return ticketCount;
+    }
+
+    public void setticketCount(Integer ticketCount) {
+        this.ticketCount = ticketCount;
     }
 }
