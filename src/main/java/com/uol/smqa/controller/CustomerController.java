@@ -1,18 +1,18 @@
 package com.uol.smqa.controller;
 
 // CustomerController.java
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Customer;
@@ -23,24 +23,31 @@ import com.uol.smqa.model.Event;
 import java.util.ArrayList;
 import java.util.List;
 import com.uol.smqa.service.CustomerService;
+import com.uol.smqa.model.CardDetails;
 import com.uol.smqa.service.CustomerBookEventService;
-
 import java.util.List;
 import java.util.Map;
 import com.uol.smqa.service.WishListService;
+
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
-    @Autowired
-    private CustomerBookEventService customerBookEventService;
+    private final CustomerBookEventService customerBookEventService;
+	private final WishListService wishlistService;
+	private final EventService eventService;
 
 	@Autowired
-	private WishListService wishlistService;
+	public CustomerController(CustomerService customerService, CustomerBookEventService customerBookEventService,
+							  WishListService wishlistService, EventService eventService) {
+		this.customerService = customerService;
+		this.customerBookEventService = customerBookEventService;
+		this.wishlistService = wishlistService;
+		this.eventService = eventService;
+	}
 
     @PostMapping("/register")
     public Customer customerRegistration(@RequestBody Customer customer) {
@@ -52,6 +59,11 @@ public class CustomerController {
         Customer customer = this.customerService.getCustomerById(customerId);
         return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
     }
+
+	@GetMapping("/all-events")
+	public List<Event> getAllEvents(CustomerEventsFilterSearchCriteria eventsFilterSearchCriteria) {
+		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);
+	}
      
     @PostMapping("/bookEvent")
     public String bookEvent(@RequestBody Map<String, Object> requestBody) {
@@ -67,10 +79,10 @@ public class CustomerController {
 
         Customer customer = this.customerService.getCustomerById(customerId);
         customerBookEventService.bookEvent(eventId, customer);
-
         return "Event booked successfully!";
     }
-	@PostMapping("/addEventInWishlist")
+    
+    @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
 		try {
@@ -88,6 +100,18 @@ public class CustomerController {
 
 	}
 
+	 @PostMapping("/buymembership")
+	    public ResponseEntity<?> buyMembership(@RequestParam int customerId, @RequestBody  CardDetails cardDetails) {
+	        try {
+	        	//  System.out.println("Received CardDetails: " + cardDetails.toString());
+	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);
+	            return ResponseEntity.ok(updatedCustomer);
+	        } catch (IllegalArgumentException e) {
+	            return ResponseEntity.badRequest().body(e.getMessage());
+	        }
+	 }
+
+
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
 		return this.wishlistService.getCustomerWishList(customerId);
@@ -98,6 +122,7 @@ public class CustomerController {
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
 	}
 	
+
 	
 	@PostMapping("/bookMultipleTickets")
 	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) {
@@ -130,4 +155,56 @@ public class CustomerController {
 
 }
 
+
+	@GetMapping("/getAnalytics")
+    public String getAnalytics(@RequestParam Integer customerId) {
+        try {
+        	 Map<String, Integer> map= this.customerService.getAnalytics(customerId);
+            return "Customer Analytics for CustomerId: " + customerId + "\n  "+map;
+        } catch (Exception e) {
+            return "Error retrieving customer analytics: " + e.getMessage();
+        }
+    }
+	 
+	@PostMapping("/transferticket")
+    public ResponseEntity<?> transferTicket(@RequestParam Long bookingId, @RequestParam int fromCustomerId, @RequestParam int toCustomerId) {
+        try {
+            customerBookEventService.transferTicket(bookingId, fromCustomerId, toCustomerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Booking transferred successfully", null, null), HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+	
+	@PostMapping(value = "/bookPriortyTicketForEvent")
+	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
+		
+		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
+       
+	}
+	@GetMapping("/acknowledgeBooking")
+    public ResponseEntity<?> acknowledgeBooking(@RequestParam Long bookingId) {
+        try {
+            if (bookingId == null || bookingId <= 0) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Invalid booking ID"), HttpStatus.BAD_REQUEST);
+            }
+
+            CustomerBookEvent booking = customerBookEventService.getBookingById(bookingId);
+            if (booking == null) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Booking not found with ID: " + bookingId), HttpStatus.NOT_FOUND);
+            }
+
+            Event event = booking.getEvent();
+            String acknowledgmentMessage = "Thanks for booking! Event Details: " + event.toString();
+
+            return new ResponseEntity<>(new BaseApiResponseDTO(acknowledgmentMessage, null, null), HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while acknowledging booking"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+}
 

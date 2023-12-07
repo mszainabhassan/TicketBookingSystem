@@ -20,6 +20,10 @@ public class Admin {
 	  private int id;
 	 
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database
+    private Long adminId;
+
 
 }
 

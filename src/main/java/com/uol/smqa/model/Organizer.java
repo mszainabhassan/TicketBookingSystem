@@ -2,6 +2,7 @@ package com.uol.smqa.model;
 import java.time.LocalDate;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import com.uol.smqa.Enum.Gender;
 import java.util.List;
@@ -41,6 +42,7 @@ public class Organizer {
     private String regNo;
 
     @OneToMany(mappedBy = "organizer")
+    @JsonIgnoreProperties("organizer")
     public List<Event> events;
 
     public int getOrganizerId() {

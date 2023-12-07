@@ -19,6 +19,8 @@ import com.uol.smqa.repository.OrganizerRepository;
 import com.uol.smqa.repository.UsersRepository;
 import com.uol.smqa.service.impl.DiscountCodeAlreadyExistsException;
 
+import jakarta.transaction.Transactional;
+
 @Service
 
 public class OrganizerService implements OrganizerServiceInterface {
@@ -52,16 +54,6 @@ public class OrganizerService implements OrganizerServiceInterface {
     public Optional<Organizer> findById(int organizerId) {
         return organizerRepository.findById(organizerId);
     }
-
-	
-	
-	/*
-	 * public Discount setDiscount(Discount discount) {
-	 * 
-	 * return this.discountRepository.save(discount);
-	 * 
-	 * }
-	 */
     
     
     
@@ -88,5 +80,17 @@ public class OrganizerService implements OrganizerServiceInterface {
 
 
 
+
+    @Transactional
+    public boolean organizerExists(int organizerId) {
+        return organizerRepository.existsById(organizerId);
+    }
+
+    // Add the missing method hasEventCreationRequest
+    public boolean hasEventCreationRequest(int organizerId) {
+        // Your implementation logic to check if there's a valid event creation request
+        // For simplicity, let's assume you have a repository or service method to handle this
+        return true; // Replace this with your actual logic
+    }
 
 }

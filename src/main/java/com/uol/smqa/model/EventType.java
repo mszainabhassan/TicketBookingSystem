@@ -1,10 +1,9 @@
 package com.uol.smqa.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class EventType {
@@ -18,7 +17,13 @@ public class EventType {
     @Column(name = "event_type_name", nullable = false, unique = true)
     private String typeName;
 
+    @OneToMany(mappedBy = "eventType")
+    private List<Event> eventList = new ArrayList<>();
 
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -32,5 +37,7 @@ public class EventType {
     public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
+
+
 
 }
