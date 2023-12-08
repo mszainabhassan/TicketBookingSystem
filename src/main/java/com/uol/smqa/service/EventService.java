@@ -81,7 +81,7 @@ public class EventService {
 	}
 
 
-	public void deleteEventByOrganizerId(int eventId, int organizerId) {
+	public void deleteEventByOrganizerId(int eventId, int organizerId) throws Exception {
 		Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 		Event event = eventRepository.findById(eventId);
 		if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
@@ -111,7 +111,7 @@ public class EventService {
 		if (event.getOrganizer().getOrganizerId() != eventToUpdate.getOrganizer().getOrganizerId()) throw new AuthorizationException("You can not update an event that does not belong to you");
 	}
 
-	public Event updateEvent(Event event) {
+	public Event updateEvent(Event event) throws Exception {
 		return this.eventRepository.save(event);
 	}
 

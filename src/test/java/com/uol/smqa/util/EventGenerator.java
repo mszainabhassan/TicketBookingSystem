@@ -10,7 +10,6 @@ import com.uol.smqa.repository.OrganizerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,15 +30,17 @@ public class EventGenerator {
 
     public List<Event> generateEvents() {
         List<Event> events = new ArrayList<>();
-
+        List<Organizer> organizerList = generateOrganizers();
         // Creating 5 events and adding them to the list
         for (int i = 0; i < 5; i++) {
-            Event event = createEvent(i + 1); // Event IDs start from 1
+            Event event = createEvent(i + 1, organizerList); // Event IDs start from 1
             events.add(event);
         }
 
         return eventRepository.saveAll(events);
     }
+
+
 
     private EventType getOrCreateEventType() {
         Random random = new Random();
@@ -50,7 +51,7 @@ public class EventGenerator {
                 .orElseGet(() -> eventTypeRepository.save(new EventType(eventTypeName)));
     }
 
-    private Event createEvent(int eventId) {
+    private Event createEvent(int eventId, List<Organizer> organizerList) {
         String eventName = "Event " + eventId;
         String eventDescription = "Description for Event " + eventId;
         String eventLocation = "Location " + eventId;
@@ -64,26 +65,39 @@ public class EventGenerator {
         Boolean isLimitedSeats = true; // Replace with true or false
         String eventFrequency = "WEEKLY"; // Replace with event frequency
         Boolean status = true; // Replace with true or false
-        Organizer organizer = generateRandomOrganizer();
+        Organizer organizer = getRandomOrganizer(organizerList);
 
         return new Event(eventName, eventDescription, eventLocation, eventDateTime,
                 seatsAvailable, noOfPrioritySeats, availablePrioritySeatsInteger, prioritySeatFees,
                 eventFees, eventType, isLimitedSeats, eventFrequency, status, organizer);
     }
 
+    private Organizer getRandomOrganizer(List<Organizer> organizerList) {
+        Random random = new Random();
+        return organizerList.get(random.nextInt(organizerList.size()));
+    }
 
-    public Organizer generateRandomOrganizer() {
+
+    private List<Organizer> generateOrganizers() {
+        List<Organizer> organizerList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            organizerList.add(generateRandomOrganizer(i));
+        }
+
+        return organizerRepository.saveAll(organizerList);
+    }
+
+    public Organizer generateRandomOrganizer(int id) {
         Random random = new Random();
 
-        String name = "Random Organizer"; // Example: generateRandomString(8)
-        String orgName = "University of Leicester"; // Example: generateRandomString(10)
-        String email = "organizer@uol.com"; // Example: generateRandomEmail(name, orgName)
+        String name = "Random Organizer" + id; // Example: generateRandomString(8)
+        String orgName = "University of Leicester " + id; // Example: generateRandomString(10)
+        String email = "organizer" + id + "@uol.com"; // Example: generateRandomEmail(name, orgName)
         LocalDate dob = LocalDate.of(1990, 4, 12); // Example: generateRandomDOB()
         Gender gender = Gender.values()[random.nextInt(Gender.values().length)]; // Example: random gender from Enum
-        String contactNumber = "+99 888 777 223"; // Example: generateRandomPhoneNumber()
-        String regNo = "88877727611622525"; // Example: generateRandomString(6)
+        String contactNumber = "+99 888 777 223" + id; // Example: generateRandomPhoneNumber()
+        String regNo = "88877727611622525" + id; // Example: generateRandomString(6)
 
-        return organizerRepository.findByEmail(email).orElseGet(() ->
-                organizerRepository.save(new Organizer(name, orgName, email, dob, gender, contactNumber, regNo)));
+        return new Organizer(name, orgName, email, dob, gender, contactNumber, regNo);
     }
 }

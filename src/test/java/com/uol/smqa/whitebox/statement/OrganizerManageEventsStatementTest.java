@@ -27,8 +27,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -154,6 +156,124 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event updatedEventFromDatabase = eventRepository.findById(eventToEdit.getEventId());
         Assertions.assertNotNull(updatedEventFromDatabase);
         Assertions.assertEquals(eventToEdit.getEventName(), updatedEventFromDatabase.getEventName());
+    }
+
+
+    @Test
+    public void organizerEditEvent_WithInvalidEventId_thenReturnNotFoundError() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        eventToEdit.setEventName("Edited event name");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ 28999999)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Event with id does not exist"));
+
+        verify(eventService, times(0)).updateEvent(any(Event.class));
+    }
+
+
+    @Test
+    public void organizerEditEvent_WithInvalidEventFrequency_thenReturnBadRequestError() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        eventToEdit.setEventFrequency("Invalid Frequency");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Invalid event frequency. Valid values are")));
+
+        verify(eventService, times(0)).updateEvent(any(Event.class));
+    }
+
+
+    @Test
+    public void organizerEditEvent_WithAnotherOrganizerEventId_thenReturnAuthorizationError() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+
+        Optional<Event> eventOfAnotherOrganizer = eventList.stream().filter(event -> event.getOrganizer().getOrganizerId() != eventToEdit.getOrganizer().getOrganizerId()).findFirst();
+        Assertions.assertTrue(eventOfAnotherOrganizer.isPresent());
+
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventOfAnotherOrganizer.get().getEventId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("You can not update an event that does not belong to you"));
+
+        verify(eventService, times(0)).updateEvent(any(Event.class));
+    }
+
+
+    @Test
+    public void organizerEditEvent_WithUnexpectedError_thenReturnInternalServerError() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+
+
+        doThrow(new Exception("An error occurred while updating organizer"))
+                .when(eventService).updateEvent(any(Event.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("An error occurred while updating events for organizer"));
+
+        verify(eventService, times(1)).updateEvent(any(Event.class));
+    }
+
+
+
+    @Test
+    public void organizerDeleteEvent_WithValidRequestBody_thenReturnSuccess() throws Exception {
+        Event eventToDelete = eventList.get(eventList.size() - 1);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ eventToDelete.getEventId() + "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value("Successfully deleted event"));
+
+        verify(eventService, times(1)).deleteEventByOrganizerId(anyInt(), anyInt());
+
+        Event updatedEventFromDatabase = eventRepository.findById(eventToDelete.getEventId());
+        Assertions.assertNull(updatedEventFromDatabase);
+    }
+
+
+    @Test
+    public void organizerDeleteEvent_WithInvalidEventId_thenReturnNotFoundError() throws Exception {
+        Event eventToDelete = eventList.get(eventList.size() - 1);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ 100000000+ "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Event with id does not exist"));
+
+        verify(eventService, times(1)).deleteEventByOrganizerId(anyInt(), anyInt());
+    }
+
+    @Test
+    public void organizerDeleteEvent_WithUnexpectedError_thenReturnInternalServerError() throws Exception {
+        Event eventToDelete = eventList.get(eventList.size() - 1);
+
+        doThrow(new Exception("An error occurred while deleting organizer"))
+                .when(eventService).deleteEventByOrganizerId(anyInt(), anyInt());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ eventToDelete.getEventId()+ "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("An error occurred while deleting organizer"));
+
+        verify(eventService, times(1)).deleteEventByOrganizerId(anyInt(), anyInt());
     }
 
 }

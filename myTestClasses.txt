@@ -3,14 +3,3 @@ com.uol.smqa.controller.AuthController
 com.uol.smqa.controller.CustomerController
 com.uol.smqa.controller.OrganizerController
 com.uol.smqa.controller.PasswordResetController
-com.uol.smqa.service.impl.AuthServiceImpl
-com.uol.smqa.service.impl.AuthServiceImpl
-com.uol.smqa.service.impl.PasswordResetServiceImpl
-com.uol.smqa.service.AdminService
-com.uol.smqa.service.CustomerService
-com.uol.smqa.service.CustomerBookEventService
-com.uol.smqa.service.EventService
-com.uol.smqa.service.EventTypeService
-com.uol.smqa.service.OrganizerService
-com.uol.smqa.service.UsersService
-com.uol.smqa.service.UserDetailServiceImpl

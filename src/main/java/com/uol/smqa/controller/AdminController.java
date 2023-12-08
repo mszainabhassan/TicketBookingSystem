@@ -68,7 +68,7 @@ public class AdminController {
 	}
 	
 	@PutMapping("/updateEvent")
-	public Event updateEvent(@RequestBody Event event) {
+	public Event updateEvent(@RequestBody Event event) throws Exception {
 		return this.eventService.updateEvent(event);
 	}
 	

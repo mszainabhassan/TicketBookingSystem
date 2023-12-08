@@ -131,7 +131,7 @@ public class OrganizerController {
 
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<?> deleteEvent(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> deleteEvent(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) throws Exception {
 
         try {
             this.eventService.deleteEventByOrganizerId(eventId, organizerId);
