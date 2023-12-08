@@ -30,7 +30,11 @@ public class Users {
 
 	@NotNull(message = "Password Required!")
 
+
+
+
 	@Column(name = "password", nullable = false)
+
 
 	private String password;
 
@@ -98,6 +102,17 @@ public class Users {
 
 	}
 
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+ 
+	
+
 	@JsonIgnore
 
 	public Organizer getOrganizer() {
@@ -118,16 +133,7 @@ public class Users {
 
 	}
 
-	public boolean isActive() {
 
-		return isActive;
 
-	}
-
-	public void setActive(boolean active) {
-
-		isActive = active;
-
-	}
 
 }

@@ -133,8 +133,8 @@ public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplic
     public void filterEvents_ByEventType_thenReturnSuccess() throws Exception {
 
         Event eventToSearchFor = eventList.get(eventList.size() - 1);
-        long expectedEventsCount = eventList.stream().filter(current -> current.getEventType().getTypeName().equals(eventToSearchFor.getEventType().getTypeName())).count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(null, eventToSearchFor.getEventType().getTypeName(), null,
+        long expectedEventsCount = eventList.stream().filter(current -> current.getEventType().getEventTypeName().equals(eventToSearchFor.getEventType().getEventTypeName())).count();
+        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(null, eventToSearchFor.getEventType().getEventTypeName(), null,
                 null);
         mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events?eventType="+filterSearchCriteria.getEventType())
                         .contentType(MediaType.APPLICATION_JSON))

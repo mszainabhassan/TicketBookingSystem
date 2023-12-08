@@ -15,7 +15,7 @@ public class EventType {
 
 
     @Column(name = "event_type_name", nullable = false, unique = true)
-    private String typeName;
+    private String eventTypeName;
 
     @OneToMany(mappedBy = "eventType")
     private List<Event> eventList = new ArrayList<>();
@@ -29,20 +29,20 @@ public class EventType {
         return id;
     }
 
-    public String getTypeName() {
-		return typeName;
+	public String getEventTypeName() {
+		return eventTypeName;
 	}
 
+	public void setEventTypeName(String eventTypeName) {
+		this.eventTypeName = eventTypeName;
+	}
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
 
 
     public EventType() {
     }
 
     public EventType(String typeName) {
-        this.typeName = typeName;
+        this.eventTypeName = typeName;
     }
 }

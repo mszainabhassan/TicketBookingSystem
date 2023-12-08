@@ -70,6 +70,9 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     private EventRepository eventRepository;
 
     @Autowired
+    private AdminService adminService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
@@ -78,7 +81,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        organizerController = new OrganizerController(eventTypeService, organizerService, eventService, eventReviewService);
+        organizerController = new OrganizerController(eventTypeService, organizerService, eventService, eventReviewService, adminService);
         mockMvc = MockMvcBuilders.standaloneSetup(organizerController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())

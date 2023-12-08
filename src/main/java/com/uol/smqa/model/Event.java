@@ -3,6 +3,7 @@ package com.uol.smqa.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,11 +38,16 @@ public class Event {
     private Integer seatsAvailable;
 
 
+    @OneToMany
+    private List<Discount> discounts = new ArrayList<>();
+    
+
     @Column(name = "no_of_priority_seats")
     private Integer noOfPrioritySeats;
 
     @Column(name = "available_priority_seats")
     private Integer availablePrioritySeatsInteger;
+
 
     @Column(name = "prority_seat_fees")
     private Float prioritySeatFees;
@@ -70,7 +76,14 @@ public class Event {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
-
+    @Override
+    public String toString() {
+    	return "Event{" +
+    			 " name='" + eventName + '\'' +
+    		        "location='" + eventLocation + '\'' +
+    		        " Description='" + eventDescription + '\'' +
+    		        "}";
+    }
     public int getEventId() {
         return eventId;
     }
@@ -223,3 +236,5 @@ public class Event {
     public Event() {
     }
 }
+
+

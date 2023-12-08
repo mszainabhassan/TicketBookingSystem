@@ -26,7 +26,7 @@ public class EventSpecification {
             }
 
             if (searchCriteria.getEventType() != null) {
-                allSearchPredicates.add(builder.equal(root.get("eventType").get("typeName"), searchCriteria.getEventType()));
+                allSearchPredicates.add(builder.equal(root.get("eventType").get("eventTypeName"), searchCriteria.getEventType()));
             }
 
             if (searchCriteria.getEventDate() != null) {

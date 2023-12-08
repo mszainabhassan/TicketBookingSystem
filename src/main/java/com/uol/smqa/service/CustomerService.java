@@ -3,13 +3,14 @@ package com.uol.smqa.service;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
-
+import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.model.CardDetails;
 
 import com.uol.smqa.repository.UsersRepository;
@@ -22,10 +23,11 @@ import java.util.Map;
 @Service
 public class CustomerService {
 
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     private final CustomerRepository customerRepository;
     private final UsersRepository usersRepository;
     private final CustomerBookEventRepository customerBookEventRepository;
+
 
     @Autowired
     public CustomerService(PasswordEncoder passwordEncoder, CustomerRepository customerRepository,
@@ -59,12 +61,13 @@ public class CustomerService {
         // Validate card details
         if (isValidCardDetails(cardDetails)) {
 
-            // Perform necessary operations (e.g., payment processing, updating membership details)
+
             customer.setIsMember(true);
-            // Other logic...
+            // Save the updated customer back to the database
+            customerRepository.save(customer);
             return customer;
         } else {
-            // Handle invalid card details
+
             throw new IllegalArgumentException("Invalid card details");
         }
     }
@@ -98,6 +101,33 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
     }
 
+
+    public void updateCustomer(Customer existingCustomer) {
+
+        customerRepository.save(existingCustomer);
+    }
+
+    public ResponseEntity<String> validateEmailFormat(int customerId, String email) {
+        // Retrieve the customer by ID
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+
+        // Check if the provided email matches the customer's email
+        if (!email.equals(customer.getEmail())) {
+            return ResponseEntity.badRequest().body("Provided email does not match the registered email for customer ID: " + customerId);
+        }
+
+        // Basic email format validation logic
+        // This is a simple example and may not cover all edge cases
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        if (!email.matches(emailRegex)) {
+            return ResponseEntity.badRequest().body("Emmail is not valid");
+        }
+
+        return ResponseEntity.ok("Email Verified");
+    }
+
+
     public Map<String, Integer> getAnalytics(Integer customerId) {
         // Get the Customer
         Customer customer = this.getCustomerById(customerId);
@@ -112,5 +142,23 @@ public class CustomerService {
 
         return map;
     }
+
+    public ResponseEntity<?> cancelMembership(int customerId) {
+        // Fetch customer details
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if (customer == null) {
+            throw new IllegalArgumentException("Invalid customer ID");
+        }
+        // Check if the customer is a member
+        if (!customer.getIsMember()) {
+            return ResponseEntity.badRequest().body("Customer is not a member");
+        }
+        // Update customer membership status
+        customer.setIsMember(false);
+        // Save the updated customer back to the database
+        customerRepository.save(customer);
+        return ResponseEntity.ok(new BaseApiResponseDTO("Successfully canceled membership", customer, null));
+    }
+
 }
 

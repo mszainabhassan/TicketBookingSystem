@@ -47,7 +47,7 @@ public class EventGenerator {
         final List<String> eventTypeNames = Arrays.asList("GRADUATE JOB FAIR", "CONCERT", "BOOK READING", "PROGRAMMING",
                 "NETWORKING");
         String eventTypeName = eventTypeNames.get(random.nextInt(eventTypeNames.size()));
-        return eventTypeRepository.findByTypeName(eventTypeName)
+        return eventTypeRepository.findByEventTypeName(eventTypeName)
                 .orElseGet(() -> eventTypeRepository.save(new EventType(eventTypeName)));
     }
 

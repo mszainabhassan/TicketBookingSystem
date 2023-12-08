@@ -28,28 +28,26 @@ import static com.uol.smqa.dtos.specifications.EventSpecification.buildSearchPre
 @Service
 public class EventService {
 
-
-    private final EventRepository eventRepository;
-    private final CustomerRepository customerRepository;
     private final EventTypeService eventTypeService;
+	private final EventRepository eventRepository;
+	private final CustomerRepository customerRepository;
 	private final OrganizerServiceInterface organizerService;
 	private final CustomerBookEventRepository customerBookEventRepository;
-
+	private final EmailService emailService;
 
 	@Autowired
 	public EventService(EventRepository eventRepository,
 						CustomerRepository customerRepository,
 						EventTypeService eventTypeService,
 						CustomerBookEventRepository customerBookEventRepository,
-						OrganizerServiceInterface organizerService) {
+						OrganizerServiceInterface organizerService, EmailService emailService) {
 		this.eventRepository = eventRepository;
 		this.organizerService = organizerService;
 		this.customerRepository = customerRepository;
 		this.eventTypeService = eventTypeService;
 		this.customerBookEventRepository = customerBookEventRepository;
+		this.emailService = emailService;
 	}
-
-
 
 	public String ChangeEventStatus(int eventId, Boolean status) {
 		Event event = this.eventRepository.findById(eventId);
@@ -156,4 +154,19 @@ public class EventService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
     }
+
+    public void sendEventNotifications(Event event) {
+        List<Customer> optedInCustomers = customerRepository.findByIsNotificationOn(true);
+
+        for (Customer customer : optedInCustomers) {
+            emailService.sendEventNotification(
+                    customer.getEmail(),
+                    event.getEventName(),
+                    event.getEventLocation(),
+                    event.getEventDateTime()
+            );
+        }
+    }
+
+
 }
