@@ -52,6 +52,9 @@ public class WishListService {
 
 	public ResponseEntity<?> deleteEventFromWishList(Integer wishlistId) {
 		try {
+			if(wishListRepository.findById(wishlistId).isEmpty())
+				return new ResponseEntity<>(new BaseApiResponseDTO("WishList Id Not Found", null, null),
+						HttpStatus.NOT_FOUND);
 			this.wishListRepository.deleteById(wishlistId);
 			return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted event from wishlist", null, null),
 					HttpStatus.OK);
