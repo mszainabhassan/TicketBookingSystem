@@ -6,7 +6,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.uol.smqa.model.Discount;
+import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.DiscountRepository;
+import com.uol.smqa.repository.EventRepository;
 
 import java.util.Optional;
 
@@ -36,6 +38,9 @@ public class OrganizerService implements OrganizerServiceInterface {
 	
 	@Autowired
 	private DiscountRepository discountRepository;
+	
+	@Autowired
+	private EventRepository eventRepository;
 	
 	
     @Override
@@ -69,9 +74,11 @@ public class OrganizerService implements OrganizerServiceInterface {
             // Throw a custom exception or use an existing exception type
             throw new DiscountCodeAlreadyExistsException("Discount code already exists: " + discount.getDiscountCode());
         }
-
+        
         // Save the discount if it doesn't exist
         return this.discountRepository.save(discount);
+        
+        
     } catch (DataIntegrityViolationException e) {
         // Handle database integrity violation exception
         throw new DiscountCodeAlreadyExistsException("Discount code already exists: " + discount.getDiscountCode(), e);

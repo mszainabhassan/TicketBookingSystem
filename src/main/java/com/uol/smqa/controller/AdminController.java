@@ -54,6 +54,7 @@ public class AdminController {
 	  private EventService eventService;
 	  @Autowired
 	    private OrganizerService organizerService;
+	  @Autowired private OrganizerService organizerService1;
     @GetMapping("/geteventtypes")
     public List<EventType> getAllEventTypes() {
         return eventTypeService.getAllEventTypes();
@@ -86,17 +87,7 @@ public class AdminController {
 		
 	}
 	
-	@Autowired
-	private AdminService adminService;
-	@PutMapping("/change_user_status")
-	
-	public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
-		return this.adminService.ChangeUserStatus(customer_id, isActive);
-		
-	}
-	
-	
-	
+
 	
   
 	@Autowired
@@ -106,10 +97,13 @@ public class AdminController {
 	public Customer AdminCustomerRegistration(@RequestBody Customer customer) {
 	return this.customerService1.CustomerRegistration(customer);
 	}
+
 	
-	  @PostMapping("/admin_register_organizer") 
+	
+	  
+	  @PostMapping("/admin_register_organizer")
 	  public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
-	  { return this.organizerService.OrganizerRegistration(organizer); }
+	  { return this.organizerService1.OrganizerRegistration(organizer); }
 	 
 	  
 	  @Autowired
@@ -121,7 +115,14 @@ public class AdminController {
 			
 		}
 	
-	
+		@Autowired
+		private AdminService adminService;
+		@PutMapping("/change_user_status")
+		
+		public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
+			return this.adminService.ChangeUserStatus(customer_id, isActive);
+			
+		}
   
 
 
@@ -133,9 +134,6 @@ public class AdminController {
 	return this.customerService.CustomerRegistration(customer);
 	}
 	
-
-	@JsonIgnoreProperties("bookedCustomers")
-
 	@GetMapping("/getAllEvents")
 	public List<Event> getAllEvents(){
 		return this.eventService.getAllEvents();

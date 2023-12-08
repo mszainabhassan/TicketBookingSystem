@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import com.uol.smqa.model.Event;
 
 import java.time.LocalDate;
+
 import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,11 @@ public interface EventRepository extends JpaRepository<Event, Integer>, JpaSpeci
 	List<Object[]> findAllEvents();
 	void deleteByEventIdAndOrganizer(int eventId, Organizer organizer);
 
+	
+	
+	
 	Optional<Event> findByEventIdAndOrganizer(int eventId, Organizer organizer);
-
+	List<Event> findByeventDateTime(LocalDate currentDate);	
+	//Optional<Event> findById1(int eventId);
+	
 }

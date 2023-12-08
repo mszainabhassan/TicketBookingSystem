@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -28,24 +29,30 @@ public class Discount implements Serializable{
 	@Column(name = "discount_value", nullable = false)
 	private int discountValue = 0;
 	
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "discount")
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="event_id")
 	private Event event;
-	
-	/*
-	 * @OneToMany(cascade = CascadeType.ALL)
-	 * 
-	 * @JoinColumn(name = "discount_id", referencedColumnName = "event_id", unique =
-	 * true) private List<Event> events;
-	 */
+//	
+//	/*
+//	 * @OneToMany(cascade = CascadeType.ALL)
+//	 * 
+//	 * @JoinColumn(name = "discount_id", referencedColumnName = "event_id", unique =
+//	 * true) private List<Event> events;
+//	 */
+//
+//	
+//	    public Event getEvent() {
+//		return event;
+//	}
+//
+//	public void setEvent(Event event) {
+//		this.event = event;
+//	}
 
-
 	
-	
-	
-	    @OneToMany(mappedBy = "discount" , cascade = CascadeType.ALL)
+		@OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
 		private List<Event> events;
-	
-	
+
 	
 	public int getDiscountId() {
 		return DiscountId;
@@ -78,6 +85,17 @@ public class Discount implements Serializable{
 	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+	
+	
+	
 
 	
 

@@ -10,16 +10,24 @@ import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 
 @Entity
-public class Admin 
-{
+public class Admin {
+	
+	/*
+	 * @Id
+	 * 
+	 * @GeneratedValue // Adjust the strategy based on your database private int
+	 * id1;
+	 */
+
 	 
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database
-    private Long adminId;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database 
+	private Long adminId;
+	
 
 }
 
