@@ -2,7 +2,6 @@ package com.uol.smqa.controller;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.EventType;
 import com.uol.smqa.service.EventTypeService;
-import com.uol.smqa.service.OrganizerServiceInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,28 +29,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
-import com.uol.smqa.service.EventService;
-import com.uol.smqa.service.EventTypeService;
 import com.uol.smqa.service.OrganizerService;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.uol.smqa.model.Discount;
-import com.uol.smqa.service.OrganizerService;
-
-
-	
-	
-
-import com.uol.smqa.model.Event;
-import com.uol.smqa.model.EventType;
-import com.uol.smqa.model.Organizer;
-import com.uol.smqa.service.OrganizerService;
 
 @RestController
 @RequestMapping("/organizer")
@@ -68,10 +49,23 @@ public class OrganizerController {
     private AdminService adminService;
 
     @PostMapping("/set_discount")
-	public Discount setDiscount(@RequestBody Discount discount) {
+	public Discount setDiscount(@Validated @RequestBody Discount discount, BindingResult bindingResult) {
+    	if (bindingResult.hasErrors()) {
+    		System.out.print(bindingResult);
+    	}
 		return this.organizerService.setDiscount(discount);
 		
+		
 	}
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {

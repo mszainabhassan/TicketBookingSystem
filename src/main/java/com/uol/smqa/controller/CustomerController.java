@@ -18,15 +18,22 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.WishList;
+import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.repository.ReviewRepository;
 import com.uol.smqa.model.Event;
+import com.uol.smqa.model.Review;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.model.CardDetails;
 import com.uol.smqa.service.CustomerBookEventService;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import com.uol.smqa.service.WishListService;
 
 
@@ -153,7 +160,7 @@ public class CustomerController {
 	}
 
 
-}
+
 
 
 	@GetMapping("/getAnalytics")
@@ -205,6 +212,130 @@ public class CustomerController {
         }
     }
 
+	
+//	@Autowired
+//    private EventRepository eventRepository;
+//
+//    @Autowired
+//    private ReviewRepository reviewRepository;
+//	
+//	
+//    @GetMapping("/past_reviews")
+//    public List<Event> getPastEvents() {
+//        LocalDate currentDate = LocalDate.now();
+//        return eventRepository.findByeventDateTime(currentDate);
+//    }
+//
+////    @GetMapping("/{eventId}/reviews")
+////    public List<Review> getEventReviews(@PathVariable int eventId) {
+////        return reviewRepository.findById(eventId);
+////    }
+////	
+//	
+//    @PostMapping("/{eventId}/reviews")
+//    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
+//        Optional<Event> eventOptional = eventRepository.findById(eventId);
+//
+//        if (eventOptional.isPresent()) {
+//            Event event = eventOptional.get();
+//            review.setEvent(event);
+//            reviewRepository.save(review);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Review created successfully");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+//        }
+//    }
+//    
+//    
+//    
+//    
+//    @PutMapping("/{reviewId}")
+//    public ResponseEntity<String> updateReview(
+//            @PathVariable Long reviewId,
+//            @RequestBody Review updatedReview
+//    ) {
+//        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
+//
+//        if (existingReviewOptional.isPresent()) {
+//            Review existingReview = existingReviewOptional.get();
+//            existingReview.setComment(updatedReview.getComment());
+//            existingReview.setRating(updatedReview.getRating());
+//            
+//            // Assuming you want to update only comment and rating; you can add more fields as needed.
+//
+//            reviewRepository.save(existingReview);
+//            return ResponseEntity.ok("Review updated successfully");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
+//        }
+//    }
+//    
+//    
+//    
+//    
+    
+    
+    ///////////
+	
+	
+	@Autowired
+    private EventRepository eventRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+
+    @GetMapping("/past_reviews")
+    public List<Event> getPastEvents() {
+        LocalDate currentDate = LocalDate.now();
+        return eventRepository.findByeventDateTime(currentDate);
+    }
+
+    @GetMapping("/{eventId}/reviews")
+    public List<Review> getEventReviews(@PathVariable int eventId) {
+        Optional<Event> eventOptional = Optional.of(this.eventRepository.findById(eventId));
+        return eventOptional.map(event -> reviewRepository.findByEvent(event)).orElse(Collections.emptyList());
+    }
+
+    @PostMapping("/{eventId}/reviews")
+    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            review.setEvent(event);
+            reviewRepository.save(review);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Review created successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        }
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<String> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody Review updatedReview
+    ) {
+        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
+
+        if (existingReviewOptional.isPresent()) {
+            Review existingReview = existingReviewOptional.get();
+            existingReview.setComment(updatedReview.getComment());
+            existingReview.setRating(updatedReview.getRating());
+            
+            // Assuming you want to update only comment and rating; you can add more fields as needed.
+
+            reviewRepository.save(existingReview);
+            return ResponseEntity.ok("Review updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
+        }
+    }
+	
+	
+	
+    
+    
+    
 }
 
