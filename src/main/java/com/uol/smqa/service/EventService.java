@@ -75,7 +75,7 @@ public class EventService {
 		 return this.eventRepository.findAll(buildSearchPredicate(searchCriteria));
 	}
 
-	public List<Event> getAllEventsByOrganizerId(int organizerId) {
+	public List<Event> getAllEventsByOrganizerId(int organizerId) throws Exception {
 		Organizer organizer = organizerService.findById(organizerId).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 		return this.eventRepository.findAllByOrganizer(organizer);
 	}

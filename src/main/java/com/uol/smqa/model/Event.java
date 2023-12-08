@@ -1,6 +1,7 @@
 package com.uol.smqa.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import jakarta.persistence.*;
 
 
 @Entity(name = "events")
-public class Event implements Serializable {
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -184,7 +185,9 @@ public class Event implements Serializable {
     }
 
     public void setPrioritySeatFees(Float prioritySeatFees) {
-        this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+        if (prioritySeatFees != null && eventFees != null) {
+            this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+        }
     }
 
     public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {

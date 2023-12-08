@@ -14,6 +14,7 @@ import com.uol.smqa.service.*;
 import com.uol.smqa.util.EventGenerator;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -29,8 +30,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,6 +67,9 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private MockMvc mockMvc;
     private List<Event> eventList = new ArrayList<>();
 
@@ -83,98 +87,73 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     }
 
     @Test
-    public void organizerViewEvents_WithoutAnyParameters_thenReturnSuccess() throws Exception {
-        long expectedEventsCount = eventRepository.count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria();
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(filterSearchCriteria)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize((int) expectedEventsCount)));
-
-        verify(eventService, times(1)).getAllEventsBySearchCriteria(any());
-    }
-
-
-    @Test
-    public void filterEvents_ByLocation_thenReturnSuccess() throws Exception {
-
-        Event eventToSeachFor = eventList.get(eventList.size() - 1);
-        long expectedEventsCount = eventList.stream().filter(current -> current.getEventLocation().equals(eventToSeachFor.getEventLocation())).count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(eventToSeachFor.getEventLocation(), null, null, null);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events?location="+filterSearchCriteria.getLocation())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.length()").value(expectedEventsCount))
-                .andExpect(jsonPath("$[0].eventName").value(eventToSeachFor.getEventName()))
-                .andExpect(jsonPath("$[0].eventDescription").value(eventToSeachFor.getEventDescription()));
-
-        verify(eventService, times(1)).getAllEventsBySearchCriteria(any());
-    }
-
-
-    @Test
-    public void filterEvents_ByEventDate_thenReturnSuccess() throws Exception {
-
+    public void organizerViewEvents_WithValidOrganizerId_thenReturnSuccess() throws Exception {
         Event eventToSearchFor = eventList.get(eventList.size() - 1);
-        long expectedEventsCount = eventList.stream().filter(current -> current.getEventDateTime().toLocalDate().isEqual(eventToSearchFor.getEventDateTime().toLocalDate())).count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(null, null, null,
-                eventToSearchFor.getEventDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        long expectedOrganizerEventsCount = eventList.stream().filter(current -> current.getOrganizer().getOrganizerId() == eventToSearchFor.getOrganizer().getOrganizerId()).count();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events?eventDate="+filterSearchCriteria.getEventDate())
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+eventToSearchFor.getOrganizer().getOrganizerId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$", hasSize((int) expectedEventsCount)))
-                .andExpect(jsonPath("$[0].eventName").value(eventToSearchFor.getEventName()))
-                .andExpect(jsonPath("$[0].eventDescription").value(eventToSearchFor.getEventDescription()));
+                .andExpect(jsonPath("$.message").value("Successfully retrieved all organizers"))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data", hasSize((int) expectedOrganizerEventsCount)));
 
-        verify(eventService, times(1)).getAllEventsBySearchCriteria(any());
+        verify(eventService, times(1)).getAllEventsByOrganizerId(anyInt());
     }
 
 
     @Test
-    public void filterEvents_ByEventType_thenReturnSuccess() throws Exception {
+    public void organizerViewEvents_WithInvalidOrganizerId_thenReturnNotFoundError() throws Exception {
 
-        Event eventToSearchFor = eventList.get(eventList.size() - 1);
-        long expectedEventsCount = eventList.stream().filter(current -> current.getEventType().getTypeName().equals(eventToSearchFor.getEventType().getTypeName())).count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(null, eventToSearchFor.getEventType().getTypeName(), null,
-                null);
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events?eventType="+filterSearchCriteria.getEventType())
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+ 14444444)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$", hasSize((int) expectedEventsCount)))
-                .andExpect(jsonPath("$[0].eventName").value(eventToSearchFor.getEventName()))
-                .andExpect(jsonPath("$[0].eventDescription").value(eventToSearchFor.getEventDescription()));
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Organizer with id does not exist"));
 
-        verify(eventService, times(1)).getAllEventsBySearchCriteria(any());
+
+        verify(eventService, times(1)).getAllEventsByOrganizerId(anyInt());
     }
 
     @Test
-    public void filterEvents_ByEventName_thenReturnSuccess() throws Exception {
-
+    public void organizerViewEvents_WithUnexpectedSystemError_thenReturnInternalServerError() throws Exception {
         Event eventToSearchFor = eventList.get(eventList.size() - 1);
-        long expectedEventsCount = eventList.stream().filter(current -> current.getEventName().equals(eventToSearchFor.getEventName())).count();
-        CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria(null, null, eventToSearchFor.getEventName(),
-                null);
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/all-events?name="+filterSearchCriteria.getName())
+
+        doThrow(new Exception("An error occurred while retrieving events for organizer"))
+                .when(eventService).getAllEventsByOrganizerId(anyInt());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+ eventToSearchFor.getOrganizer().getOrganizerId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$", hasSize((int) expectedEventsCount)))
-                .andExpect(jsonPath("$[0].eventName").value(eventToSearchFor.getEventName()))
-                .andExpect(jsonPath("$[0].eventDescription").value(eventToSearchFor.getEventDescription()));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("An error occurred while retrieving events for organizer"));
 
-        verify(eventService, times(1)).getAllEventsBySearchCriteria(any());
+
+        verify(eventService, times(1)).getAllEventsByOrganizerId(anyInt());
+    }
+
+
+
+
+
+    @Test
+    public void organizerEditEvent_WithValidRequestBody_thenReturnSuccess() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        eventToEdit.setEventName("Edited event name");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value("Successfully updated event"));
+
+        verify(eventService, times(1)).updateEvent(any(Event.class));
+
+        Event updatedEventFromDatabase = eventRepository.findById(eventToEdit.getEventId());
+        Assertions.assertNotNull(updatedEventFromDatabase);
+        Assertions.assertEquals(eventToEdit.getEventName(), updatedEventFromDatabase.getEventName());
     }
 
 }

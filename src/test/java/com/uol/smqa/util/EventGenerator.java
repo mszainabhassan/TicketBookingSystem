@@ -10,6 +10,7 @@ import com.uol.smqa.repository.OrganizerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class EventGenerator {
         String eventName = "Event " + eventId;
         String eventDescription = "Description for Event " + eventId;
         String eventLocation = "Location " + eventId;
-        LocalDateTime eventDateTime = LocalDateTime.now(); // Replace with actual date and time
+        LocalDateTime eventDateTime = LocalDateTime.now().plusMonths(12); // Replace with actual date and time
         Integer seatsAvailable = 100; // Replace with available seats count
         Integer noOfPrioritySeats = 20; // Replace with priority seats count
         Integer availablePrioritySeatsInteger = 15; // Replace with available priority seats count
