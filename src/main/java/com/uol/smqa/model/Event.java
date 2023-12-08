@@ -2,6 +2,7 @@ package com.uol.smqa.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,12 +37,21 @@ public class Event implements Serializable {
     private Integer seatsAvailable;
 
 
-    @OneToOne
-    @JoinColumn(name="discount_id")
-    private Discount discount;
+    @OneToMany
+    private List<Discount> discount = new ArrayList<>();
     
+//    @OneToOne
+//    @JoinColumn(name="review_id")
+//    private Review review;
+    
+    public List<Discount> getDiscount() {
+		return discount;
+	}
+	public void setDiscount(List<Discount> discount) {
+		this.discount = discount;
+	}
 
-    @Column(name = "no_of_priority_seats")
+	@Column(name = "no_of_priority_seats")
     private Integer noOfPrioritySeats;
 
     @Column(name = "available_priority_seats")

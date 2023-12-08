@@ -125,7 +125,6 @@ public class CustomerService{
 
 
 	 
-}
 
   
 	public  Map<String, Integer>  getAnalytics(Integer customerId) {
@@ -142,6 +141,8 @@ public class CustomerService{
         
         return map;
 	}
+	
+	
 
 	public ResponseEntity<?> cancelMembership(int customerId) {
 	    // Fetch customer details

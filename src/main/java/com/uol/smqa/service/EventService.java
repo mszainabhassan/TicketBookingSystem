@@ -9,6 +9,8 @@ import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
 import com.uol.smqa.repository.EventRepository;
 
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +22,12 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
+import com.uol.smqa.model.Discount;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
+import com.uol.smqa.repository.DiscountRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -86,17 +86,7 @@ public class AdminController {
 		
 	}
 	
-	@Autowired
-	private AdminService adminService;
-	@PutMapping("/change_user_status")
-	
-	public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
-		return this.adminService.ChangeUserStatus(customer_id, isActive);
-		
-	}
-	
-	
-	
+
 	
   
 	@Autowired
@@ -108,12 +98,12 @@ public class AdminController {
 	}
 	
 	
-	  @Autowired private OrganizerService organizerService;
+	  @Autowired private OrganizerService organizerService1;
 	  
 	  @PostMapping("/admin_register_organizer")
 	  
 	  public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
-	  { return this.organizerService.OrganizerRegistration(organizer); }
+	  { return this.organizerService1.OrganizerRegistration(organizer); }
 	 
 	  
 	  @Autowired
@@ -125,7 +115,14 @@ public class AdminController {
 			
 		}
 	
-	
+		@Autowired
+		private AdminService adminService;
+		@PutMapping("/change_user_status")
+		
+		public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
+			return this.adminService.ChangeUserStatus(customer_id, isActive);
+			
+		}
   
 
 
