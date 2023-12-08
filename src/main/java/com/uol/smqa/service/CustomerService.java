@@ -10,7 +10,7 @@ import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
-
+import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.model.CardDetails;
 
 import com.uol.smqa.repository.UsersRepository;
@@ -57,12 +57,13 @@ public class CustomerService{
 	        // Validate card details
 	        if (isValidCardDetails(cardDetails)) {
 	        	
-	            // Perform necessary operations (e.g., payment processing, updating membership details)
+	            
 	        	 customer.setIsMember(true);
-	            // Other logic...
+	            // Save the updated customer back to the database
+	            customerRepository.save(customer);
 	            return customer;
 	        } else {
-	            // Handle invalid card details
+	           
 	            throw new IllegalArgumentException("Invalid card details");
 	        }
 	    }
@@ -89,7 +90,6 @@ public class CustomerService{
 	        // Basic check: CVV should be numeric and have a valid length
 	        return cvv != null && cvv.matches("\\d{3}");
 	    }
-
 
 	 public Customer getCustomerById(int customerId) {
 	        return customerRepository.findById(customerId)
@@ -141,6 +141,23 @@ public class CustomerService{
         map.put("NumberOfNon-PriorityEvents",numberOfBookedEvents- numberOfPriorityEvents);
         
         return map;
+	}
+
+	public ResponseEntity<?> cancelMembership(int customerId) {
+	    // Fetch customer details
+	    Customer customer = customerRepository.findById(customerId).orElse(null);
+	    if (customer == null) {
+	        throw new IllegalArgumentException("Invalid customer ID");
+	    }
+	    // Check if the customer is a member
+	    if (!customer.getIsMember()) {
+	        return ResponseEntity.badRequest().body("Customer is not a member");
+	    }
+	    // Update customer membership status
+	    customer.setIsMember(false);
+	    // Save the updated customer back to the database
+	    customerRepository.save(customer);
+	    return ResponseEntity.ok(new BaseApiResponseDTO("Successfully canceled membership", customer, null));
 	}
 
 }

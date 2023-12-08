@@ -42,6 +42,8 @@ import com.uol.smqa.service.EventTypeService;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import com.uol.smqa.model.EventType;
+import com.uol.smqa.service.EventTypeService;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/admin")
@@ -52,22 +54,29 @@ public class AdminController {
 	  private EventService eventService;
 	  @Autowired
 	    private OrganizerService organizerService;
-    @GetMapping("/eventtypes")
+    @GetMapping("/geteventtypes")
     public List<EventType> getAllEventTypes() {
         return eventTypeService.getAllEventTypes();
     }
 
-    @PostMapping("/eventtype")
-    public EventType addEventType(@RequestBody EventType eventType) {
-       return eventTypeService.addEventType(eventType);
+    @PostMapping("/addeventtype")
+    public ResponseEntity<?> addEventType(@RequestBody EventType eventType) {
+        ResponseEntity<?> addedEventType = eventTypeService.addEventType(eventType);
+
+        return addedEventType;
+	}
+      
+    @PutMapping("/updateeventtype")
+    public ResponseEntity<?> updateEventType(@RequestParam Long id, @RequestBody EventType eventType) {
+    	ResponseEntity<?> updatedEventType = eventTypeService.updateEventType(id, eventType);
+        return updatedEventType;
     }
 
-    @PutMapping("/eventtype/{id}")
-    public EventType updateEventType(@PathVariable Long id, @RequestBody EventType eventType) {
-        return eventTypeService.updateEventType(id, eventType);
+    @DeleteMapping("/deleteeventtype")
+    public ResponseEntity<?> deleteEventType(@RequestParam Long id) {
+        ResponseEntity<?> DeletedEventType = eventTypeService.deleteEventType(id);
+        return DeletedEventType;
     }
-
-
 
 	@PutMapping("/change_event_status")
 	public String ChangeEventStatus(@RequestParam(name = "eventId") Integer eventId,
@@ -153,10 +162,7 @@ public class AdminController {
 
 
   
-  @DeleteMapping("/eventtype/{id}")
-    public void deleteEventType(@PathVariable Long id) {
-        eventTypeService.deleteEventType(id);
-    }
+  
 
   @PostMapping("/initiateEventCreation")
   public String initiateEventCreation(@RequestBody Event event, @RequestParam int organizerId) {

@@ -5,7 +5,6 @@ import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import com.uol.smqa.Enum.Gender;
@@ -194,13 +193,28 @@ public class CustomerController {
 	        try {
 	        	//  System.out.println("Received CardDetails: " + cardDetails.toString());
 	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);
-	            return ResponseEntity.ok(updatedCustomer);
+	            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully Purchased membership", updatedCustomer, null),
+	                    HttpStatus.OK);
 	        } catch (IllegalArgumentException e) {
 	            return ResponseEntity.badRequest().body(e.getMessage());
 	        }
 	 }
+	
+	 @PostMapping("/cancelmembership")
+	 public ResponseEntity<?> cancelMembership(@RequestParam int customerId) {
+	     try {
+	         ResponseEntity<?> response = customerService.cancelMembership(customerId);
 
-
+	         if (response.getStatusCode() == HttpStatus.OK) {
+	             return new ResponseEntity<>(new BaseApiResponseDTO("Successfully Canceled membership", response.getBody(), null),
+	                     HttpStatus.OK);
+	         } else {
+	             return ResponseEntity.badRequest().body(response.getBody());
+	         }
+	     } catch (IllegalArgumentException e) {
+	         return ResponseEntity.badRequest().body(e.getMessage());
+	     }
+	 }
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
 		return this.wishlistService.getCustomerWishList(customerId);
