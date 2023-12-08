@@ -21,6 +21,7 @@ public class Admin {
 	 * @GeneratedValue // Adjust the strategy based on your database private int
 	 * id1;
 	 */
+
 	 
 
 	@Id

@@ -36,6 +36,7 @@ public class CustomerService{
 	
 
 	public Customer CustomerRegistration(Customer customer) {
+		
 		customer.getUsers().setPassword(passwordEncoder.encode(customer.getUsers().getPassword()));
 		Customer customer2= this.customerRepository.save(customer);
 		customer2.setUsers(customer.getUsers());
@@ -122,9 +123,6 @@ public class CustomerService{
 	        return ResponseEntity.ok("Email Verified");
 	    }
 
-
-
-	 
 
   
 	public  Map<String, Integer>  getAnalytics(Integer customerId) {

@@ -76,7 +76,7 @@ public class Event implements Serializable {
     private String eventFrequency;
 
     @Column
-    public Boolean status;
+    private Boolean status=false;
 
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = false)
@@ -207,7 +207,7 @@ public class Event implements Serializable {
     }
 
     public void setPrioritySeatFees(Float prioritySeatFees) {
-        this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+        this.prioritySeatFees = getEventFees() + (eventFees / 10);
     }
 
     public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {

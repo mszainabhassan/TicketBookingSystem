@@ -4,6 +4,8 @@ package com.uol.smqa.controller;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +61,13 @@ public class CustomerController {
     private final CustomerBookEventService customerBookEventService;
 	private final WishListService wishlistService;
 	private final EventService eventService;
+	
+	
+	@Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
 	@Autowired
 	public CustomerController(CustomerService customerService, CustomerBookEventService customerBookEventService,
@@ -69,9 +78,22 @@ public class CustomerController {
 		this.eventService = eventService;
 	}
 
+	//zh177-ZainabHassan
     @PostMapping("/register")
-    public Customer customerRegistration(@RequestBody Customer customer) {
-        return this.customerService.CustomerRegistration(customer);
+    public ResponseEntity<?> customerRegistration(@RequestBody Customer customer) {
+        try {
+        	Customer customer2= this.customerService.CustomerRegistration(customer);
+         return new ResponseEntity<>(new BaseApiResponseDTO("Customer Registered Successfully!", customer2, null),
+				HttpStatus.OK);
+         }
+        catch (DataIntegrityViolationException e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("Duplicate customer Email!"),
+  					HttpStatus.CONFLICT);
+		}
+         catch (Exception e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while registering customer"),
+ 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
 
     @GetMapping("/events")
@@ -172,8 +194,8 @@ public class CustomerController {
 
     
     
-
-    
+ 
+  //zh177-ZainabHassan
     @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
@@ -219,11 +241,14 @@ public class CustomerController {
 	         return ResponseEntity.badRequest().body(e.getMessage());
 	     }
 	 }
+	//zh177-ZainabHassan
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
+		this.customerService.getCustomerById(customerId);
 		return this.wishlistService.getCustomerWishList(customerId);
 	}
 
+	//zh177-ZainabHassan
 	@DeleteMapping("/deleteEventFromWishList")
 	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId){
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
@@ -261,8 +286,7 @@ public class CustomerController {
 
 
 
-
-
+	//zh177-ZainabHassan
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {
@@ -284,7 +308,7 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-	
+	//zh177-ZainabHassan
 	@PostMapping(value = "/bookPriortyTicketForEvent")
 	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
 		
@@ -313,76 +337,7 @@ public class CustomerController {
     }
 
 	
-//	@Autowired
-//    private EventRepository eventRepository;
-//
-//    @Autowired
-//    private ReviewRepository reviewRepository;
-//	
-//	
-//    @GetMapping("/past_reviews")
-//    public List<Event> getPastEvents() {
-//        LocalDate currentDate = LocalDate.now();
-//        return eventRepository.findByeventDateTime(currentDate);
-//    }
-//
-////    @GetMapping("/{eventId}/reviews")
-////    public List<Review> getEventReviews(@PathVariable int eventId) {
-////        return reviewRepository.findById(eventId);
-////    }
-////	
-//	
-//    @PostMapping("/{eventId}/reviews")
-//    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
-//        Optional<Event> eventOptional = eventRepository.findById(eventId);
-//
-//        if (eventOptional.isPresent()) {
-//            Event event = eventOptional.get();
-//            review.setEvent(event);
-//            reviewRepository.save(review);
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Review created successfully");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
-//        }
-//    }
-//    
-//    
-//    
-//    
-//    @PutMapping("/{reviewId}")
-//    public ResponseEntity<String> updateReview(
-//            @PathVariable Long reviewId,
-//            @RequestBody Review updatedReview
-//    ) {
-//        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
-//
-//        if (existingReviewOptional.isPresent()) {
-//            Review existingReview = existingReviewOptional.get();
-//            existingReview.setComment(updatedReview.getComment());
-//            existingReview.setRating(updatedReview.getRating());
-//            
-//            // Assuming you want to update only comment and rating; you can add more fields as needed.
-//
-//            reviewRepository.save(existingReview);
-//            return ResponseEntity.ok("Review updated successfully");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
-//        }
-//    }
-//    
-//    
-//    
-//    
-    
-    
-    ///////////
-	
-	
-	@Autowired
-    private EventRepository eventRepository;
 
-    @Autowired
-    private ReviewRepository reviewRepository;
 
 
     @GetMapping("/past_reviews")
@@ -431,10 +386,5 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
         }
     }
-	
-	
-	
-    
-    
 }
 
