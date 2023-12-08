@@ -166,9 +166,7 @@ public class CustomerController {
     
     
 
-        customerBookEventService.bookEvent(eventId, customer);
-        return "Event booked successfully!";
-    }
+ 
     
     @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
@@ -256,7 +254,7 @@ public class CustomerController {
 	}
 
 
-}
+
 
 
 	@GetMapping("/getAnalytics")

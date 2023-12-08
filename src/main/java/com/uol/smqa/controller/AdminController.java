@@ -107,11 +107,7 @@ public class AdminController {
 	return this.customerService1.CustomerRegistration(customer);
 	}
 	
-	
-	  @Autowired private OrganizerService organizerService;
-	  
-	  @PostMapping("/admin_register_organizer")
-	  
+	  @PostMapping("/admin_register_organizer") 
 	  public Organizer AdminOrganizerRegistration(@RequestBody Organizer organizer)
 	  { return this.organizerService.OrganizerRegistration(organizer); }
 	 

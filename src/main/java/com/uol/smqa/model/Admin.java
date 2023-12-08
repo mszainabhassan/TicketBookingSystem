@@ -12,12 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.persistence.Column;
 
 @Entity
-public class Admin {
-	
-	  @Id
-	  
-	  @GeneratedValue // Adjust the strategy based on your database 
-	  private int id;
+public class Admin 
+{
 	 
 
 	@Id
