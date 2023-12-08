@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +34,19 @@ import com.uol.smqa.service.EventService;
 import com.uol.smqa.service.EventTypeService;
 import com.uol.smqa.service.OrganizerService;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.uol.smqa.model.Discount;
+import com.uol.smqa.service.OrganizerService;
+
+
+	
+	
 
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
@@ -58,6 +67,12 @@ public class OrganizerController {
     @Autowired
     private AdminService adminService;
 
+    @PostMapping("/set_discount")
+	public Discount setDiscount(@RequestBody Discount discount) {
+		return this.organizerService.setDiscount(discount);
+		
+	}
+    
    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {
         String eventTypeName = event.getEventType().getEventTypeName();
@@ -173,5 +188,6 @@ public class OrganizerController {
 	        }
 	    }
   
+
 	
 }

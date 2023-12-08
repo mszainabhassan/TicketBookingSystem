@@ -34,7 +34,12 @@ import static com.uol.smqa.dtos.request.specifications.EventSpecification.buildS
 @Service
 public class EventService {
 
-
+	
+	@Autowired
+	private  EmailService emailService;
+  
+	
+	
     @Autowired
     private EventRepository eventRepository;
     
@@ -158,4 +163,24 @@ public class EventService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
     }
+   
+    public EventService(EmailService emailService, CustomerRepository customerRepository) {
+        this.emailService = emailService;
+        this.customerRepository = customerRepository;
+    }
+
+    public void sendEventNotifications(Event event) {
+        List<Customer> optedInCustomers = customerRepository.findByisNotificationOn(true);
+
+        for (Customer customer : optedInCustomers) {
+            emailService.sendEventNotification(
+                    customer.getEmail(),  
+                    event.getEventName(),
+                    event.getEventLocation(),
+                    event.getEventDateTime()
+            );
+        }
+    }
+    
+    
 }

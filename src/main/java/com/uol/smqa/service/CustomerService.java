@@ -90,11 +90,44 @@ public class CustomerService{
 	        // Basic check: CVV should be numeric and have a valid length
 	        return cvv != null && cvv.matches("\\d{3}");
 	    }
-	  
+
 	 public Customer getCustomerById(int customerId) {
 	        return customerRepository.findById(customerId)
 	                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
 	    }
+  
+  
+	public void updateCustomer(Customer existingCustomer) {
+		
+		customerRepository.save(existingCustomer);
+	}
+	
+	 public ResponseEntity<String> validateEmailFormat(int customerId, String email) {
+	        // Retrieve the customer by ID
+	        Customer customer = customerRepository.findById(customerId)
+	                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+
+	        // Check if the provided email matches the customer's email
+	        if (!email.equals(customer.getEmail())) {
+	            return ResponseEntity.badRequest().body("Provided email does not match the registered email for customer ID: " + customerId);
+	        }
+
+	        // Basic email format validation logic
+	        // This is a simple example and may not cover all edge cases
+	        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+	        if (!email.matches(emailRegex)) {
+	            return ResponseEntity.badRequest().body("Emmail is not valid");
+	        }
+
+	        return ResponseEntity.ok("Email Verified");
+	    }
+
+
+
+	 
+}
+
+  
 	public  Map<String, Integer>  getAnalytics(Integer customerId) {
 		   // Get the Customer
         Customer customer = this.getCustomerById(customerId);
@@ -109,7 +142,6 @@ public class CustomerService{
         
         return map;
 	}
-
 
 	public ResponseEntity<?> cancelMembership(int customerId) {
 	    // Fetch customer details
@@ -127,5 +159,6 @@ public class CustomerService{
 	    customerRepository.save(customer);
 	    return ResponseEntity.ok(new BaseApiResponseDTO("Successfully canceled membership", customer, null));
 	}
+
 }
 
