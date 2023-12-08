@@ -6,6 +6,7 @@ import com.uol.smqa.TicketBookingSystemApplicationTests;
 import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.CustomerController;
+import com.uol.smqa.controller.OrganizerController;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
@@ -34,9 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplicationTests {
+public class OrganizerManageEventsStatementTest extends TicketBookingSystemApplicationTests {
 
-    private CustomerController customerController;
+    private OrganizerController organizerController;
 
     @SpyBean
     private CustomerService customerService;
@@ -50,6 +51,15 @@ public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplic
     @SpyBean
     private EventService eventService;
 
+    @SpyBean
+    private EventTypeService eventTypeService;
+
+    @SpyBean
+    private OrganizerService organizerService;
+
+    @SpyBean
+    private EventReviewService eventReviewService;
+
     @Autowired
     private EventGenerator eventGenerator;
 
@@ -62,8 +72,8 @@ public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplic
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        customerController = new CustomerController(customerService, customerBookEventService, wishListService, eventService);
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController)
+        organizerController = new OrganizerController(eventTypeService, organizerService, eventService, eventReviewService);
+        mockMvc = MockMvcBuilders.standaloneSetup(organizerController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())
                 .build();
@@ -73,7 +83,7 @@ public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplic
     }
 
     @Test
-    public void filterEvents_WithoutAnyParameters_thenReturnSuccess() throws Exception {
+    public void organizerViewEvents_WithoutAnyParameters_thenReturnSuccess() throws Exception {
         long expectedEventsCount = eventRepository.count();
         CustomerEventsFilterSearchCriteria filterSearchCriteria = new CustomerEventsFilterSearchCriteria();
 

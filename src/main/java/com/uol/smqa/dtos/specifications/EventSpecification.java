@@ -1,4 +1,4 @@
-package com.uol.smqa.dtos.request.specifications;
+package com.uol.smqa.dtos.specifications;
 
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.model.Event;
@@ -42,6 +42,7 @@ public class EventSpecification {
             Predicate[] predicates = allSearchPredicates.toArray(new Predicate[0]);
 
             Predicate combinedPredicate = builder.and(predicates);
+            query.orderBy(builder.desc(root.get("eventDateTime")));
             return combinedPredicate;
         };
     }

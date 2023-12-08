@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -40,8 +41,10 @@ public class EventGenerator {
     }
 
     private EventType getOrCreateEventType() {
-        System.out.println("Again");
-        final String eventTypeName = "GRADUATE JOB FAIR";
+        Random random = new Random();
+        final List<String> eventTypeNames = Arrays.asList("GRADUATE JOB FAIR", "CONCERT", "BOOK READING", "PROGRAMMING",
+                "NETWORKING");
+        String eventTypeName = eventTypeNames.get(random.nextInt(eventTypeNames.size()));
         return eventTypeRepository.findByTypeName(eventTypeName)
                 .orElseGet(() -> eventTypeRepository.save(new EventType(eventTypeName)));
     }

@@ -6,7 +6,6 @@ import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Event;
-import com.uol.smqa.model.EventType;
 import com.uol.smqa.repository.EventRepository;
 
 import java.time.LocalDateTime;
@@ -23,13 +22,8 @@ import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import com.uol.smqa.model.Event;
-import com.uol.smqa.repository.EventRepository;
-
-import static com.uol.smqa.dtos.request.specifications.EventSpecification.buildSearchPredicate;
+import static com.uol.smqa.dtos.specifications.EventSpecification.buildSearchPredicate;
 
 @Service
 public class EventService {
