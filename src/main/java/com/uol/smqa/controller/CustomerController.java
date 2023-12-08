@@ -4,6 +4,8 @@ package com.uol.smqa.controller;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,9 +64,22 @@ public class CustomerController {
 		this.eventService = eventService;
 	}
 
+	//zh177-ZainabHassan
     @PostMapping("/register")
-    public Customer customerRegistration(@RequestBody Customer customer) {
-        return this.customerService.CustomerRegistration(customer);
+    public ResponseEntity<?> customerRegistration(@RequestBody Customer customer) {
+        try {
+        	Customer customer2= this.customerService.CustomerRegistration(customer);
+         return new ResponseEntity<>(new BaseApiResponseDTO("Customer Registered Successfully!", customer2, null),
+				HttpStatus.OK);
+         }
+        catch (DataIntegrityViolationException e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("Duplicate customer Email!"),
+  					HttpStatus.CONFLICT);
+		}
+         catch (Exception e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while registering customer"),
+ 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
 
     @GetMapping("/events")
@@ -167,7 +182,7 @@ public class CustomerController {
     
 
  
-    
+  //zh177-ZainabHassan
     @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
@@ -213,11 +228,14 @@ public class CustomerController {
 	         return ResponseEntity.badRequest().body(e.getMessage());
 	     }
 	 }
+	//zh177-ZainabHassan
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
+		this.customerService.getCustomerById(customerId);
 		return this.wishlistService.getCustomerWishList(customerId);
 	}
 
+	//zh177-ZainabHassan
 	@DeleteMapping("/deleteEventFromWishList")
 	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId){
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
@@ -256,7 +274,7 @@ public class CustomerController {
 
 
 
-
+	//zh177-ZainabHassan
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {
@@ -278,7 +296,7 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-	
+	//zh177-ZainabHassan
 	@PostMapping(value = "/bookPriortyTicketForEvent")
 	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
 		
@@ -305,7 +323,6 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while acknowledging booking"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 
 }

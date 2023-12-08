@@ -47,7 +47,6 @@ public class WishListService {
 			return null;
 		else {
 			return customer.get().getWishlists();
-
 		}
 	}
 

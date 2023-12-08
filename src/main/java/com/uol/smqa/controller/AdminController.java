@@ -29,7 +29,7 @@ import com.uol.smqa.service.CustomerService;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.uol.smqa.dtos.response.BaseApiResponseDTO;
-
+import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.service.EventService;
@@ -142,17 +142,62 @@ public class AdminController {
 	}
 	
 	@PostMapping("/createEvent")
-	public Event createEvent(@RequestBody Event event) {
-		return this.eventService.createEvent(event);
+	public ResponseEntity<?> createEvent(@RequestBody Event event) {
+		try {
+			String eventTypeName = event.getEventType().getEventTypeName();
+	        Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
+
+	        if (existingEventType.isPresent()) {
+	            // If the event type exists, set it in the event
+	            event.setEventType(existingEventType.get());
+	        } else {
+	            // If the event type does not exist, create a new one and set it in the event
+	           return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
+	        }
+			Optional<Organizer> organizer=this.organizerService.findById(event.getOrganizer().getOrganizerId());
+			if (!organizer.isPresent()) {
+				throw new ResourceNotFoundException("Organizer not found");
+			}
+		Event event2= this.eventService.createEventByAdmin(event);
+		 return new ResponseEntity<>(new BaseApiResponseDTO("Event created successfully", event2, null), HttpStatus.OK);
+		}  
+		catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+		catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during creating an event"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 	}
 	
 	@PutMapping("/updateEvent")
-	public Event updateEvent(@RequestBody Event event) {
-		return this.eventService.updateEvent(event);
+	public ResponseEntity<?> updateEvent(@RequestBody Event event) {
+		try {
+			String eventTypeName = event.getEventType().getEventTypeName();
+	        Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
+
+	        if (existingEventType.isPresent()) {
+	            // If the event type exists, set it in the event
+	            event.setEventType(existingEventType.get());
+	        } else {
+	            // If the event type does not exist, create a new one and set it in the event
+	           return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
+	        }
+			Event event2=this.eventService.getEventById(event.getEventId());
+	        Optional<Organizer> organizer=this.organizerService.findById(event.getOrganizer().getOrganizerId());
+			if (!organizer.isPresent()) {
+				throw new ResourceNotFoundException("Organizer not found");
+			}
+			Event updatedEvent= this.eventService.updateEvent(event);
+			 return new ResponseEntity<>(new BaseApiResponseDTO("Event updated successfully", updatedEvent, null), HttpStatus.OK);
+		}
+		catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during updating an event"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+		
 	}
 	
 	@DeleteMapping("/deleteEvent")
-	public String updateEvent(@RequestParam Integer eventId) {
+	public String deleteEvent(@RequestParam Integer eventId) {
 		return this.eventService.deleteEvent(eventId);
 	}
 

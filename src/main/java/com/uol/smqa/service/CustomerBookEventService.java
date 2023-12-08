@@ -109,7 +109,8 @@ public class CustomerBookEventService {
         if (!existingBookings.isEmpty()) {
             throw new RuntimeException("Customer has already booked the event with ID: " + eventId);
         }
-	    if(event.getAvailablePrioritySeatsInteger()>0) {
+	    if( event.getAvailablePrioritySeatsInteger()!=null) {
+	    	if(event.getAvailablePrioritySeatsInteger()>0 ) {
                 event.setAvailablePrioritySeatsInteger(event.getAvailablePrioritySeatsInteger()-1);
                 eventRepository.save(event);
                 CustomerBookEvent booking = new CustomerBookEvent();
@@ -117,11 +118,15 @@ public class CustomerBookEventService {
                 booking.setEvent(event);  
                 booking.setIsPriority(true);
                 customerBookEventRepository.save(booking);
-                return "Priority Ticket for Event booked successfully!";
-	    }
+                return "Priority Ticket for Event booked successfully!";}
 	    else {
 	    	return "SOLD OUT";
-	    }}
+	    }
+	    }
+	else {
+		return "The event does not have priority seats";
+	}
+	   }
 	  public CustomerBookEvent getBookingById(Long bookingId) {
 	        return customerBookEventRepository.findById(bookingId)
 	                .orElse(null);

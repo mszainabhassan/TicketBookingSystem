@@ -36,6 +36,7 @@ public class CustomerService{
 	
 
 	public Customer CustomerRegistration(Customer customer) {
+		
 		customer.getUsers().setPassword(passwordEncoder.encode(customer.getUsers().getPassword()));
 		Customer customer2= this.customerRepository.save(customer);
 		customer2.setUsers(customer.getUsers());

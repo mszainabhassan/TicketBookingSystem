@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
 import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.repository.OrganizerRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -44,6 +45,9 @@ public class EventService {
     private EventRepository eventRepository;
     
     @Autowired
+    private OrganizerRepository organizerRepository;
+    
+    @Autowired
     private CustomerRepository customerRepository;
     @Autowired
     private EventTypeService eventTypeService;
@@ -71,6 +75,10 @@ public class EventService {
 	}
 
     public Event createEvent(Event event) {
+        return eventRepository.save(event);
+    }
+    
+    public Event createEventByAdmin(Event event) {
         return eventRepository.save(event);
     }
 
@@ -126,8 +134,14 @@ public class EventService {
 		Event event = this.eventRepository.findById(eventId);
 
 		if (event != null) 
-		{	this.eventRepository.delete(event);
+		{	
+			if(event.getBookedCustomers().size()==0)
+			{this.eventRepository.delete(event);
 		return "Event: "+eventId+" deleted Successfully!";}
+			else {
+				return "Event can't be deleted as customers have booked it";
+			}
+		}
 		else {
 			return "Event not found!";
 		}
