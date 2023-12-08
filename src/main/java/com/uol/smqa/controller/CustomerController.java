@@ -5,7 +5,6 @@ import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import com.uol.smqa.Enum.Gender;
@@ -23,6 +22,9 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
+
+import com.uol.smqa.model.Event;
+
 import com.uol.smqa.model.WishList;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.ReviewRepository;
@@ -33,6 +35,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.model.CardDetails;
 import com.uol.smqa.service.CustomerBookEventService;
@@ -72,16 +75,17 @@ public class CustomerController {
     }
 
     @GetMapping("/events")
-    public List<CustomerBookEvent> getAllBookedEvents(@RequestParam int customerId) {
-        Customer customer = this.customerService.getCustomerById(customerId);
-        return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
+    public List<Object[]> getAllUpcomingEvents() {
+		return this.customerBookEventService.getAllEvents();
     }
+
 
 	@GetMapping("/all-events")
 	public List<Event> getAllEvents(CustomerEventsFilterSearchCriteria eventsFilterSearchCriteria) {
 		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);
 	}
      
+
     @PostMapping("/bookEvent")
     public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody) {
         if (!(requestBody.get("customerId") instanceof Integer)) {
@@ -115,12 +119,12 @@ public class CustomerController {
         }
     }
     @PostMapping("/provideRating/{bookingId}")
-    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating) {
+    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating, @RequestParam String review) {
         try {
-            customerBookEventService.provideEventRating(bookingId, rating);
-            return "Rating provided successfully!";
+            customerBookEventService.provideEventRating(bookingId, rating,review);
+            return "Rating and review provided successfully!";
         } catch (Exception e) {
-            return "Error providing rating: " + e.getMessage();
+            return "Error providing rating and review: " + e.getMessage();
         }
     }
     @GetMapping("/viewDetails/{customerId}")
@@ -193,13 +197,28 @@ public class CustomerController {
 	        try {
 	        	//  System.out.println("Received CardDetails: " + cardDetails.toString());
 	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);
-	            return ResponseEntity.ok(updatedCustomer);
+	            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully Purchased membership", updatedCustomer, null),
+	                    HttpStatus.OK);
 	        } catch (IllegalArgumentException e) {
 	            return ResponseEntity.badRequest().body(e.getMessage());
 	        }
 	 }
+	
+	 @PostMapping("/cancelmembership")
+	 public ResponseEntity<?> cancelMembership(@RequestParam int customerId) {
+	     try {
+	         ResponseEntity<?> response = customerService.cancelMembership(customerId);
 
-
+	         if (response.getStatusCode() == HttpStatus.OK) {
+	             return new ResponseEntity<>(new BaseApiResponseDTO("Successfully Canceled membership", response.getBody(), null),
+	                     HttpStatus.OK);
+	         } else {
+	             return ResponseEntity.badRequest().body(response.getBody());
+	         }
+	     } catch (IllegalArgumentException e) {
+	         return ResponseEntity.badRequest().body(e.getMessage());
+	     }
+	 }
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
 		return this.wishlistService.getCustomerWishList(customerId);
