@@ -56,9 +56,6 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     @SpyBean
     private OrganizerService organizerService;
 
-    @SpyBean
-    private EventReviewService eventReviewService;
-
     @Autowired
     private EventGenerator eventGenerator;
 
@@ -77,7 +74,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        organizerController = new OrganizerController(eventTypeService, organizerService, eventService, eventReviewService, adminService);
+        organizerController = new OrganizerController(eventTypeService, organizerService, eventService, adminService);
         mockMvc = MockMvcBuilders.standaloneSetup(organizerController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())

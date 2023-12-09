@@ -8,7 +8,9 @@ import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.CustomerController;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.model.Event;
+import com.uol.smqa.model.Review;
 import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.repository.ReviewRepository;
 import com.uol.smqa.service.*;
 import com.uol.smqa.util.EventGenerator;
 import org.junit.Before;
@@ -56,18 +58,20 @@ public class CustomerFilterEventsStatementTest extends TicketBookingSystemApplic
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     private MockMvc mockMvc;
     private List<Event> eventList = new ArrayList<>();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        customerController = new CustomerController(customerService, customerBookEventService, wishListService, eventService);
+        customerController = new CustomerController(customerService, customerBookEventService, wishListService, eventService, eventRepository, reviewRepository);
         mockMvc = MockMvcBuilders.standaloneSetup(customerController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())
                 .build();
-
 
         eventList = eventGenerator.generateEvents();
     }
