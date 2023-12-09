@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.uol.smqa.model</a> &gt; <span class="el_source">EventType.java</span></div><h1>EventType.java</h1><pre class="source lang-java linenums">package com.uol.smqa.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class EventType {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;event_type_id&quot;)
+    private Long id;
+
+
+    @Column(name = &quot;event_type_name&quot;, nullable = false, unique = true)
+    @NotNull(message = &quot;Event type name is required&quot;)
+    private String eventTypeName;
+
+<span class="nc" id="L22">    @OneToMany(mappedBy = &quot;eventType&quot;)</span>
+    private List&lt;Event&gt; eventList = new ArrayList&lt;&gt;();
+
+
+    public void setId(Long id) {
+<span class="nc" id="L27">        this.id = id;</span>
+<span class="nc" id="L28">    }</span>
+
+    public Long getId() {
+<span class="nc" id="L31">        return id;</span>
+    }
+
+	public String getEventTypeName() {
+<span class="nc" id="L35">		return eventTypeName;</span>
+	}
+
+	public void setEventTypeName(String eventTypeName) {
+<span class="nc" id="L39">		this.eventTypeName = eventTypeName;</span>
+<span class="nc" id="L40">	}</span>
+
+
+
+<span class="nc" id="L44">    public EventType() {</span>
+<span class="nc" id="L45">    }</span>
+
+<span class="nc" id="L47">    public EventType(String typeName) {</span>
+<span class="nc" id="L48">        this.eventTypeName = typeName;</span>
+<span class="nc" id="L49">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

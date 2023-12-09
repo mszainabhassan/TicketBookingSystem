@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.uol.smqa.service</a> &gt; <span class="el_source">CustomerService.java</span></div><h1>CustomerService.java</h1><pre class="source lang-java linenums">package com.uol.smqa.service;
+
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
+import com.uol.smqa.repository.CustomerBookEventRepository;
+import com.uol.smqa.repository.CustomerRepository;
+import com.uol.smqa.dtos.response.BaseApiResponseDTO;
+import com.uol.smqa.model.CardDetails;
+
+import com.uol.smqa.repository.UsersRepository;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+@Service
+public class CustomerService {
+
+    private PasswordEncoder passwordEncoder;
+    private final CustomerRepository customerRepository;
+    private final UsersRepository usersRepository;
+    private final CustomerBookEventRepository customerBookEventRepository;
+
+
+    @Autowired
+    public CustomerService(PasswordEncoder passwordEncoder, CustomerRepository customerRepository,
+                           CustomerBookEventRepository customerBookEventRepository,
+<span class="nc" id="L35">                           UsersRepository usersRepository) {</span>
+<span class="nc" id="L36">        this.passwordEncoder = passwordEncoder;</span>
+<span class="nc" id="L37">        this.customerRepository = customerRepository;</span>
+<span class="nc" id="L38">        this.usersRepository = usersRepository;</span>
+<span class="nc" id="L39">        this.customerBookEventRepository = customerBookEventRepository;</span>
+<span class="nc" id="L40">    }</span>
+
+    public Customer CustomerRegistration(Customer customer) {
+<span class="nc" id="L43">        customer.getUsers().setPassword(passwordEncoder.encode(customer.getUsers().getPassword()));</span>
+<span class="nc" id="L44">        Customer customer2 = this.customerRepository.save(customer);</span>
+<span class="nc" id="L45">        customer2.setUsers(customer.getUsers());</span>
+
+<span class="nc" id="L47">        customer.getUsers().setCustomer(customer2);</span>
+<span class="nc" id="L48">        usersRepository.save(customer.getUsers());</span>
+<span class="nc" id="L49">        return customer2;</span>
+    }
+
+
+    public Customer buyMembership(int customerId, CardDetails cardDetails) {
+
+        // Fetch customer details
+<span class="nc" id="L56">        Customer customer = customerRepository.findById(customerId).orElse(null);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (customer == null) {</span>
+<span class="nc" id="L58">            throw new IllegalArgumentException(&quot;Invalid customer ID&quot;);</span>
+        }
+
+        // Validate card details
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (isValidCardDetails(cardDetails)) {</span>
+
+
+<span class="nc" id="L65">            customer.setIsMember(true);</span>
+            // Save the updated customer back to the database
+<span class="nc" id="L67">            customerRepository.save(customer);</span>
+<span class="nc" id="L68">            return customer;</span>
+        } else {
+
+<span class="nc" id="L71">            throw new IllegalArgumentException(&quot;Invalid card details&quot;);</span>
+        }
+    }
+
+    public static boolean isValidCardDetails(CardDetails cardDetails) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        return isValidCardNumber(cardDetails.getCardNumber()) &amp;&amp;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                isValidExpiryDate(cardDetails.getExpiryDate()) &amp;&amp;</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                isValidCVV(cardDetails.getCvv());</span>
+    }
+
+    private static boolean isValidCardNumber(String cardNumber) {
+        // Basic check: Card number should be numeric and have a valid length
+<span class="nc" id="L83">        System.out.println(cardNumber);</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        return cardNumber != null &amp;&amp; cardNumber.matches(&quot;\\d{12}&quot;);</span>
+    }
+
+    private static boolean isValidExpiryDate(String expiryDate) {
+<span class="nc" id="L88">        System.out.println(expiryDate);</span>
+        // Basic check: Expiry date should be in the format &quot;MM/YY&quot;
+<span class="nc bnc" id="L90" title="All 4 branches missed.">        return expiryDate != null &amp;&amp; expiryDate.matches(&quot;\\d{2}/\\d{2}&quot;);</span>
+    }
+
+    private static boolean isValidCVV(String cvv) {
+<span class="nc" id="L94">        System.out.println(cvv);</span>
+        // Basic check: CVV should be numeric and have a valid length
+<span class="nc bnc" id="L96" title="All 4 branches missed.">        return cvv != null &amp;&amp; cvv.matches(&quot;\\d{3}&quot;);</span>
+    }
+
+    public Customer getCustomerById(int customerId) {
+<span class="nc" id="L100">        return customerRepository.findById(customerId)</span>
+<span class="nc" id="L101">                .orElseThrow(() -&gt; new RuntimeException(&quot;Customer not found with ID: &quot; + customerId));</span>
+    }
+
+
+    public void updateCustomer(Customer existingCustomer) {
+
+<span class="nc" id="L107">        customerRepository.save(existingCustomer);</span>
+<span class="nc" id="L108">    }</span>
+
+    public ResponseEntity&lt;String&gt; validateEmailFormat(int customerId, String email) {
+        // Retrieve the customer by ID
+<span class="nc" id="L112">        Customer customer = customerRepository.findById(customerId)</span>
+<span class="nc" id="L113">                .orElseThrow(() -&gt; new RuntimeException(&quot;Customer not found with ID: &quot; + customerId));</span>
+
+        // Check if the provided email matches the customer's email
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (!email.equals(customer.getEmail())) {</span>
+<span class="nc" id="L117">            return ResponseEntity.badRequest().body(&quot;Provided email does not match the registered email for customer ID: &quot; + customerId);</span>
+        }
+
+        // Basic email format validation logic
+        // This is a simple example and may not cover all edge cases
+<span class="nc" id="L122">        String emailRegex = &quot;^[a-zA-Z0-9_+&amp;*-]+(?:\\.[a-zA-Z0-9_+&amp;*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$&quot;;</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (!email.matches(emailRegex)) {</span>
+<span class="nc" id="L124">            return ResponseEntity.badRequest().body(&quot;Emmail is not valid&quot;);</span>
+        }
+
+<span class="nc" id="L127">        return ResponseEntity.ok(&quot;Email Verified&quot;);</span>
+    }
+
+
+    public Map&lt;String, Integer&gt; getAnalytics(Integer customerId) {
+        // Get the Customer
+<span class="nc" id="L133">        Customer customer = this.getCustomerById(customerId);</span>
+<span class="nc" id="L134">        List&lt;CustomerBookEvent&gt; bookedEvents = customer.getBookedEvents();</span>
+<span class="nc" id="L135">        List&lt;CustomerBookEvent&gt; priorityBookedEvents = customerBookEventRepository.findByIsPriorityAndCustomer(true, customer);</span>
+<span class="nc" id="L136">        int numberOfBookedEvents = bookedEvents.size();</span>
+<span class="nc" id="L137">        int numberOfPriorityEvents = priorityBookedEvents.size();</span>
+<span class="nc" id="L138">        Map&lt;String, Integer&gt; map = new HashMap();</span>
+<span class="nc" id="L139">        map.put(&quot;TotalnumberOfBookedEvents&quot;, numberOfBookedEvents);</span>
+<span class="nc" id="L140">        map.put(&quot;NumberOfPriorityEvents&quot;, numberOfPriorityEvents);</span>
+<span class="nc" id="L141">        map.put(&quot;NumberOfNon-PriorityEvents&quot;, numberOfBookedEvents - numberOfPriorityEvents);</span>
+
+<span class="nc" id="L143">        return map;</span>
+    }
+
+    public ResponseEntity&lt;?&gt; cancelMembership(int customerId) {
+        // Fetch customer details
+<span class="nc" id="L148">        Customer customer = customerRepository.findById(customerId).orElse(null);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        if (customer == null) {</span>
+<span class="nc" id="L150">            throw new IllegalArgumentException(&quot;Invalid customer ID&quot;);</span>
+        }
+        // Check if the customer is a member
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (!customer.getIsMember()) {</span>
+<span class="nc" id="L154">            return ResponseEntity.badRequest().body(&quot;Customer is not a member&quot;);</span>
+        }
+        // Update customer membership status
+<span class="nc" id="L157">        customer.setIsMember(false);</span>
+        // Save the updated customer back to the database
+<span class="nc" id="L159">        customerRepository.save(customer);</span>
+<span class="nc" id="L160">        return ResponseEntity.ok(new BaseApiResponseDTO(&quot;Successfully canceled membership&quot;, customer, null));</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

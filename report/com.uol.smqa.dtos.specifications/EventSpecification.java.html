@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventSpecification.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.uol.smqa.dtos.specifications</a> &gt; <span class="el_source">EventSpecification.java</span></div><h1>EventSpecification.java</h1><pre class="source lang-java linenums">package com.uol.smqa.dtos.specifications;
+
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.model.Event;
+import jakarta.persistence.criteria.Predicate;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L15">public class EventSpecification {</span>
+
+    public static Specification&lt;Event&gt; buildSearchPredicate(CustomerEventsFilterSearchCriteria searchCriteria) {
+<span class="nc" id="L18">        return (root, query, builder) -&gt; {</span>
+<span class="nc" id="L19">            final List&lt;Predicate&gt; allSearchPredicates = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L21" title="All 2 branches missed.">            if (Strings.isNotBlank(searchCriteria.getName())) {</span>
+<span class="nc" id="L22">                allSearchPredicates.add(builder.equal(root.get(&quot;eventName&quot;), searchCriteria.getName()));</span>
+            }
+
+<span class="nc bnc" id="L25" title="All 2 branches missed.">            if (searchCriteria.getEventType() != null) {</span>
+<span class="nc" id="L26">                allSearchPredicates.add(builder.equal(root.get(&quot;eventType&quot;).get(&quot;eventTypeName&quot;), searchCriteria.getEventType()));</span>
+            }
+
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if (searchCriteria.getEventDate() != null) {</span>
+<span class="nc" id="L30">                Instant instant = Instant.ofEpochMilli(searchCriteria.getEventDate());</span>
+<span class="nc" id="L31">                LocalDate searchEventDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();</span>
+<span class="nc" id="L32">                allSearchPredicates.add(builder.equal(root.get(&quot;eventDateTime&quot;).as(LocalDate.class), searchEventDate));</span>
+            }
+
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (Strings.isNotBlank(searchCriteria.getLocation())) {</span>
+<span class="nc" id="L36">                allSearchPredicates.add(builder.equal(root.get(&quot;eventLocation&quot;), searchCriteria.getLocation()));</span>
+            }
+
+<span class="nc" id="L39">            Predicate[] predicates = allSearchPredicates.toArray(new Predicate[0]);</span>
+
+<span class="nc" id="L41">            Predicate combinedPredicate = builder.and(predicates);</span>
+<span class="nc" id="L42">            query.orderBy(builder.desc(root.get(&quot;eventDateTime&quot;)));</span>
+<span class="nc" id="L43">            return combinedPredicate;</span>
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
