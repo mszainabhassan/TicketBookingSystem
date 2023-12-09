@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class CustomerControllerStatementTest extends TicketBookingSystemApplicationTests {
+public class CustomerRegistrationStatementTest extends TicketBookingSystemApplicationTests {
 
     private CustomerController customerController;
 
@@ -111,9 +111,22 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Duplicate customer Email!"));
 
-        // Verify that the service method was called with the correct parameter
-        verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
+      verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
     }
 
+    @Test
+    public void whenInternalErrorOccursDuringRegistration_thenReturnInternalServerError() throws Exception {
+        Customer customerToRegister = new Customer("John", "john@example.com", LocalDate.now().minusYears(30),
+               Gender.MALE, "+99 888 777 6665", true, true, null);
+     
+        mockMvc.perform(MockMvcRequestBuilders.post("/customer/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerToRegister)))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("An error occurred while registering customer"));
+
+        verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
+    }
 
 }
