@@ -134,7 +134,7 @@ public class OrganizerController {
 
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<?> editEvent(@Validated @PathVariable(name = "eventId") int eventId, @RequestBody Event event, BindingResult bindingResult) {
+    public ResponseEntity<?> editEvent(@Validated @PathVariable(name = "eventId") int eventId, @Validated @RequestBody Event event, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors())  {

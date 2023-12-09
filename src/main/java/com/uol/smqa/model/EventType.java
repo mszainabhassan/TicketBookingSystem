@@ -1,6 +1,7 @@
 package com.uol.smqa.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class EventType {
 
 
     @Column(name = "event_type_name", nullable = false, unique = true)
+    @NotNull(message = "Event type name is required")
     private String eventTypeName;
 
     @OneToMany(mappedBy = "eventType")

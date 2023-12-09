@@ -2,14 +2,15 @@ package com.uol.smqa.service;
 
 
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.uol.smqa.Enum.EventFrequency;
@@ -17,9 +18,6 @@ import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
 
-import com.uol.smqa.model.Customer;
-import com.uol.smqa.model.CustomerBookEvent;
-import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
 
@@ -89,6 +87,10 @@ public class EventService {
         if (event == null) throw new ResourceNotFoundException("Event with id does not exist");
         if (event.getOrganizer() != organizer)
             throw new AuthorizationException("You can not delete an event that does not belong to you");
+
+        if (customerBookEventRepository.existsByEvent(event)) {
+            throw new BadRequestException("You can not delete an event that already has bookings");
+        }
         this.eventRepository.deleteByEventIdAndOrganizer(event.getEventId(), organizer);
     }
 
@@ -100,6 +102,12 @@ public class EventService {
         List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
         if (eventRequest.getEventFrequency() != null && !eventFrequencies.contains(eventRequest.getEventFrequency())) {
             throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
+        }
+        if (eventRequest.getEventType().getEventTypeName() == null) {
+            throw new BadRequestException("The event type name is required");
+        } else {
+            EventType eventType = eventTypeService.getEventTypeByName(eventRequest.getEventType().getEventTypeName()).orElseThrow(() -> new BadRequestException("Invalid event type"));
+            eventRequest.setEventType(eventType);
         }
         organizerService.findById(eventRequest.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 

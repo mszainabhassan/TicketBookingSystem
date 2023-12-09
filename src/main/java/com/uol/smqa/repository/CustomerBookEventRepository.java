@@ -19,5 +19,7 @@ public interface CustomerBookEventRepository extends JpaRepository<CustomerBookE
 
     List<CustomerBookEvent> findByIsPriorityAndCustomer(Boolean isPriority, Customer customer);
 
+    boolean existsByEvent(Event event);
+
 
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity(name = "events")
@@ -57,6 +58,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "event_type_name", nullable = false)
+    @NotNull(message = "Event type is required")
     private EventType eventType;
 
 
@@ -76,14 +78,9 @@ public class Event {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers;
-    @Override
-    public String toString() {
-    	return "Event{" +
-    			 " name='" + eventName + '\'' +
-    		        "location='" + eventLocation + '\'' +
-    		        " Description='" + eventDescription + '\'' +
-    		        "}";
-    }
+
+    private boolean isDeleted = false;
+
     public int getEventId() {
         return eventId;
     }
@@ -231,9 +228,21 @@ public class Event {
         this.eventFrequency = eventFrequency;
         this.status = status;
         this.organizer = organizer;
+        isDeleted = false;
     }
 
     public Event() {
+        isDeleted = false;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                " name='" + eventName + '\'' +
+                "location='" + eventLocation + '\'' +
+                " Description='" + eventDescription + '\'' +
+                "}";
     }
 }
 
