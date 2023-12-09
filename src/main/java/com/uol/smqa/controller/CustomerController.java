@@ -24,6 +24,7 @@ import com.uol.smqa.exceptions.ResourceNotFoundException;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.WishList;
+import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.ReviewRepository;
 import com.uol.smqa.model.Event;
@@ -212,36 +213,45 @@ public class CustomerController {
 	
 
 	
-	@PostMapping("/bookMultipleTickets")
-	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) {
-	    List<String> errors = new ArrayList<>();
-
-	    for (Map<String, Object> ticketDetails : ticketDetailsList) {
-	        if (!(ticketDetails.get("customerId") instanceof Integer)) {
-	            errors.add("customerId should be an integer for one of the tickets");
-	        }
-	        if (!(ticketDetails.get("eventId") instanceof Integer)) {
-	            errors.add("eventId should be an integer for one of the tickets");
-	        }
-
-	        if (errors.isEmpty()) {
-	            int customerId = (Integer) ticketDetails.get("customerId");
-	            int eventId = (Integer) ticketDetails.get("eventId");
-
-	            Customer customer = this.customerService.getCustomerById(customerId);
-	            customerBookEventService.bookEvent(eventId, customer);
-	        }
-	    }
-
-	    if (!errors.isEmpty()) {
-	        return String.join(", ", errors);
-	    }
-
-	    return "Tickets booked successfully!";
-	}
 
 
+    @Autowired
+    private CustomerBookEventRepository customerBookEventRepository;
 
+
+    
+    @PostMapping("/bookMultipleTicketforEvent/{eventId}")
+    public ResponseEntity<String> bookMultipleEvents(@PathVariable Integer eventId, @RequestBody Customer customer) {
+        // Validate customer ID
+        if (customer == null || customer.getCustomerId() == 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid customer ID");
+        }
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
+
+        List<CustomerBookEvent> existingBookings = customerBookEventRepository.findByCustomerAndEvent(customer, event);
+
+        if (!existingBookings.isEmpty()) {
+            CustomerBookEvent existingBooking = existingBookings.get(0);
+            existingBooking.setTicketCount(existingBooking.getTicketCount() + 1);
+            customerBookEventRepository.save(existingBooking);
+            String details = "Tickets Booked Successfully. Booking ID: " + existingBooking.getBookingId() + " Total Tickets : " + existingBooking.getTicketCount();
+            return ResponseEntity.ok(details);
+        }
+
+        CustomerBookEvent newBooking = new CustomerBookEvent();
+        newBooking.setCustomer(customer);
+        newBooking.setEvent(event);
+        newBooking.setTicketCount(1);
+        customerBookEventRepository.save(newBooking);
+
+        String details1 = "Tickets Booked Successfully. Booking ID: " + newBooking.getBookingId() + "  Total Tickets Booked : " + newBooking.getTicketCount();
+        return ResponseEntity.ok(details1);
+    }
+      
+    
+	
 
 
 	@GetMapping("/getAnalytics")
@@ -294,69 +304,7 @@ public class CustomerController {
     }
 
 	
-//	@Autowired
-//    private EventRepository eventRepository;
-//
-//    @Autowired
-//    private ReviewRepository reviewRepository;
-//	
-//	
-//    @GetMapping("/past_reviews")
-//    public List<Event> getPastEvents() {
-//        LocalDate currentDate = LocalDate.now();
-//        return eventRepository.findByeventDateTime(currentDate);
-//    }
-//
-////    @GetMapping("/{eventId}/reviews")
-////    public List<Review> getEventReviews(@PathVariable int eventId) {
-////        return reviewRepository.findById(eventId);
-////    }
-////	
-//	
-//    @PostMapping("/{eventId}/reviews")
-//    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
-//        Optional<Event> eventOptional = eventRepository.findById(eventId);
-//
-//        if (eventOptional.isPresent()) {
-//            Event event = eventOptional.get();
-//            review.setEvent(event);
-//            reviewRepository.save(review);
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Review created successfully");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
-//        }
-//    }
-//    
-//    
-//    
-//    
-//    @PutMapping("/{reviewId}")
-//    public ResponseEntity<String> updateReview(
-//            @PathVariable Long reviewId,
-//            @RequestBody Review updatedReview
-//    ) {
-//        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
-//
-//        if (existingReviewOptional.isPresent()) {
-//            Review existingReview = existingReviewOptional.get();
-//            existingReview.setComment(updatedReview.getComment());
-//            existingReview.setRating(updatedReview.getRating());
-//            
-//            // Assuming you want to update only comment and rating; you can add more fields as needed.
-//
-//            reviewRepository.save(existingReview);
-//            return ResponseEntity.ok("Review updated successfully");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
-//        }
-//    }
-//    
-//    
-//    
-//    
-    
-    
-    ///////////
+
 	
 	
 	@Autowired
@@ -403,8 +351,7 @@ public class CustomerController {
             Review existingReview = existingReviewOptional.get();
             existingReview.setComment(updatedReview.getComment());
             existingReview.setRating(updatedReview.getRating());
-            
-            // Assuming you want to update only comment and rating; you can add more fields as needed.
+           
 
             reviewRepository.save(existingReview);
             return ResponseEntity.ok("Review updated successfully");
@@ -414,6 +361,12 @@ public class CustomerController {
     }
 	
 	
+    
+
+    
+    
+    
+    
 	
     
     

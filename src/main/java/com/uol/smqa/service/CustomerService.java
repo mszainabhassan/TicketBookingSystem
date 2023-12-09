@@ -123,9 +123,6 @@ public class CustomerService{
 	    }
 
 
-
-	 
-
   
 	public  Map<String, Integer>  getAnalytics(Integer customerId) {
 		   // Get the Customer

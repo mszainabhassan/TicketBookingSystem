@@ -51,6 +51,12 @@ public class CustomerBookEventService {
         // Return the booking ID
         return savedBooking.getBookingId();
     }
+    
+    
+   
+    
+    
+    
     public void cancelEventBooking(Long bookingId) {
         CustomerBookEvent booking = customerBookEventRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
@@ -127,3 +133,4 @@ public class CustomerBookEventService {
 	    }
 
 }
+
