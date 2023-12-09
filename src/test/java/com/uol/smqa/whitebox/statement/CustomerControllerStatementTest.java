@@ -99,11 +99,14 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
     public void whenCustomerRegistersWithDuplicateEmail_thenReturnConflict() throws Exception {
         Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
-        this.customerRepository.save(existingCustomer);  
-        
+        this.customerRepository.save(existingCustomer);
+
+        Customer existingCustomerClone = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+
         mockMvc.perform(MockMvcRequestBuilders.post("/customer/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(existingCustomer)))
+                .content(objectMapper.writeValueAsString(existingCustomerClone)))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Duplicate customer Email!"));
