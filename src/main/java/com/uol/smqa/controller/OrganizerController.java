@@ -1,8 +1,7 @@
 package com.uol.smqa.controller;
 
-import com.uol.smqa.model.CustomerBookEvent;
-import com.uol.smqa.model.EventType;
-import com.uol.smqa.service.EventTypeService;
+import com.uol.smqa.model.*;
+import com.uol.smqa.service.*;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +15,6 @@ import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
-import com.uol.smqa.model.Event;
-import com.uol.smqa.model.Organizer;
-import com.uol.smqa.service.AdminService;
-import com.uol.smqa.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,11 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
-
-import com.uol.smqa.service.OrganizerService;
-
-
-import com.uol.smqa.model.Discount;
 
 
 @RestController
@@ -45,15 +35,17 @@ public class OrganizerController {
     private final OrganizerService organizerService;
     private final EventService eventService;
     private final AdminService adminService;
+    private final EventReviewService eventReviewService;
 
     @Autowired
     public OrganizerController(EventTypeService eventTypeService, OrganizerService organizerService,
                                EventService eventService,
-                               AdminService adminService) {
+                               AdminService adminService, EventReviewService eventReviewService) {
         this.eventTypeService = eventTypeService;
         this.organizerService = organizerService;
         this.eventService = eventService;
         this.adminService = adminService;
+        this.eventReviewService = eventReviewService;
     }
 
 
@@ -177,5 +169,69 @@ public class OrganizerController {
         } catch (Exception e) {
             return new ResponseEntity<>(new BaseApiResponseDTO("Failed to send event creation request"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @GetMapping("/events/{eventId}/reviews")
+    public ResponseEntity<?> getEventReviews(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) {
+
+        try {
+            List<EventReview> reviewsByOrganizer = this.eventReviewService.getAllEventsReviewsByOrganizer(eventId, organizerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully retrieved reviews", reviewsByOrganizer, null), HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @PostMapping("/event-reviews/{reviewId}/reply")
+    public ResponseEntity<?> replyEventReviews(@Validated @PathVariable int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+
+        try {
+            ReviewReply savedReply = this.eventReviewService.replyEventReviewsByOrganizer(reviewId, reviewReply);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully replied to review", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PutMapping("/event-reviews/{reviewId}/reply")
+    public ResponseEntity<?> editEventReviewReply(@PathVariable int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+
+        try {
+            ReviewReply savedReply = this.eventReviewService.editReplyEventReviewsByOrganizer(reviewId, reviewReply);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully updated review reply", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/event-reviews/reply/{replyId}")
+    public ResponseEntity<?> deleteEventReviewReply(@PathVariable int replyId, @Validated @RequestParam int organizerId) {
+
+        try {
+            this.eventReviewService.deleteReplyEventReviewsByOrganizer(replyId, organizerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted review reply"), HttpStatus.NO_CONTENT);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

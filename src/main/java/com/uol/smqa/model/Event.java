@@ -77,7 +77,7 @@ public class Event {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event")
-    private List<CustomerBookEvent> bookedCustomers;
+    private List<CustomerBookEvent> bookedCustomers = new ArrayList<>();
 
     private boolean isDeleted = false;
 

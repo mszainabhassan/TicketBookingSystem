@@ -97,6 +97,14 @@ public class EventReview {
 
     public EventReview() {
     }
+
+    public EventReview(String comment, int rating, LocalDateTime reviewDate, Event event, Users user) {
+        this.comment = comment;
+        this.rating = rating;
+        this.reviewDate = reviewDate;
+        this.event = event;
+        this.user = user;
+    }
 }
 
 

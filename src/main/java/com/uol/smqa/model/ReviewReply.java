@@ -81,6 +81,15 @@ public class ReviewReply {
 
     public ReviewReply() {
     }
+
+
+    public ReviewReply(String replyText, LocalDateTime replyDate, EventReview review, Users user, boolean isOrganizerReply) {
+        this.replyText = replyText;
+        this.replyDate = replyDate;
+        this.review = review;
+        this.user = user;
+        this.isOrganizerReply = isOrganizerReply;
+    }
 }
 
 

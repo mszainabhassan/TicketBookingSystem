@@ -4,9 +4,11 @@ import com.uol.smqa.Enum.Gender;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
 import com.uol.smqa.model.Organizer;
+import com.uol.smqa.model.Users;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.EventTypeRepository;
 import com.uol.smqa.repository.OrganizerRepository;
+import com.uol.smqa.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,9 @@ public class EventGenerator {
     private EventTypeRepository eventTypeRepository;
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     @Autowired
     private OrganizerRepository organizerRepository;
@@ -83,8 +88,7 @@ public class EventGenerator {
         for (int i = 0; i < 5; i++) {
             organizerList.add(generateRandomOrganizer(i));
         }
-
-        return organizerRepository.saveAll(organizerList);
+        return organizerList;
     }
 
     public Organizer generateRandomOrganizer(int id) {
@@ -98,6 +102,11 @@ public class EventGenerator {
         String contactNumber = "+99 888 777 223" + id; // Example: generateRandomPhoneNumber()
         String regNo = "88877727611622525" + id; // Example: generateRandomString(6)
 
-        return new Organizer(name, orgName, email, dob, gender, contactNumber, regNo);
+        Users organizerUser = new Users(email, "password");
+        Organizer organizer = new Organizer(name, orgName, email, dob, gender, contactNumber, regNo, organizerUser);
+        organizerUser.setOrganizer(organizer);
+        organizerRepository.save(organizer);
+        usersRepository.save(organizerUser);
+        return organizer;
     }
 }

@@ -45,14 +45,14 @@ public class EventReviewServiceImpl implements EventReviewService  {
     }
 
     @Override
-    public ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) {
+    public ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) throws Exception {
         validateEventReviewReply(reviewId, reviewReply);
         return this.reviewReplyRepository.save(reviewReply);
     }
 
 
     @Override
-    public ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) {
+    public ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) throws Exception {
         validateEditEventReviewReply(reviewReply);
         return this.reviewReplyRepository.save(reviewReply);
     }
@@ -76,6 +76,7 @@ public class EventReviewServiceImpl implements EventReviewService  {
     }
 
     private void validateEventReviewReply(int reviewId, ReviewReply reviewReply) {
+        eventReviewRepository.findById(reviewId).orElseThrow(() -> new ResourceNotFoundException("Event review id not found. Please specify a valid review in the request"));
         validateEventReviewReply(reviewReply);
     }
 
@@ -85,11 +86,11 @@ public class EventReviewServiceImpl implements EventReviewService  {
         } else if (reviewReply.getReview() == null || reviewReply.getReview().getId() == 0) {
             throw new BadRequestException("Please provide a valid review");
         }
+        eventReviewRepository.findById(reviewReply.getReview().getId()).orElseThrow(() -> new ResourceNotFoundException("Event review id not found. Please specify a valid review in the request"));
         Users user = usersRepository.findById(reviewReply.getUser().getUserId()).orElseThrow(() -> new ResourceNotFoundException("User with id does not exist"));
         if (user.getOrganizer() == null || user.getOrganizer().getOrganizerId() == 0) {
             throw new BadRequestException("Only organizers can reply to this review");
         }
         organizerService.findById(user.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
-        eventReviewRepository.findById(reviewReply.getReview().getId()).orElseThrow(() -> new ResourceNotFoundException("Event review id not found. Please specify a valid review in the request"));
     }
 }

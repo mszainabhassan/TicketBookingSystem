@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface OrganizerRepository extends JpaRepository<Organizer, Integer> {
 
     Optional<Organizer> findByEmail(String email);
+
+    Optional<Organizer> findFirstByOrganizerIdNot(int organizerId);
 }
