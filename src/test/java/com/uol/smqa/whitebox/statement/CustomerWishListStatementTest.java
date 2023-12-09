@@ -1,7 +1,10 @@
 package com.uol.smqa.whitebox.statement;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -42,6 +45,7 @@ import com.uol.smqa.service.CustomerBookEventService;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.service.EventService;
 import com.uol.smqa.service.WishListService;
+import com.uol.smqa.util.EventGenerator;
 import com.uol.smqa.util.WishListGenerator;
 
 public class CustomerWishListStatementTest extends TicketBookingSystemApplicationTests {
@@ -74,6 +78,8 @@ public class CustomerWishListStatementTest extends TicketBookingSystemApplicatio
 		private CustomerRepository customerRepository;
 	    @Autowired
 		 private WishListGenerator wishListGenerator;
+	    @Autowired
+	    private EventGenerator eventGenerator;
 
 	    private List<WishList> wishLists = new ArrayList<>();
 	    @Before
@@ -111,5 +117,103 @@ public class CustomerWishListStatementTest extends TicketBookingSystemApplicatio
 
 	           verify(wishlistService, times(1)).getCustomerWishList(anyInt());
 	    }
-	  
+	    
+	    @Test
+	    public void testAddEventInWishList_Success() throws Exception {
+	      
+	    	List<WishList>list=this.wishListRepository.saveAll(wishLists);
+	    	System.out.println(list.size()+"----");
+	    	
+	    	int customerId=list.get(0).getCustomer().getCustomerId();
+	    	int eventId=list.get(0).getEvent().getEventId();
+	        mockMvc.perform(MockMvcRequestBuilders.post("/customer/addEventInWishlist")
+	                .param("eventId", String.valueOf(eventId))
+	                .param("customerId", String.valueOf(customerId)))
+	                .andExpect(status().isOk());
+
+	        verify(wishlistService, times(1)).addEventInWishList(eventId, customerId);
+	    }
+
+	    @Test
+	    public void testAddEventInWishList_Error() throws Exception {
+	    	int eventId = 1;
+	        int customerId = 2;
+	       doThrow(new Exception("An error occurred while saving event in wishlist"))
+        .when(wishlistService).addEventInWishList(anyInt(), anyInt());
+
+	        mockMvc.perform(MockMvcRequestBuilders.post("/customer/addEventInWishlist")
+	                .param("eventId", String.valueOf(eventId))
+	                .param("customerId", String.valueOf(customerId)))
+	                .andExpect(status().isInternalServerError())
+	                .andExpect(jsonPath("$.message").value("An error occurred while saving event in wishlist"));
+
+	        verify(wishlistService, times(1)).addEventInWishList(anyInt(), anyInt());
+	    }
+	    
+	    @Test
+	    public void testAddEventInWishList_CustomerNotFound() throws Exception {
+	    	List<WishList>list=this.wishListRepository.saveAll(wishLists);
+	    	int eventId=list.get(0).getEvent().getEventId();
+	        int customerId = 50;
+	       	        mockMvc.perform(MockMvcRequestBuilders.post("/customer/addEventInWishlist")
+	                .param("eventId", String.valueOf(eventId))
+	                .param("customerId", String.valueOf(customerId)))
+	                .andExpect(status().isNotFound())
+	                .andExpect(jsonPath("$.message").value("Customer Id Not Found"));
+
+	        verify(wishlistService, times(1)).addEventInWishList(anyInt(), anyInt());
+	    }
+	    
+	    @Test
+	    public void testAddEventInWishList_EventNotFound() throws Exception {
+	    	List<WishList>list=this.wishListRepository.saveAll(wishLists);
+	    	int customerId=list.get(0).getCustomer().getCustomerId(); 	
+	    	int eventId = 50;
+	       	        mockMvc.perform(MockMvcRequestBuilders.post("/customer/addEventInWishlist")
+	                .param("eventId", String.valueOf(eventId))
+	                .param("customerId", String.valueOf(customerId)))
+	                .andExpect(status().isNotFound())
+	                .andExpect(jsonPath("$.message").value("Event Id Not Found"));
+
+	        verify(wishlistService, times(1)).addEventInWishList(anyInt(), anyInt());
+	    }
+	    
+	    @Test
+	    public void testDeleteEventFromWishList_Success() throws Exception {
+	    	List<WishList>list=this.wishListRepository.saveAll(wishLists);
+	    	
+	    	int wishlistId = list.get(0).getWishlist_id();
+	        mockMvc.perform(MockMvcRequestBuilders.delete("/customer/deleteEventFromWishList")
+	                .param("wishlistId", String.valueOf(wishlistId)))
+	                .andExpect(status().isOk())
+	                .andExpect(jsonPath("$.message").value("Successfully deleted event from wishlist"));
+
+	       verify(wishlistService, times(1)).deleteEventFromWishList(wishlistId);
+	    }
+
+	    @Test
+	    public void testDeleteEventFromWishList_NotFound() throws Exception {
+	        int wishlistId = 100;
+	        mockMvc.perform(MockMvcRequestBuilders.delete("/customer/deleteEventFromWishList")
+	                .param("wishlistId", String.valueOf(wishlistId)))
+	                .andExpect(status().isNotFound())
+	                .andExpect(jsonPath("$.message").value("WishList Id Not Found"));
+
+	        verify(wishlistService, times(1)).deleteEventFromWishList(wishlistId);
+	    }
+
+	    @Test
+	    public void testDeleteEventFromWishList_InternalServerError() throws Exception {
+	        int wishlistId = 1;
+	        
+	        doThrow(new Exception("An error occurred while deleting event from wishlist"))
+	        .when(wishlistService).deleteEventFromWishList(anyInt());
+	        
+	        mockMvc.perform(MockMvcRequestBuilders.delete("/customer/deleteEventFromWishList")
+	                .param("wishlistId", String.valueOf(wishlistId)))
+	                .andExpect(status().isInternalServerError())
+	                .andExpect(jsonPath("$.message").value("An error occurred while deleting event from wishlist"));
+
+	      verify(wishlistService, times(1)).deleteEventFromWishList(anyInt());
+	    }
 }

@@ -202,13 +202,8 @@ public class CustomerController {
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
 		try {
-			System.out.println("In method");
-			WishList wishList = this.wishlistService.addEventInWishList(eventId, customerId);
-			return new ResponseEntity<>(new BaseApiResponseDTO("Successfully added event in wishlist", wishList, null),
-					HttpStatus.OK);
+			return this.wishlistService.addEventInWishList(eventId, customerId);
 
-		} catch (ResourceNotFoundException ex) {
-			return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
 		} catch (Exception ex) {
 			return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while saving event in wishlist"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -251,7 +246,7 @@ public class CustomerController {
 
 	//zh177-ZainabHassan
 	@DeleteMapping("/deleteEventFromWishList")
-	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId){
+	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId) throws Exception{
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
 	}
 	

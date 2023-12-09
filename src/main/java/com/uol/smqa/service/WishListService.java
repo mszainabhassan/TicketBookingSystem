@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +33,20 @@ public class WishListService {
 		this.eventRepository = eventRepository;
 	}
 
-	public WishList addEventInWishList(int eventId, int customerId) {
+	public ResponseEntity<?> addEventInWishList(int eventId, int customerId) {
 	
 		Optional<Customer> customer=this.customerRepository.findById(customerId);
 		Event event=this.eventRepository.findById(eventId);
-	
-		WishList wishList=new WishList();
-		wishList.setCustomer(customer.get());
-		wishList.setEvent(event);
-		return this.wishListRepository.save(wishList);
-	
+		if(!customer.isPresent())
+			return new ResponseEntity<>(new BaseApiResponseDTO("Customer Id Not Found", null, null),
+					HttpStatus.NOT_FOUND);
+		if(event==null)
+			return new ResponseEntity<>(new BaseApiResponseDTO("Event Id Not Found", null, null),
+					HttpStatus.NOT_FOUND);
+		WishList wishList=new WishList(customer.get(),event);
+		WishList wishList2=this.wishListRepository.save(wishList);
+		return new ResponseEntity<>(new BaseApiResponseDTO("Successfully added event in wishlist", wishList2, null),
+				HttpStatus.OK);
 	}
 
 	public ResponseEntity<?> getCustomerWishList(Integer customerId) {
@@ -55,7 +60,7 @@ public class WishListService {
 	    }
 	}
 
-	public ResponseEntity<?> deleteEventFromWishList(Integer wishlistId) {
+	public ResponseEntity<?> deleteEventFromWishList(Integer wishlistId) throws Exception{
 		try {
 			if(wishListRepository.findById(wishlistId).isEmpty())
 				return new ResponseEntity<>(new BaseApiResponseDTO("WishList Id Not Found", null, null),
