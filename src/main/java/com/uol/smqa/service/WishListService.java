@@ -19,15 +19,18 @@ import com.uol.smqa.repository.WishListRepository;
 
 @Service
 public class WishListService {
-	
+
+	private final WishListRepository wishListRepository;
+	private final CustomerRepository customerRepository;
+	private final EventRepository eventRepository;
+
 	@Autowired
-	private WishListRepository wishListRepository;
-	
-	@Autowired
-	private CustomerRepository customerRepository;
-	
-	@Autowired
-	private EventRepository eventRepository;
+	public WishListService(WishListRepository wishListRepository, CustomerRepository customerRepository,
+						   EventRepository eventRepository) {
+		this.wishListRepository = wishListRepository;
+		this.customerRepository = customerRepository;
+		this.eventRepository = eventRepository;
+	}
 
 	public WishList addEventInWishList(int eventId, int customerId) {
 	

@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.OrganizerRepository;
 import com.uol.smqa.repository.UsersRepository;
-import com.uol.smqa.service.impl.DiscountCodeAlreadyExistsException;
+import com.uol.smqa.exceptions.DiscountCodeAlreadyExistsException;
 
 import jakarta.transaction.Transactional;
 

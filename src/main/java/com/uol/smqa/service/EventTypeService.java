@@ -14,8 +14,13 @@ import com.uol.smqa.repository.EventTypeRepository;
 @Service
 public class EventTypeService {
 
+
+    private final EventTypeRepository eventTypeRepository;
+
     @Autowired
-    private EventTypeRepository eventTypeRepository;
+    public EventTypeService(EventTypeRepository eventTypeRepository) {
+        this.eventTypeRepository = eventTypeRepository;
+    }
 
     public ResponseEntity<?> addEventType(EventType eventType) {
         if (eventTypeRepository.existsByEventTypeName(eventType.getEventTypeName())) {
