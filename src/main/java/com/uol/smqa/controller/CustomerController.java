@@ -3,6 +3,8 @@ package com.uol.smqa.controller;
 import com.uol.smqa.model.*;
 import com.uol.smqa.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +26,14 @@ import com.uol.smqa.model.CustomerBookEvent;
 import com.uol.smqa.model.Event;
 
 import com.uol.smqa.model.WishList;
+import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.repository.ReviewRepository;
 import com.uol.smqa.model.Event;
+import com.uol.smqa.model.Review;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.uol.smqa.service.CustomerService;
@@ -40,6 +46,8 @@ import java.util.List;
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 
 import java.util.Map;
+import java.util.Optional;
+
 import com.uol.smqa.service.WishListService;
 
 
@@ -52,19 +60,37 @@ public class CustomerController {
     private final CustomerBookEventService customerBookEventService;
 	private final WishListService wishlistService;
 	private final EventService eventService;
+    private final EventRepository eventRepository;
+	private final ReviewRepository reviewRepository;
 
 	@Autowired
 	public CustomerController(CustomerService customerService, CustomerBookEventService customerBookEventService,
-							  WishListService wishlistService, EventService eventService) {
+							  WishListService wishlistService, EventService eventService, EventRepository eventRepository,
+							  ReviewRepository reviewRepository) {
 		this.customerService = customerService;
 		this.customerBookEventService = customerBookEventService;
 		this.wishlistService = wishlistService;
 		this.eventService = eventService;
+		this.eventRepository = eventRepository;
+		this.reviewRepository = reviewRepository;
 	}
 
+	//zh177-ZainabHassan
     @PostMapping("/register")
-    public Customer customerRegistration(@RequestBody Customer customer) {
-        return this.customerService.CustomerRegistration(customer);
+    public ResponseEntity<?> customerRegistration(@RequestBody Customer customer) {
+        try {
+        	Customer customer2= this.customerService.CustomerRegistration(customer);
+         return new ResponseEntity<>(new BaseApiResponseDTO("Customer Registered Successfully!", customer2, null),
+				HttpStatus.OK);
+         }
+        catch (DataIntegrityViolationException e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("Duplicate customer Email!"),
+  					HttpStatus.CONFLICT);
+		}
+         catch (Exception e) {
+        	 return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while registering customer"),
+ 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
 
     @GetMapping("/events")
@@ -84,6 +110,7 @@ public class CustomerController {
 		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);
 	}
      
+
     @PostMapping("/bookEvent")
     public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody) {
         if (!(requestBody.get("customerId") instanceof Integer)) {
@@ -152,7 +179,6 @@ public class CustomerController {
             }
 
             if (updates.containsKey("dob")) {
-
                 existingCustomer.setDob(LocalDate.parse((String) updates.get("dob")));
             }
 
@@ -168,7 +194,10 @@ public class CustomerController {
             @RequestParam String email) {
         return customerService.validateEmailFormat(customerId, email);
     }
-    
+
+
+
+  //zh177-ZainabHassan
     @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
 			@RequestParam(name = "customerId") Integer customerId) {
@@ -198,17 +227,68 @@ public class CustomerController {
 	        }
 	 }
 
+	 @PostMapping("/cancelmembership")
+	 public ResponseEntity<?> cancelMembership(@RequestParam int customerId) {
+	     try {
+	         ResponseEntity<?> response = customerService.cancelMembership(customerId);
 
+	         if (response.getStatusCode() == HttpStatus.OK) {
+	             return new ResponseEntity<>(new BaseApiResponseDTO("Successfully Canceled membership", response.getBody(), null),
+	                     HttpStatus.OK);
+	         } else {
+	             return ResponseEntity.badRequest().body(response.getBody());
+	         }
+	     } catch (IllegalArgumentException e) {
+	         return ResponseEntity.badRequest().body(e.getMessage());
+	     }
+	 }
+
+	//zh177-ZainabHassan
 	@GetMapping("/getCustomerWishList")
 	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
+		this.customerService.getCustomerById(customerId);
 		return this.wishlistService.getCustomerWishList(customerId);
 	}
 
+	//zh177-ZainabHassan
 	@DeleteMapping("/deleteEventFromWishList")
 	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId){
 		return this.wishlistService.deleteEventFromWishList(wishlistId);
 	}
 	
+
+	
+	@PostMapping("/bookMultipleTickets")
+	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) {
+	    List<String> errors = new ArrayList<>();
+
+	    for (Map<String, Object> ticketDetails : ticketDetailsList) {
+	        if (!(ticketDetails.get("customerId") instanceof Integer)) {
+	            errors.add("customerId should be an integer for one of the tickets");
+	        }
+	        if (!(ticketDetails.get("eventId") instanceof Integer)) {
+	            errors.add("eventId should be an integer for one of the tickets");
+	        }
+
+	        if (errors.isEmpty()) {
+	            int customerId = (Integer) ticketDetails.get("customerId");
+	            int eventId = (Integer) ticketDetails.get("eventId");
+
+	            Customer customer = this.customerService.getCustomerById(customerId);
+	            customerBookEventService.bookEvent(eventId, customer);
+	        }
+	    }
+
+	    if (!errors.isEmpty()) {
+	        return String.join(", ", errors);
+	    }
+
+	    return "Tickets booked successfully!";
+	}
+
+
+
+	//zh177-ZainabHassan
 	@GetMapping("/getAnalytics")
     public String getAnalytics(@RequestParam Integer customerId) {
         try {
@@ -230,7 +310,7 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred during ticket transfer"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-	
+	//zh177-ZainabHassan
 	@PostMapping(value = "/bookPriortyTicketForEvent")
 	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
 		
@@ -256,6 +336,53 @@ public class CustomerController {
             return new ResponseEntity<>(new BaseApiResponseDTO(acknowledgmentMessage, null, null), HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while acknowledging booking"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/past_reviews")
+    public List<Event> getPastEvents() {
+        LocalDate currentDate = LocalDate.now();
+        return eventRepository.findByeventDateTime(currentDate);
+    }
+
+    @GetMapping("/{eventId}/reviews")
+    public List<Review> getEventReviews(@PathVariable int eventId) {
+        Optional<Event> eventOptional = Optional.of(this.eventRepository.findById(eventId));
+        return eventOptional.map(event -> reviewRepository.findByEvent(event)).orElse(Collections.emptyList());
+    }
+
+    @PostMapping("/{eventId}/reviews")
+    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            review.setEvent(event);
+            reviewRepository.save(review);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Review created successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        }
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<String> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody Review updatedReview
+    ) {
+        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
+
+        if (existingReviewOptional.isPresent()) {
+            Review existingReview = existingReviewOptional.get();
+            existingReview.setComment(updatedReview.getComment());
+            existingReview.setRating(updatedReview.getRating());
+
+            // Assuming you want to update only comment and rating; you can add more fields as needed.
+
+            reviewRepository.save(existingReview);
+            return ResponseEntity.ok("Review updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
         }
     }
 }

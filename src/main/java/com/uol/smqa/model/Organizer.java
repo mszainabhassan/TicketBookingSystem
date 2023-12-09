@@ -102,6 +102,7 @@ public class Organizer {
         this.gender = gender;
     }
 
+    @JsonIgnore
     public List<Event> getEvents() {
         return events;
     }

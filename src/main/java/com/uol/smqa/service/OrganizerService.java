@@ -10,10 +10,7 @@ import com.uol.smqa.repository.DiscountRepository;
 
 import java.util.Optional;
 
-import com.uol.smqa.repository.DiscountRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import com.uol.smqa.model.Organizer;
 import com.uol.smqa.repository.OrganizerRepository;
@@ -29,7 +26,7 @@ public class OrganizerService implements OrganizerServiceInterface {
     private final OrganizerRepository organizerRepository;
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
-    private DiscountRepository discountRepository;
+    private final DiscountRepository discountRepository;
 
     @Autowired
     public OrganizerService(OrganizerRepository organizerRepository, UsersRepository usersRepository,
