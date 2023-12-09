@@ -9,6 +9,7 @@ import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.CustomerController;
 import com.uol.smqa.model.Customer;
 import com.uol.smqa.model.Users;
+import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.ReviewRepository;
 import com.uol.smqa.service.CustomerBookEventService;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +33,7 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,6 +63,9 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
 
     private MockMvc mockMvc;
 
+    @Autowired
+	private CustomerRepository customerRepository;
+
 
     @Before
     public void setup() {
@@ -88,5 +94,23 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
 
         verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
     }
+    
+    @Test
+    public void whenCustomerRegistersWithDuplicateEmail_thenReturnConflict() throws Exception {
+        Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+        this.customerRepository.save(existingCustomer);  
+        
+        mockMvc.perform(MockMvcRequestBuilders.post("/customer/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(existingCustomer)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Duplicate customer Email!"));
+
+        // Verify that the service method was called with the correct parameter
+        verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
+    }
+
 
 }
