@@ -44,13 +44,15 @@ public class WishListService {
 	
 	}
 
-	public List<WishList> getCustomerWishList(Integer customerId) {
-		Optional<Customer> customer=this.customerRepository.findById(customerId);
-		if(customer.isEmpty())
-			return null;
-		else {
-			return customer.get().getWishlists();
-		}
+	public ResponseEntity<?> getCustomerWishList(Integer customerId) {
+	    Optional<Customer> customerOptional = this.customerRepository.findById(customerId);
+
+	    if (customerOptional.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    } else {
+	        List<WishList> wishList = customerOptional.get().getWishlists();
+	        return ResponseEntity.ok(wishList);
+	    }
 	}
 
 	public ResponseEntity<?> deleteEventFromWishList(Integer wishlistId) {

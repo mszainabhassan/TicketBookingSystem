@@ -245,8 +245,7 @@ public class CustomerController {
 
 	//zh177-ZainabHassan
 	@GetMapping("/getCustomerWishList")
-	public List<WishList> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
-		this.customerService.getCustomerById(customerId);
+	public ResponseEntity<?> getCustomerWishList(@RequestParam(name = "customerId") Integer customerId) {
 		return this.wishlistService.getCustomerWishList(customerId);
 	}
 
