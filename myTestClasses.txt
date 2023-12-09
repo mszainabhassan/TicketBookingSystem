@@ -1,5 +1,4 @@
 com.uol.smqa.controller.AdminController
 com.uol.smqa.controller.AuthController
 com.uol.smqa.controller.CustomerController
-com.uol.smqa.controller.OrganizerController
 com.uol.smqa.controller.PasswordResetController
