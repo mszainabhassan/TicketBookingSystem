@@ -76,7 +76,7 @@ public class OrganizerController {
 
 
     @GetMapping("/events")
-    public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> getAllEvents(@Validated @RequestParam(name = "organizerId") int organizerId) {
 
         try {
             List<Event> organizerList = this.eventService.getAllEventsByOrganizerId(organizerId);
@@ -90,7 +90,7 @@ public class OrganizerController {
 
     }
     @GetMapping("/eventAnalytics/{eventId}")
-    public String getEventAnalytics(@PathVariable Integer eventId) {
+    public String getEventAnalytics(@PathVariable(name = "eventId") Integer eventId) {
         try {
             // Get the event
             Event event = eventService.getEventById(eventId);
@@ -108,7 +108,7 @@ public class OrganizerController {
 
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<?> editEvent(@Validated @PathVariable int eventId, @RequestBody Event event, BindingResult bindingResult) {
+    public ResponseEntity<?> editEvent(@Validated @PathVariable(name = "eventId") int eventId, @RequestBody Event event, BindingResult bindingResult) {
 
         try {
             if (bindingResult.hasErrors())  {
@@ -132,7 +132,7 @@ public class OrganizerController {
 
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<?> deleteEvent(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) throws Exception {
+    public ResponseEntity<?> deleteEvent(@Validated @PathVariable(name = "eventId") int eventId, @Validated @RequestParam(name = "organizerId") int organizerId) throws Exception {
 
         try {
             this.eventService.deleteEventByOrganizerId(eventId, organizerId);

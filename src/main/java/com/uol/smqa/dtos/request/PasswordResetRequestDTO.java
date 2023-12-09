@@ -46,4 +46,7 @@ public class PasswordResetRequestDTO {
         this.password = password;
         this.confirmPassword = confirmPassword;
     }
+
+    public PasswordResetRequestDTO() {
+    }
 }

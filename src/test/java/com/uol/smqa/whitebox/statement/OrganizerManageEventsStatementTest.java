@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uol.smqa.TicketBookingSystemApplicationTests;
 import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
-import com.uol.smqa.controller.CustomerController;
 import com.uol.smqa.controller.OrganizerController;
-import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.service.*;
@@ -24,12 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -96,7 +92,8 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event eventToSearchFor = eventList.get(eventList.size() - 1);
         long expectedOrganizerEventsCount = eventList.stream().filter(current -> current.getOrganizer().getOrganizerId() == eventToSearchFor.getOrganizer().getOrganizerId()).count();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+eventToSearchFor.getOrganizer().getOrganizerId())
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events")
+                        .param("organizerId", String.valueOf(eventToSearchFor.getOrganizer().getOrganizerId()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -111,7 +108,8 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     @Test
     public void organizerViewEvents_WithInvalidOrganizerId_thenReturnNotFoundError() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+ 14444444)
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events")
+                        .param("organizerId", String.valueOf(14444444))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -126,16 +124,17 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event eventToSearchFor = eventList.get(eventList.size() - 1);
 
         doThrow(new Exception("An error occurred while retrieving events for organizer"))
-                .when(eventService).getAllEventsByOrganizerId(anyInt());
+                .when(eventService).getAllEventsByOrganizerId(eq(eventToSearchFor.getOrganizer().getOrganizerId()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events?organizerId="+ eventToSearchFor.getOrganizer().getOrganizerId())
+        mockMvc.perform(MockMvcRequestBuilders.get("/organizer/events")
+                        .param("organizerId", String.valueOf(eventToSearchFor.getOrganizer().getOrganizerId()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("An error occurred while retrieving events for organizer"));
 
 
-        verify(eventService, times(1)).getAllEventsByOrganizerId(anyInt());
+        verify(eventService, times(1)).getAllEventsByOrganizerId(eq(eventToSearchFor.getOrganizer().getOrganizerId()));
     }
 
 
@@ -147,7 +146,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event eventToEdit = eventList.get(eventList.size() - 1);
         eventToEdit.setEventName("Edited event name");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/{eventId}", eventToEdit.getEventId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
                 .andDo(print())
@@ -167,7 +166,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event eventToEdit = eventList.get(eventList.size() - 1);
         eventToEdit.setEventName("Edited event name");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ 28999999)
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/{eventId}", 28999999)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
                 .andDo(print())
@@ -183,7 +182,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Event eventToEdit = eventList.get(eventList.size() - 1);
         eventToEdit.setEventFrequency("Invalid Frequency");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/{eventId}", eventToEdit.getEventId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
                 .andDo(print())
@@ -202,7 +201,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         Assertions.assertTrue(eventOfAnotherOrganizer.isPresent());
 
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventOfAnotherOrganizer.get().getEventId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/{eventId}", eventOfAnotherOrganizer.get().getEventId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
                 .andDo(print())
@@ -221,7 +220,7 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         doThrow(new Exception("An error occurred while updating organizer"))
                 .when(eventService).updateEvent(any(Event.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/"+ eventToEdit.getEventId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/organizer/events/{eventId}", eventToEdit.getEventId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
                 .andDo(print())
@@ -237,7 +236,8 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     public void organizerDeleteEvent_WithValidRequestBody_thenReturnSuccess() throws Exception {
         Event eventToDelete = eventList.get(eventList.size() - 1);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ eventToDelete.getEventId() + "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/{eventId}", eventToDelete.getEventId())
+                        .param("organizerId", String.valueOf(eventToDelete.getOrganizer().getOrganizerId()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNoContent())
@@ -254,7 +254,8 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
     public void organizerDeleteEvent_WithInvalidEventId_thenReturnNotFoundError() throws Exception {
         Event eventToDelete = eventList.get(eventList.size() - 1);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ 100000000+ "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/{eventId}", 100000000)
+                        .param("organizerId", String.valueOf(eventToDelete.getOrganizer().getOrganizerId()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -270,7 +271,8 @@ public class OrganizerManageEventsStatementTest extends TicketBookingSystemAppli
         doThrow(new Exception("An error occurred while deleting organizer"))
                 .when(eventService).deleteEventByOrganizerId(anyInt(), anyInt());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/"+ eventToDelete.getEventId()+ "?organizerId=" + eventToDelete.getOrganizer().getOrganizerId())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/organizer/events/{eventId}", eventToDelete.getEventId())
+                        .param("organizerId", String.valueOf(eventToDelete.getOrganizer().getOrganizerId()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())

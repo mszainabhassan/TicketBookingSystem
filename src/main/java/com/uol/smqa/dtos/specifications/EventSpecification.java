@@ -4,9 +4,6 @@ import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
 import com.uol.smqa.model.Event;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;

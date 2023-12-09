@@ -1,6 +1,16 @@
 #!/bin/sh
 
-javac -d classes -cp junit-platform-console-standalone-1.10.1.jar:classes -g src/main/java/com/uol/smqa/**/*.java && \
-java -cp classes -javaagent:jacoco-0.8.11/lib/jacocoagent.jar -jar &&  \
-junit-platform-console-standalone-1.10.1.jar execute --class-path classes --scan-class-path && \
-java -jar jacoco-0.8.11/lib/jacococli.jar report jacoco.exec --classfiles classes --sourcefiles src --html report
+# Constructing classpath for JAR files and resources
+classpath=""
+for jarfile in lib/*.jar; do
+    classpath="$classpath:$jarfile"
+done
+classpath="$classpath:src/test/resources"
+
+# Compilation command using the generated classpath
+javac -Xlint:deprecation -Xlint:unchecked -d classes -cp "junit-platform-console-standalone-1.10.1.jar:$classpath" -g $(find src/main/java -name "*.java") $(find src/test/java -name "*.java")
+
+# Execution commands for JUnit and Jacoco
+java -cp "classes:junit-platform-console-standalone-1.10.1.jar:$classpath" org.junit.platform.console.ConsoleLauncher --class-path=target/test-classes --scan-class-path
+
+java -javaagent:jacoco-0.8.11/lib/jacocoagent.jar -jar jacoco-0.8.11/lib/jacococli.jar report jacoco.exec --classfiles target/test-classes --sourcefiles src --html report
