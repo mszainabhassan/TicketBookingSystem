@@ -151,6 +151,10 @@ public class Organizer {
 
     public Organizer() {
     }
+
+	public Organizer(int i) {
+		this.organizerId=i;
+	}
 }
 
 

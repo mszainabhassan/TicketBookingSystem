@@ -80,8 +80,8 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
     @Test
     public void whenCustomerRegisters_thenReturnSuccess() throws Exception {
 
-        Customer customerToRegister = new Customer("Olatunde", "olatunde@tbs.com", LocalDate.now().minusYears(30),
-                Gender.MALE, "+99 888 777 6665", true, true, new Users("olatunde@tbs.com", "password"));
+        Customer customerToRegister = new Customer("Zainab", "Zainab@tbs.com", LocalDate.now().minusYears(30),
+                Gender.FEMALE, "+99 888 777 6665", true, true, new Users("Zainab@tbs.com", "password"));
         mockMvc.perform(MockMvcRequestBuilders.post("/customer/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerToRegister)))

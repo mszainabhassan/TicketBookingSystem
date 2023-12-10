@@ -131,7 +131,7 @@ public class AdminController {
     }
 
     @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+    public ResponseEntity<?> createEvent(@RequestBody Event event) throws Exception {
         try {
             String eventTypeName = event.getEventType().getEventTypeName();
             Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);

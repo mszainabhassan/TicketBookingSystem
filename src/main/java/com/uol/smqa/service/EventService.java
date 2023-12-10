@@ -63,7 +63,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event createEventByAdmin(Event event) {
+    public Event createEventByAdmin(Event event)throws Exception {
         return eventRepository.save(event);
     }
 
