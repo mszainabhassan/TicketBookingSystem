@@ -30,7 +30,11 @@ public class Users {
 
 	@NotNull(message = "Password Required!")
 
+
+
+
 	@Column(name = "password", nullable = false)
+
 
 	private String password;
 
@@ -91,12 +95,22 @@ public class Users {
 	}
 
 	@JsonIgnore
-
 	public Customer getCustomer() {
 
 		return customer;
 
 	}
+
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+ 
+	
 
 	@JsonIgnore
 
@@ -113,21 +127,15 @@ public class Users {
 	}
 
 	public void setCustomer(Customer customer) {
-
 		this.customer = customer;
-
 	}
 
-	public boolean isActive() {
 
-		return isActive;
-
+	public Users() {
 	}
 
-	public void setActive(boolean active) {
-
-		isActive = active;
-
+	public Users(String username, String password) {
+		this.username = username;
+		this.password = password;
 	}
-
 }

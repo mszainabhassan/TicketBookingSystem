@@ -10,3 +10,4 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
 
 
+//changed Long to Integer

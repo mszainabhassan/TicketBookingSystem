@@ -5,5 +5,5 @@ import com.uol.smqa.dtos.response.PasswordResetResponseDto;
 
 public interface PasswordResetService {
 
-    PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
+    PasswordResetResponseDto initiateResetPassword(PasswordResetRequestDTO passwordResetRequestDTO) throws Exception;
 }

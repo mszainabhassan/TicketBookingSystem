@@ -1,13 +1,10 @@
 package com.uol.smqa.dtos.request;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import java.io.Serializable;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoginRequestDTO implements Serializable {
 
     @NotBlank(message = "The username field is required")
