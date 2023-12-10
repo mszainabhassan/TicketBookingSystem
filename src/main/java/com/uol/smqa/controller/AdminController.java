@@ -73,13 +73,13 @@ public class AdminController {
     }
 
     @PutMapping("/updateeventtype")
-    public ResponseEntity<?> updateEventType(@RequestParam Long id, @RequestBody EventType eventType) {
+    public ResponseEntity<?> updateEventType(@RequestParam(name = "id") Long id, @RequestBody EventType eventType) {
         ResponseEntity<?> updatedEventType = eventTypeService.updateEventType(id, eventType);
         return updatedEventType;
     }
 
     @DeleteMapping("/deleteeventtype")
-    public ResponseEntity<?> deleteEventType(@RequestParam Long id) {
+    public ResponseEntity<?> deleteEventType(@RequestParam(name = "id") Long id) {
         ResponseEntity<?> DeletedEventType = eventTypeService.deleteEventType(id);
         return DeletedEventType;
     }
@@ -106,13 +106,13 @@ public class AdminController {
 
     @PutMapping("/change_organizer_account_status")
 
-    public String ChangeOrganizerStatus(@RequestParam Integer organizer_id, @RequestParam Boolean isActive) {
+    public String ChangeOrganizerStatus(@RequestParam(name = "organizer_id") Integer organizer_id, @RequestParam(name = "isActive") Boolean isActive) {
         return this.adminService.ChangeOrganizerStatus(organizer_id, isActive);
 
     }
 
     @PutMapping("/change_user_status")
-    public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
+    public String ChangeUserStatus(@RequestParam(name = "customer_id") Integer customer_id, @RequestParam(name = "isActive") Boolean isActive) {
         return this.adminService.ChangeUserStatus(customer_id, isActive);
 
     }
@@ -183,13 +183,13 @@ public class AdminController {
     }
 
     @DeleteMapping("/deleteEvent")
-    public String deleteEvent(@RequestParam Integer eventId) {
+    public String deleteEvent(@RequestParam(name = "eventId") Integer eventId) {
         return this.eventService.deleteEvent(eventId);
     }
 
 
     @PostMapping("/initiateEventCreation")
-    public String initiateEventCreation(@RequestBody Event event, @RequestParam int organizerId) {
+    public String initiateEventCreation(@RequestBody Event event, @RequestParam(name = "organizerId") int organizerId) throws Exception {
         try {
 
             if (!organizerService.hasEventCreationRequest(organizerId)) {

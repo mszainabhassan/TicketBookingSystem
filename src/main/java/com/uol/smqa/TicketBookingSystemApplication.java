@@ -34,6 +34,7 @@ public class TicketBookingSystemApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		System.out.println("Starting up....");
 		if (!usersRepository.existsByUsername("admin@tbs.com")) {
 			Users admin = new Users();
 			admin.setUsername("admin@tbs.com");

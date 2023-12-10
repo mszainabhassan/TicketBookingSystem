@@ -200,17 +200,12 @@ public class CustomerController {
   //zh177-ZainabHassan
     @PostMapping(&quot;/addEventInWishlist&quot;)
 	public ResponseEntity&lt;?&gt; addEventInWishList(@RequestParam(name = &quot;eventId&quot;) Integer eventId,
-			@RequestParam(name = &quot;customerId&quot;) Integer customerId) {
+			@RequestParam(name = &quot;customerId&quot;) Integer customerId) throws Exception {
 		try {
-<span class="nc" id="L205">			System.out.println(&quot;In method&quot;);</span>
-<span class="nc" id="L206">			WishList wishList = this.wishlistService.addEventInWishList(eventId, customerId);</span>
-<span class="nc" id="L207">			return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Successfully added event in wishlist&quot;, wishList, null),</span>
-					HttpStatus.OK);
+<span class="nc" id="L205">			return this.wishlistService.addEventInWishList(eventId, customerId);</span>
 
-<span class="nc" id="L210">		} catch (ResourceNotFoundException ex) {</span>
-<span class="nc" id="L211">			return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);</span>
-<span class="nc" id="L212">		} catch (Exception ex) {</span>
-<span class="nc" id="L213">			return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while saving event in wishlist&quot;),</span>
+<span class="nc" id="L207">		} catch (Exception ex) {</span>
+<span class="nc" id="L208">			return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while saving event in wishlist&quot;),</span>
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -220,40 +215,45 @@ public class CustomerController {
 	    public ResponseEntity&lt;?&gt; buyMembership(@RequestParam int customerId, @RequestBody  CardDetails cardDetails) {
 	        try {
 	        	//  System.out.println(&quot;Received CardDetails: &quot; + cardDetails.toString());
-<span class="nc" id="L223">	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);</span>
-<span class="nc" id="L224">	            return ResponseEntity.ok(updatedCustomer);</span>
-<span class="nc" id="L225">	        } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L226">	            return ResponseEntity.badRequest().body(e.getMessage());</span>
+<span class="nc" id="L218">	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);</span>
+<span class="nc" id="L219">	            return ResponseEntity.ok(updatedCustomer);</span>
+<span class="nc" id="L220">	        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L221">	            return ResponseEntity.badRequest().body(e.getMessage());</span>
 	        }
 	 }
 
 	 @PostMapping(&quot;/cancelmembership&quot;)
 	 public ResponseEntity&lt;?&gt; cancelMembership(@RequestParam int customerId) {
 	     try {
-<span class="nc" id="L233">	         ResponseEntity&lt;?&gt; response = customerService.cancelMembership(customerId);</span>
+<span class="nc" id="L228">	         ResponseEntity&lt;?&gt; response = customerService.cancelMembership(customerId);</span>
 
-<span class="nc bnc" id="L235" title="All 2 branches missed.">	         if (response.getStatusCode() == HttpStatus.OK) {</span>
-<span class="nc" id="L236">	             return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Successfully Canceled membership&quot;, response.getBody(), null),</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">	         if (response.getStatusCode() == HttpStatus.OK) {</span>
+<span class="nc" id="L231">	             return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Successfully Canceled membership&quot;, response.getBody(), null),</span>
 	                     HttpStatus.OK);
 	         } else {
-<span class="nc" id="L239">	             return ResponseEntity.badRequest().body(response.getBody());</span>
+<span class="nc" id="L234">	             return ResponseEntity.badRequest().body(response.getBody());</span>
 	         }
-<span class="nc" id="L241">	     } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L242">	         return ResponseEntity.badRequest().body(e.getMessage());</span>
+<span class="nc" id="L236">	     } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L237">	         return ResponseEntity.badRequest().body(e.getMessage());</span>
 	     }
 	 }
 
 	//zh177-ZainabHassan
 	@GetMapping(&quot;/getCustomerWishList&quot;)
-	public List&lt;WishList&gt; getCustomerWishList(@RequestParam(name = &quot;customerId&quot;) Integer customerId) {
-<span class="nc" id="L249">		this.customerService.getCustomerById(customerId);</span>
-<span class="nc" id="L250">		return this.wishlistService.getCustomerWishList(customerId);</span>
+	public ResponseEntity&lt;?&gt; getCustomerWishList(@RequestParam(name = &quot;customerId&quot;) Integer customerId) {
+<span class="nc" id="L244">		return this.wishlistService.getCustomerWishList(customerId);</span>
 	}
 
 	//zh177-ZainabHassan
 	@DeleteMapping(&quot;/deleteEventFromWishList&quot;)
-	public ResponseEntity&lt;?&gt; deleteEventFromWishList(@RequestParam(name = &quot;wishlistId&quot;) Integer wishlistId){
-<span class="nc" id="L256">		return this.wishlistService.deleteEventFromWishList(wishlistId);</span>
+	public ResponseEntity&lt;?&gt; deleteEventFromWishList(@RequestParam(name = &quot;wishlistId&quot;) Integer wishlistId) throws Exception{
+		try {
+<span class="nc" id="L251">            return this.wishlistService.deleteEventFromWishList(wishlistId);</span>
+<span class="nc" id="L252">        } catch (Exception e) {</span>
+<span class="nc" id="L253">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while deleting event from wishlist&quot;),</span>
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
 	}
 	
 
@@ -387,4 +387,4 @@ public class CustomerController {
     }
 }
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

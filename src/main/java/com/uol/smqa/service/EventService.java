@@ -59,7 +59,7 @@ public class EventService {
         }
     }
 
-    public Event createEvent(Event event) {
+    public Event createEvent(Event event) throws Exception {
         return eventRepository.save(event);
     }
 

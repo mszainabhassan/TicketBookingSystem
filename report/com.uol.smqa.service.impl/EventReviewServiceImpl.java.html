@@ -45,14 +45,14 @@ public class EventReviewServiceImpl implements EventReviewService  {
     }
 
     @Override
-    public ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) {
+    public ReviewReply replyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) throws Exception {
 <span class="nc" id="L49">        validateEventReviewReply(reviewId, reviewReply);</span>
 <span class="nc" id="L50">        return this.reviewReplyRepository.save(reviewReply);</span>
     }
 
 
     @Override
-    public ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) {
+    public ReviewReply editReplyEventReviewsByOrganizer(int reviewId, ReviewReply reviewReply) throws Exception {
 <span class="nc" id="L56">        validateEditEventReviewReply(reviewReply);</span>
 <span class="nc" id="L57">        return this.reviewReplyRepository.save(reviewReply);</span>
     }
@@ -76,21 +76,22 @@ public class EventReviewServiceImpl implements EventReviewService  {
 <span class="nc" id="L76">    }</span>
 
     private void validateEventReviewReply(int reviewId, ReviewReply reviewReply) {
-<span class="nc" id="L79">        validateEventReviewReply(reviewReply);</span>
-<span class="nc" id="L80">    }</span>
+<span class="nc" id="L79">        eventReviewRepository.findById(reviewId).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Event review id not found. Please specify a valid review in the request&quot;));</span>
+<span class="nc" id="L80">        validateEventReviewReply(reviewReply);</span>
+<span class="nc" id="L81">    }</span>
 
     private void validateEventReviewReply(ReviewReply reviewReply) {
-<span class="nc bnc" id="L83" title="All 4 branches missed.">        if (reviewReply.getUser() == null || reviewReply.getUser().getUserId() == 0) {</span>
-<span class="nc" id="L84">            throw new BadRequestException(&quot;Please provide a valid reply user&quot;);</span>
-<span class="nc bnc" id="L85" title="All 4 branches missed.">        } else if (reviewReply.getReview() == null || reviewReply.getReview().getId() == 0) {</span>
-<span class="nc" id="L86">            throw new BadRequestException(&quot;Please provide a valid review&quot;);</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (reviewReply.getUser() == null || reviewReply.getUser().getUserId() == 0) {</span>
+<span class="nc" id="L85">            throw new BadRequestException(&quot;Please provide a valid reply user&quot;);</span>
+<span class="nc bnc" id="L86" title="All 4 branches missed.">        } else if (reviewReply.getReview() == null || reviewReply.getReview().getId() == 0) {</span>
+<span class="nc" id="L87">            throw new BadRequestException(&quot;Please provide a valid review&quot;);</span>
         }
-<span class="nc" id="L88">        Users user = usersRepository.findById(reviewReply.getUser().getUserId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User with id does not exist&quot;));</span>
-<span class="nc bnc" id="L89" title="All 4 branches missed.">        if (user.getOrganizer() == null || user.getOrganizer().getOrganizerId() == 0) {</span>
-<span class="nc" id="L90">            throw new BadRequestException(&quot;Only organizers can reply to this review&quot;);</span>
+<span class="nc" id="L89">        eventReviewRepository.findById(reviewReply.getReview().getId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Event review id not found. Please specify a valid review in the request&quot;));</span>
+<span class="nc" id="L90">        Users user = usersRepository.findById(reviewReply.getUser().getUserId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User with id does not exist&quot;));</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">        if (user.getOrganizer() == null || user.getOrganizer().getOrganizerId() == 0) {</span>
+<span class="nc" id="L92">            throw new BadRequestException(&quot;Only organizers can reply to this review&quot;);</span>
         }
-<span class="nc" id="L92">        organizerService.findById(user.getOrganizer().getOrganizerId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Organizer with id does not exist&quot;));</span>
-<span class="nc" id="L93">        eventReviewRepository.findById(reviewReply.getReview().getId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Event review id not found. Please specify a valid review in the request&quot;));</span>
-<span class="nc" id="L94">    }</span>
+<span class="nc" id="L94">        organizerService.findById(user.getOrganizer().getOrganizerId()).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Organizer with id does not exist&quot;));</span>
+<span class="nc" id="L95">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

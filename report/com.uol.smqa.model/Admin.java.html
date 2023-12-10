@@ -9,13 +9,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-<span class="nc" id="L12">public class Admin {</span>
+public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Adjust the strategy based on your database
     private Long adminId;
 
 
+<span class="nc" id="L19">    public Admin() {</span>
+<span class="nc" id="L20">    }</span>
+
+
+    public Long getAdminId() {
+<span class="nc" id="L24">        return adminId;</span>
+    }
+
+    public void setAdminId(Long adminId) {
+<span class="nc" id="L28">        this.adminId = adminId;</span>
+<span class="nc" id="L29">    }</span>
 }
 
 
@@ -23,4 +34,4 @@ import jakarta.persistence.Id;
 
 
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
