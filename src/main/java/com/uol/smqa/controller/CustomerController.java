@@ -312,10 +312,12 @@ public class CustomerController {
     }
 	//zh177-ZainabHassan
 	@PostMapping(value = "/bookPriortyTicketForEvent")
-	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) throws Exception {
-		
-		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
-       
+	public String PriortyTicketForEvent(@RequestParam(name = "eventId") Integer eventId,@RequestParam(name = "customerId") Integer customerId) throws Exception {
+		try {
+            return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
+        } catch (RuntimeException ex) {
+            return ex.getMessage();
+        }
 	}
 
 	@GetMapping("/acknowledgeBooking")
