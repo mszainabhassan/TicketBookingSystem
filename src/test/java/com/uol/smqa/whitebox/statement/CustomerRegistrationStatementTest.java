@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -260,5 +261,48 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
     }
+    @Test
+    public void whenBookPriorityTicketForEvent_InvalidCustomer_thenReturnCustomerNotFound() throws Exception {
+    	
+       Event eventToBook = eventList.get(eventList.size() - 1);
+    	int eventId = eventToBook.getEventId();
+        int customerId =100;
+        System.out.println(customerId+"......");
+        String expectedResponse = "Customer not found with ID:  "+customerId;
+        when(customerService.getCustomerById(anyInt())).thenReturn(Optional.empty());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/customer/bookPriortyTicketForEvent")
+                .param("eventId", String.valueOf(eventId))
+                .param("customerId", String.valueOf(customerId))
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$").isNotEmpty())
+        .andExpect(jsonPath("$.message").value(expectedResponse));
+
+         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
+    }
     
+    @Test
+    public void whenBookPriorityTicketForEvent_InvalidEvent_thenReturnEventNotFound() throws Exception {
+    	 Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+         this.customerRepository.save(existingCustomer);
+       
+    	int eventId = 100;
+        int customerId =existingCustomer.getCustomerId();
+        System.out.println(customerId+"......");
+        String expectedResponse = "Event not found with ID:   "+eventId;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/customer/bookPriortyTicketForEvent")
+                .param("eventId", String.valueOf(eventId))
+                .param("customerId", String.valueOf(customerId))
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$").isNotEmpty())
+        .andExpect(jsonPath("$.message").value(expectedResponse));
+
+         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
+    }
 }
