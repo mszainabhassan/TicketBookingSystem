@@ -33,7 +33,7 @@ public class WishListService {
 		this.eventRepository = eventRepository;
 	}
 
-	public ResponseEntity<?> addEventInWishList(int eventId, int customerId) {
+	public ResponseEntity<?> addEventInWishList(int eventId, int customerId) throws Exception {
 	
 		Optional<Customer> customer=this.customerRepository.findById(customerId);
 		Event event=this.eventRepository.findById(eventId);
@@ -61,18 +61,13 @@ public class WishListService {
 	}
 
 	public ResponseEntity<?> deleteEventFromWishList(Integer wishlistId) throws Exception{
-		try {
-			if(wishListRepository.findById(wishlistId).isEmpty())
-				return new ResponseEntity<>(new BaseApiResponseDTO("WishList Id Not Found", null, null),
-						HttpStatus.NOT_FOUND);
-			this.wishListRepository.deleteById(wishlistId);
-			return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted event from wishlist", null, null),
-					HttpStatus.OK);
-		}
-		catch (Exception e) {
-			return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while deleting event from wishlist"),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+
+		if(wishListRepository.findById(wishlistId).isEmpty())
+			return new ResponseEntity<>(new BaseApiResponseDTO("WishList Id Not Found", null, null),
+					HttpStatus.NOT_FOUND);
+		this.wishListRepository.deleteById(wishlistId);
+		return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted event from wishlist", null, null),
+				HttpStatus.OK);
 	}
 
 }

@@ -200,7 +200,7 @@ public class CustomerController {
   //zh177-ZainabHassan
     @PostMapping("/addEventInWishlist")
 	public ResponseEntity<?> addEventInWishList(@RequestParam(name = "eventId") Integer eventId,
-			@RequestParam(name = "customerId") Integer customerId) {
+			@RequestParam(name = "customerId") Integer customerId) throws Exception {
 		try {
 			return this.wishlistService.addEventInWishList(eventId, customerId);
 
@@ -247,7 +247,13 @@ public class CustomerController {
 	//zh177-ZainabHassan
 	@DeleteMapping("/deleteEventFromWishList")
 	public ResponseEntity<?> deleteEventFromWishList(@RequestParam(name = "wishlistId") Integer wishlistId) throws Exception{
-		return this.wishlistService.deleteEventFromWishList(wishlistId);
+		try {
+            return this.wishlistService.deleteEventFromWishList(wishlistId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("An error occurred while deleting event from wishlist"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
 	}
 	
 

@@ -19,6 +19,7 @@ import org.junit.Before;
 
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -65,7 +66,7 @@ public class CustomerWishListStatementTest extends TicketBookingSystemApplicatio
 	    @Autowired
 	    private  ReviewRepository reviewRepository;
 	    
-	    @Autowired
+	    @SpyBean
 	    private WishListRepository wishListRepository;
 
 
@@ -139,7 +140,7 @@ public class CustomerWishListStatementTest extends TicketBookingSystemApplicatio
 	    	int eventId = 1;
 	        int customerId = 2;
 	       doThrow(new Exception("An error occurred while saving event in wishlist"))
-        .when(wishlistService).addEventInWishList(anyInt(), anyInt());
+        	.when(wishlistService).addEventInWishList(anyInt(), anyInt());
 
 	        mockMvc.perform(MockMvcRequestBuilders.post("/customer/addEventInWishlist")
 	                .param("eventId", String.valueOf(eventId))
