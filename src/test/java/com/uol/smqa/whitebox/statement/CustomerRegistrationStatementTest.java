@@ -38,7 +38,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
@@ -333,4 +335,22 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
       verify(customerBookEventService, times(1)).getAllBookedEventsForCustomer(any(Customer.class));
     }
+    
+    @Test
+    public void whenViewCustomerDetails_thenReturnCustomerDetails() throws Exception {
+    	Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+        this.customerRepository.save(existingCustomer);
+      int customerId=existingCustomer.getCustomerId();
+     mockMvc.perform(MockMvcRequestBuilders.get("/customer/viewDetails/{customerId}", customerId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.customerId").value(existingCustomer.getCustomerId()))
+                .andExpect(jsonPath("$.name").value(existingCustomer.getName()));
+
+        verify(customerService, times(1)).getCustomerById(anyInt());
+    }
+   
+    
 }
