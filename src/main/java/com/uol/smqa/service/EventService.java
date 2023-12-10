@@ -189,7 +189,7 @@ public class EventService {
         return new DiscountResponseDTO("Successfully applied discount", discountAmount);
     }
 
-    private Float computeDiscountAmount(Discount discount, Event event) {
+    public Float computeDiscountAmount(Discount discount, Event event) {
         switch (discount.getDiscountType()) {
             case PERCENTAGE:
                 return event.getEventFees() * (discount.getDiscountValue() / 100.0f);

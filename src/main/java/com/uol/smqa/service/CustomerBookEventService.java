@@ -129,6 +129,14 @@ public class CustomerBookEventService {
                 .orElse(null);
     }
 
+    public CustomerBookEvent save(CustomerBookEvent customerBookEvent) {
+        return customerBookEventRepository.save(customerBookEvent);
+    }
+
+    public List<CustomerBookEvent> findByCustomerAndEvent(Customer customer, Event event) {
+        return customerBookEventRepository.findByCustomerAndEvent(customer, event);
+    }
+
 
     public List<CustomerBookEvent> getAllBookedEventsForCustomer(Customer customer) {
         return customerBookEventRepository.findByCustomer(customer);
