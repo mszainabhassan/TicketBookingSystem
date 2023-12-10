@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -45,7 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AdminManageEventsStatementTest extends TicketBookingSystemApplicationTests {
 
-    @Autowired
     private AdminController adminController;
 
     @SpyBean
@@ -266,8 +266,13 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
     @Test
     public void adminUpdateEvent_WithInvalidEventType_thenReturnBadRequestResponse() throws Exception {
-        Event eventToEdit = eventList.get(eventList.size() - 1);
+        Event event = eventList.get(eventList.size() - 1);
+
+
+        Event eventToEdit = new Event();
+        BeanUtils.copyProperties(event, eventToEdit, "eventType");
         eventToEdit.setEventType(new EventType("Non existing event name"));
+
         mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
@@ -276,7 +281,7 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$").value("Invalid event type"));
 
-        verify(eventService, times(1)).updateEvent(any(Event.class));
+        verify(eventService, times(0)).updateEvent(any(Event.class));
 
     }
 
