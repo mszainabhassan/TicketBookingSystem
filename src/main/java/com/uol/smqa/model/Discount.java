@@ -23,6 +23,8 @@ public class Discount {
 	@Enumerated(EnumType.STRING)
 	private DiscountType discountType;
 
+	private boolean isActive;
+
 	@ManyToOne
 	@JoinColumn(name = "organizer_id")
 	private Organizer organizer;
@@ -73,6 +75,14 @@ public class Discount {
 		this.discountType = discountType;
 	}
 
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
+	}
+
 	public Discount() {
 	}
 
@@ -80,6 +90,7 @@ public class Discount {
 		this.discountCode = discountCode;
 		this.discountValue = discountValue;
 		this.event = event;
+		isActive = true;
 	}
 
 	public Discount(String discountCode, Float discountValue, DiscountType discountType, Organizer organizer, Event event) {
@@ -88,6 +99,7 @@ public class Discount {
 		this.discountType = discountType;
 		this.organizer = organizer;
 		this.event = event;
+		isActive = true;
 	}
 }
 
