@@ -163,11 +163,9 @@ public class AdminController {
             Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
             if (existingEventType.isPresent()) {
-                // If the event type exists, set it in the event
-                event.setEventType(existingEventType.get());
+                 event.setEventType(existingEventType.get());
             } else {
-                // If the event type does not exist, create a new one and set it in the event
-                return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
+               return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
             }
             Event event2 = this.eventService.getEventById(event.getEventId());
             Optional<Organizer> organizer = this.organizerService.findById(event.getOrganizer().getOrganizerId());
