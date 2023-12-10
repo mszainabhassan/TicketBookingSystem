@@ -8,7 +8,10 @@ import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.CustomerController;
 import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
+import com.uol.smqa.model.Event;
 import com.uol.smqa.model.Users;
+import com.uol.smqa.repository.CustomerBookEventRepository;
 import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.ReviewRepository;
@@ -16,6 +19,8 @@ import com.uol.smqa.service.CustomerBookEventService;
 import com.uol.smqa.service.CustomerService;
 import com.uol.smqa.service.EventService;
 import com.uol.smqa.service.WishListService;
+import com.uol.smqa.util.EventGenerator;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -29,8 +34,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +59,8 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
     @Autowired
     private  CustomerBookEventService customerBookEventService;
     @Autowired
+    private  CustomerBookEventRepository customerBookEventRepository;
+    @Autowired
     private  WishListService wishlistService;
     @Autowired
     private  EventService eventService;
@@ -65,7 +77,10 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
     @Autowired
 	private CustomerRepository customerRepository;
-
+    
+    @Autowired
+    private EventGenerator eventGenerator;
+    private List<Event> eventList = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -75,6 +90,7 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())
                 .build();
+        eventList = eventGenerator.generateEvents();
     }
 
     @Test
@@ -128,5 +144,54 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
         verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
     }
+    
+    @Test
+    public void customerGetEventAnalytics_WithValidRequest_thenReturnSuccessResponse() throws Exception {
+    	 Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+         this.customerRepository.save(existingCustomer);
+       int customerId=existingCustomer.getCustomerId();
+       Event eventToBook = eventList.get(eventList.size() - 1);
+       CustomerBookEvent customerBookEvent = new CustomerBookEvent(eventToBook,existingCustomer);;
+       this.customerBookEventRepository.save(customerBookEvent);
+       mockMvc.perform(MockMvcRequestBuilders.get("/customer/getAnalytics")
+        		 .param("customerId", String.valueOf(customerId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$", containsString("Customer Analytics for CustomerId:")));
 
+        verify(customerService, times(1)).getAnalytics(anyInt());
+    }
+    @Test
+    public void customerGetEventAnalytics_WithInValidCustomerIdRequest_thenReturnNotFoundResponseMessage() throws Exception {
+    	int customerId=10;
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/getAnalytics")
+         		 .param("customerId", String.valueOf(customerId))
+                         .contentType(MediaType.APPLICATION_JSON_VALUE))
+                 .andDo(print())
+                 .andExpect(status().isOk())
+                 .andExpect(jsonPath("$").isNotEmpty())
+                 .andExpect(jsonPath("$", containsString("Customer not found with ID: ")));
+
+         verify(customerService, times(1)).getAnalytics(anyInt());
+    
+    }
+    @Test
+    public void customerGetEventAnalytics_WithInValidRequest_thenReturnInternalServerError() throws Exception {
+    	int customerId=10;
+    	 doThrow(new Exception("Error retrieving customer analytics:"))
+     	.when(customerService).getAnalytics(anyInt());
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/getAnalytics")
+         		 .param("customerId", String.valueOf(customerId))
+                         .contentType(MediaType.APPLICATION_JSON_VALUE))
+                 .andDo(print())
+                 .andExpect(status().isOk())
+                 .andExpect(jsonPath("$").isNotEmpty())
+                 .andExpect(jsonPath("$", containsString("Error retrieving customer analytics: ")));
+
+         verify(customerService, times(1)).getAnalytics(anyInt());
+    
+    }
 }
