@@ -94,7 +94,7 @@ public class CustomerController {
     }
 
     @GetMapping("/events")
-    public List<CustomerBookEvent> getAllBookedEvents(@RequestParam int customerId) {
+    public List<CustomerBookEvent> getAllBookedEvents(@RequestParam int customerId)throws Exception {
         Customer customer = this.customerService.getCustomerById(customerId);
         return this.customerBookEventService.getAllBookedEventsForCustomer(customer);
     }
@@ -112,7 +112,7 @@ public class CustomerController {
      
 
     @PostMapping("/bookEvent")
-    public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<String> bookEvent(@RequestBody Map<String, Object> requestBody)throws Exception {
         if (!(requestBody.get("customerId") instanceof Integer)) {
             return ResponseEntity.badRequest().body("customerId should be an integer");
         }
@@ -154,7 +154,7 @@ public class CustomerController {
     }
 
     @GetMapping("/viewDetails/{customerId}")
-    public Customer viewCustomerDetails(@PathVariable int customerId) {
+    public Customer viewCustomerDetails(@PathVariable int customerId) throws Exception{
         return customerService.getCustomerById(customerId);
     }
 
@@ -259,7 +259,7 @@ public class CustomerController {
 
 	
 	@PostMapping("/bookMultipleTickets")
-	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) {
+	public String bookMultipleTickets(@RequestBody List<Map<String, Object>> ticketDetailsList) throws Exception {
 	    List<String> errors = new ArrayList<>();
 
 	    for (Map<String, Object> ticketDetails : ticketDetailsList) {
@@ -290,7 +290,7 @@ public class CustomerController {
 
 	//zh177-ZainabHassan
 	@GetMapping("/getAnalytics")
-    public String getAnalytics(@RequestParam Integer customerId) {
+    public String getAnalytics(@RequestParam(name = "customerId") Integer customerId) throws Exception {
         try {
         	 Map<String, Integer> map= this.customerService.getAnalytics(customerId);
             return "Customer Analytics for CustomerId: " + customerId + "\n  "+map;
@@ -312,7 +312,7 @@ public class CustomerController {
     }
 	//zh177-ZainabHassan
 	@PostMapping(value = "/bookPriortyTicketForEvent")
-	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
+	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) throws Exception {
 		
 		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);
        

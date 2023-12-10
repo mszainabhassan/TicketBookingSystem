@@ -96,7 +96,7 @@ public class CustomerService {
         return cvv != null && cvv.matches("\\d{3}");
     }
 
-    public Customer getCustomerById(int customerId) {
+    public Customer getCustomerById(int customerId) throws Exception {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
     }
@@ -128,13 +128,17 @@ public class CustomerService {
     }
 
 
-    public Map<String, Integer> getAnalytics(Integer customerId) {
-        // Get the Customer
+    public Map<String, Integer> getAnalytics(Integer customerId) throws Exception {
+    	int numberOfBookedEvents=0;
+    	 int numberOfPriorityEvents=0;
+    	// Get the Customer
         Customer customer = this.getCustomerById(customerId);
         List<CustomerBookEvent> bookedEvents = customer.getBookedEvents();
         List<CustomerBookEvent> priorityBookedEvents = customerBookEventRepository.findByIsPriorityAndCustomer(true, customer);
-        int numberOfBookedEvents = bookedEvents.size();
-        int numberOfPriorityEvents = priorityBookedEvents.size();
+       if(bookedEvents!=null)
+        numberOfBookedEvents = bookedEvents.size();
+       if(priorityBookedEvents!=null)
+       numberOfPriorityEvents = priorityBookedEvents.size();
         Map<String, Integer> map = new HashMap();
         map.put("TotalnumberOfBookedEvents", numberOfBookedEvents);
         map.put("NumberOfPriorityEvents", numberOfPriorityEvents);

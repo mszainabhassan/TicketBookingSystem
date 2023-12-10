@@ -101,14 +101,14 @@ public class CustomerBookEventService {
     }
 
 
-    public String PriortyTicketForEvent(Integer eventId, Integer customerId) {
+    public String PriortyTicketForEvent(Integer eventId, Integer customerId) throws Exception {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
         Customer customer = customerService.getCustomerById(customerId);
         // Check if the customer has already booked the event
         List<CustomerBookEvent> existingBookings = customerBookEventRepository.findByCustomerAndEvent(customer, event);
         if (!existingBookings.isEmpty()) {
-            throw new RuntimeException("Customer has already booked the event with ID: " + eventId);
+            return "Customer has already booked the event with ID: " + eventId;
         }
         if (event.getAvailablePrioritySeatsInteger() > 0) {
             event.setAvailablePrioritySeatsInteger(event.getAvailablePrioritySeatsInteger() - 1);
