@@ -37,12 +37,6 @@ public class Event {
 
     @Column(name = &quot;seats_available&quot;)
     private Integer seatsAvailable;
-
-
-<span class="nc" id="L42">    @OneToMany</span>
-    private List&lt;Discount&gt; discounts = new ArrayList&lt;&gt;();
-    
-
     @Column(name = &quot;no_of_priority_seats&quot;)
     private Integer noOfPrioritySeats;
 
@@ -75,170 +69,189 @@ public class Event {
     @JoinColumn(name = &quot;organizer_id&quot;, nullable = false)
     private Organizer organizer;
 
-    @JsonIgnore
+<span class="nc" id="L72">    @JsonIgnore</span>
     @OneToMany(mappedBy = &quot;event&quot;)
-    private List&lt;CustomerBookEvent&gt; bookedCustomers;
+    private List&lt;CustomerBookEvent&gt; bookedCustomers = new ArrayList&lt;&gt;();
 
-<span class="nc" id="L82">    private boolean isDeleted = false;</span>
+<span class="nc" id="L76">    @OneToMany(mappedBy = &quot;event&quot;)</span>
+    private List&lt;Discount&gt; discounts = new ArrayList&lt;&gt;();
+
+<span class="nc" id="L79">    private boolean isDeleted = false;</span>
 
     public int getEventId() {
-<span class="nc" id="L85">        return eventId;</span>
+<span class="nc" id="L82">        return eventId;</span>
     }
 
     public void setEventId(int eventId) {
-<span class="nc" id="L89">        this.eventId = eventId;</span>
-<span class="nc" id="L90">    }</span>
+<span class="nc" id="L86">        this.eventId = eventId;</span>
+<span class="nc" id="L87">    }</span>
 
     public String getEventName() {
-<span class="nc" id="L93">        return eventName;</span>
+<span class="nc" id="L90">        return eventName;</span>
     }
 
     public void setEventName(String eventName) {
-<span class="nc" id="L97">        this.eventName = eventName;</span>
-<span class="nc" id="L98">    }</span>
+<span class="nc" id="L94">        this.eventName = eventName;</span>
+<span class="nc" id="L95">    }</span>
 
     public String getEventDescription() {
-<span class="nc" id="L101">        return eventDescription;</span>
+<span class="nc" id="L98">        return eventDescription;</span>
     }
 
     public void setEventDescription(String eventDescription) {
-<span class="nc" id="L105">        this.eventDescription = eventDescription;</span>
-<span class="nc" id="L106">    }</span>
+<span class="nc" id="L102">        this.eventDescription = eventDescription;</span>
+<span class="nc" id="L103">    }</span>
 
     public String getEventLocation() {
-<span class="nc" id="L109">        return eventLocation;</span>
+<span class="nc" id="L106">        return eventLocation;</span>
     }
 
     public void setEventLocation(String eventLocation) {
-<span class="nc" id="L113">        this.eventLocation = eventLocation;</span>
-<span class="nc" id="L114">    }</span>
+<span class="nc" id="L110">        this.eventLocation = eventLocation;</span>
+<span class="nc" id="L111">    }</span>
 
     public LocalDateTime getEventDateTime() {
-<span class="nc" id="L117">        return eventDateTime;</span>
+<span class="nc" id="L114">        return eventDateTime;</span>
     }
 
     public void setEventDateTime(LocalDateTime eventDateTime) {
-<span class="nc" id="L121">        this.eventDateTime = eventDateTime;</span>
-<span class="nc" id="L122">    }</span>
+<span class="nc" id="L118">        this.eventDateTime = eventDateTime;</span>
+<span class="nc" id="L119">    }</span>
 
     public EventType getEventType() {
-<span class="nc" id="L125">        return eventType;</span>
+<span class="nc" id="L122">        return eventType;</span>
     }
 
     public void setEventType(EventType eventType) {
-<span class="nc" id="L129">        this.eventType = eventType;</span>
-<span class="nc" id="L130">    }</span>
+<span class="nc" id="L126">        this.eventType = eventType;</span>
+<span class="nc" id="L127">    }</span>
 
     public Integer getSeatsAvailable() {
-<span class="nc" id="L133">        return seatsAvailable;</span>
+<span class="nc" id="L130">        return seatsAvailable;</span>
     }
 
     public void setSeatsAvailable(Integer seatsAvailable) {
-<span class="nc" id="L137">        this.seatsAvailable = seatsAvailable;</span>
-<span class="nc" id="L138">    }</span>
+<span class="nc" id="L134">        this.seatsAvailable = seatsAvailable;</span>
+<span class="nc" id="L135">    }</span>
 
     public Boolean getIsLimitedSeats() {
-<span class="nc" id="L141">        return isLimitedSeats;</span>
+<span class="nc" id="L138">        return isLimitedSeats;</span>
     }
 
 
     public void setIsLimitedSeats(Boolean isLimitedSeats) {
-<span class="nc" id="L146">        this.isLimitedSeats = isLimitedSeats;</span>
-<span class="nc" id="L147">    }</span>
+<span class="nc" id="L143">        this.isLimitedSeats = isLimitedSeats;</span>
+<span class="nc" id="L144">    }</span>
 
     public String getEventFrequency() {
-<span class="nc" id="L150">        return eventFrequency;</span>
+<span class="nc" id="L147">        return eventFrequency;</span>
     }
 
     public void setEventFrequency(String eventFrequency) {
-<span class="nc" id="L154">        this.eventFrequency = eventFrequency;</span>
-<span class="nc" id="L155">    }</span>
+<span class="nc" id="L151">        this.eventFrequency = eventFrequency;</span>
+<span class="nc" id="L152">    }</span>
 
     public List&lt;CustomerBookEvent&gt; getBookedCustomers() {
-<span class="nc" id="L158">        return bookedCustomers;</span>
+<span class="nc" id="L155">        return bookedCustomers;</span>
     }
 
     public void setBookedCustomers(List&lt;CustomerBookEvent&gt; bookedCustomers) {
-<span class="nc" id="L162">        this.bookedCustomers = bookedCustomers;</span>
-<span class="nc" id="L163">    }</span>
+<span class="nc" id="L159">        this.bookedCustomers = bookedCustomers;</span>
+<span class="nc" id="L160">    }</span>
 
     public Boolean getStatus() {
-<span class="nc" id="L166">        return status;</span>
+<span class="nc" id="L163">        return status;</span>
     }
 
     public void setStatus(Boolean status) {
-<span class="nc" id="L170">        this.status = status;</span>
-<span class="nc" id="L171">    }</span>
+<span class="nc" id="L167">        this.status = status;</span>
+<span class="nc" id="L168">    }</span>
 
     public Organizer getOrganizer() {
-<span class="nc" id="L174">        return organizer;</span>
+<span class="nc" id="L171">        return organizer;</span>
     }
 
     public void setOrganizer(Organizer organizer) {
-<span class="nc" id="L178">        this.organizer = organizer;</span>
-<span class="nc" id="L179">    }</span>
+<span class="nc" id="L175">        this.organizer = organizer;</span>
+<span class="nc" id="L176">    }</span>
 
     public Integer getNoOfPrioritySeats() {
-<span class="nc" id="L182">        return noOfPrioritySeats;</span>
+<span class="nc" id="L179">        return noOfPrioritySeats;</span>
     }
 
     public void setNoOfPrioritySeats(Integer noOfPrioritySeats) {
-<span class="nc" id="L186">        this.noOfPrioritySeats = noOfPrioritySeats;</span>
-<span class="nc" id="L187">    }</span>
+<span class="nc" id="L183">        this.noOfPrioritySeats = noOfPrioritySeats;</span>
+<span class="nc" id="L184">    }</span>
 
     public Integer getAvailablePrioritySeatsInteger() {
-<span class="nc" id="L190">        return availablePrioritySeatsInteger;</span>
+<span class="nc" id="L187">        return availablePrioritySeatsInteger;</span>
     }
 
     public Float getPrioritySeatFees() {
-<span class="nc" id="L194">        return prioritySeatFees;</span>
+<span class="nc" id="L191">        return prioritySeatFees;</span>
     }
 
     public void setPrioritySeatFees(Float prioritySeatFees) {
-<span class="nc bnc" id="L198" title="All 4 branches missed.">        if (prioritySeatFees != null &amp;&amp; eventFees != null) {</span>
-<span class="nc" id="L199">            this.prioritySeatFees = prioritySeatFees + (eventFees / 10);</span>
+<span class="nc bnc" id="L195" title="All 4 branches missed.">        if (prioritySeatFees != null &amp;&amp; eventFees != null) {</span>
+<span class="nc" id="L196">            this.prioritySeatFees = prioritySeatFees + (eventFees / 10);</span>
         }
-<span class="nc" id="L201">    }</span>
+<span class="nc" id="L198">    }</span>
 
     public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
-<span class="nc" id="L204">        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;</span>
-<span class="nc" id="L205">    }</span>
+<span class="nc" id="L201">        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;</span>
+<span class="nc" id="L202">    }</span>
 
     public Float getEventFees() {
-<span class="nc" id="L208">        return eventFees;</span>
+<span class="nc" id="L205">        return eventFees;</span>
     }
 
     public void setEventFees(Float eventFees) {
-<span class="nc" id="L212">        this.eventFees = eventFees;</span>
-<span class="nc" id="L213">    }</span>
+<span class="nc" id="L209">        this.eventFees = eventFees;</span>
+<span class="nc" id="L210">    }</span>
 
 
-<span class="nc" id="L216">    public Event(String eventName, String eventDescription, String eventLocation, LocalDateTime eventDateTime, Integer seatsAvailable, Integer noOfPrioritySeats, Integer availablePrioritySeatsInteger, Float prioritySeatFees, Float eventFees, EventType eventType, Boolean isLimitedSeats, String eventFrequency, Boolean status, Organizer organizer) {</span>
-<span class="nc" id="L217">        this.eventName = eventName;</span>
-<span class="nc" id="L218">        this.eventDescription = eventDescription;</span>
-<span class="nc" id="L219">        this.eventLocation = eventLocation;</span>
-<span class="nc" id="L220">        this.eventDateTime = eventDateTime;</span>
-<span class="nc" id="L221">        this.seatsAvailable = seatsAvailable;</span>
-<span class="nc" id="L222">        this.noOfPrioritySeats = noOfPrioritySeats;</span>
-<span class="nc" id="L223">        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;</span>
-<span class="nc" id="L224">        this.prioritySeatFees = prioritySeatFees;</span>
-<span class="nc" id="L225">        this.eventFees = eventFees;</span>
-<span class="nc" id="L226">        this.eventType = eventType;</span>
-<span class="nc" id="L227">        this.isLimitedSeats = isLimitedSeats;</span>
-<span class="nc" id="L228">        this.eventFrequency = eventFrequency;</span>
-<span class="nc" id="L229">        this.status = status;</span>
-<span class="nc" id="L230">        this.organizer = organizer;</span>
-<span class="nc" id="L231">        isDeleted = false;</span>
-<span class="nc" id="L232">    }</span>
+    public boolean isDeleted() {
+<span class="nc" id="L214">        return isDeleted;</span>
+    }
 
-<span class="nc" id="L234">    public Event() {</span>
-<span class="nc" id="L235">        isDeleted = false;</span>
-<span class="nc" id="L236">    }</span>
+    public void setDeleted(boolean deleted) {
+<span class="nc" id="L218">        isDeleted = deleted;</span>
+<span class="nc" id="L219">    }</span>
+
+    public List&lt;Discount&gt; getDiscounts() {
+<span class="nc" id="L222">        return discounts;</span>
+    }
+
+    public void setDiscounts(List&lt;Discount&gt; discounts) {
+<span class="nc" id="L226">        this.discounts = discounts;</span>
+<span class="nc" id="L227">    }</span>
+
+<span class="nc" id="L229">    public Event(String eventName, String eventDescription, String eventLocation, LocalDateTime eventDateTime, Integer seatsAvailable, Integer noOfPrioritySeats, Integer availablePrioritySeatsInteger, Float prioritySeatFees, Float eventFees, EventType eventType, Boolean isLimitedSeats, String eventFrequency, Boolean status, Organizer organizer) {</span>
+<span class="nc" id="L230">        this.eventName = eventName;</span>
+<span class="nc" id="L231">        this.eventDescription = eventDescription;</span>
+<span class="nc" id="L232">        this.eventLocation = eventLocation;</span>
+<span class="nc" id="L233">        this.eventDateTime = eventDateTime;</span>
+<span class="nc" id="L234">        this.seatsAvailable = seatsAvailable;</span>
+<span class="nc" id="L235">        this.noOfPrioritySeats = noOfPrioritySeats;</span>
+<span class="nc" id="L236">        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;</span>
+<span class="nc" id="L237">        this.prioritySeatFees = prioritySeatFees;</span>
+<span class="nc" id="L238">        this.eventFees = eventFees;</span>
+<span class="nc" id="L239">        this.eventType = eventType;</span>
+<span class="nc" id="L240">        this.isLimitedSeats = isLimitedSeats;</span>
+<span class="nc" id="L241">        this.eventFrequency = eventFrequency;</span>
+<span class="nc" id="L242">        this.status = status;</span>
+<span class="nc" id="L243">        this.organizer = organizer;</span>
+<span class="nc" id="L244">        isDeleted = false;</span>
+<span class="nc" id="L245">    }</span>
+
+<span class="nc" id="L247">    public Event() {</span>
+<span class="nc" id="L248">        isDeleted = false;</span>
+<span class="nc" id="L249">    }</span>
 
 
     @Override
     public String toString() {
-<span class="nc" id="L241">        return &quot;Event{&quot; +</span>
+<span class="nc" id="L254">        return &quot;Event{&quot; +</span>
                 &quot; name='&quot; + eventName + '\'' +
                 &quot;location='&quot; + eventLocation + '\'' +
                 &quot; Description='&quot; + eventDescription + '\'' +
@@ -247,4 +260,4 @@ public class Event {
 }
 
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

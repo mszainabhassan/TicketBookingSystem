@@ -78,7 +78,7 @@ public class OrganizerService implements OrganizerServiceInterface {
 
 
     @Transactional
-    public boolean organizerExists(int organizerId) {
+    public boolean organizerExists(int organizerId) throws Exception {
         return organizerRepository.existsById(organizerId);
     }
 

@@ -59,11 +59,11 @@ public class EventService {
         }
     }
 
-    public Event createEvent(Event event) {
+    public Event createEvent(Event event) throws Exception {
 <span class="nc" id="L63">        return eventRepository.save(event);</span>
     }
 
-    public Event createEventByAdmin(Event event) {
+    public Event createEventByAdmin(Event event)throws Exception {
 <span class="nc" id="L67">        return eventRepository.save(event);</span>
     }
 
@@ -174,7 +174,7 @@ public class EventService {
 <span class="nc" id="L174">                .orElseThrow(() -&gt; new RuntimeException(&quot;Event not found with ID: &quot; + eventId));</span>
     }
 
-    public void sendEventNotifications(Event event) {
+    public void sendEventNotifications(Event event) throws Exception {
 <span class="nc" id="L178">        List&lt;Customer&gt; optedInCustomers = customerRepository.findByIsNotificationOn(true);</span>
 
 <span class="nc bnc" id="L180" title="All 2 branches missed.">        for (Customer customer : optedInCustomers) {</span>
@@ -189,4 +189,4 @@ public class EventService {
 
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

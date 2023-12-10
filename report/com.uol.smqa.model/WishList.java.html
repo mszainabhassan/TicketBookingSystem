@@ -5,12 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-<span class="nc" id="L8">public class WishList {</span>
+public class WishList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = &quot;wishlist_id&quot;)
 	private int wishlist_id;
 	
+	
+	
+	public WishList() {
+<span class="nc" id="L17">		super();</span>
+<span class="nc" id="L18">	}</span>
+
 	@ManyToOne
 	@JoinColumn(name = &quot;event_id&quot;, nullable = false)
 	private Event event;
@@ -19,13 +25,18 @@ import jakarta.persistence.*;
 	@JoinColumn(name = &quot;customer_id&quot;, nullable = false)
 	private Customer customer;
 
+<span class="nc" id="L28">	public WishList(Customer customer2, Event event2) {</span>
+<span class="nc" id="L29">		this.customer=customer2;</span>
+<span class="nc" id="L30">		this.event=event2;</span>
+<span class="nc" id="L31">	}</span>
+
 	public int getWishlist_id() {
-<span class="nc" id="L23">		return wishlist_id;</span>
+<span class="nc" id="L34">		return wishlist_id;</span>
 	}
 
 	public void setWishlist_id(int wishlist_id) {
-<span class="nc" id="L27">		this.wishlist_id = wishlist_id;</span>
-<span class="nc" id="L28">	}</span>
+<span class="nc" id="L38">		this.wishlist_id = wishlist_id;</span>
+<span class="nc" id="L39">	}</span>
 
 //	public Integer getCustomerId() {
 //		return customerId;
@@ -40,12 +51,12 @@ import jakarta.persistence.*;
 //	}
 
 	public Event getEvent() {
-<span class="nc" id="L43">		return event;</span>
+<span class="nc" id="L54">		return event;</span>
 	}
 
 	public void setEvent(Event event) {
-<span class="nc" id="L47">		this.event = event;</span>
-<span class="nc" id="L48">	}</span>
+<span class="nc" id="L58">		this.event = event;</span>
+<span class="nc" id="L59">	}</span>
 
 //	public void setEventId(Integer eventId) {
 //		this.eventId = eventId;
@@ -53,13 +64,13 @@ import jakarta.persistence.*;
 
 	@JsonIgnore
 	public Customer getCustomer() {
-<span class="nc" id="L56">		return customer;</span>
+<span class="nc" id="L67">		return customer;</span>
 	}
 
 	public void setCustomer(Customer customer) {
-<span class="nc" id="L60">		this.customer = customer;</span>
-<span class="nc" id="L61">	}</span>
+<span class="nc" id="L71">		this.customer = customer;</span>
+<span class="nc" id="L72">	}</span>
 		
 	
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

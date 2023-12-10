@@ -3,10 +3,11 @@ package com.uol.smqa.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.uol.smqa.Enum.DiscountType;
 import jakarta.persistence.*;
 
 @Entity
-public class Discount implements Serializable{
+public class Discount {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,9 +18,16 @@ public class Discount implements Serializable{
 	private String discountCode = "";
 	
 	@Column(name = "discount_value", nullable = false)
-	private int discountValue = 0;
+	private Float discountValue = 0f;
+
+	@Enumerated(EnumType.STRING)
+	private DiscountType discountType;
+
+	@ManyToOne
+	@JoinColumn(name = "organizer_id")
+	private Organizer organizer;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name="event_id")
 	private Event event;
 
@@ -39,11 +47,11 @@ public class Discount implements Serializable{
 		this.discountCode = discountCode;
 	}
 
-	public int getDiscountValue() {
+	public Float getDiscountValue() {
 		return discountValue;
 	}
 
-	public void setDiscountValue(int discountValue) {
+	public void setDiscountValue(Float discountValue) {
 		this.discountValue = discountValue;
 	}
 
@@ -57,10 +65,29 @@ public class Discount implements Serializable{
 	}
 
 
+	public DiscountType getDiscountType() {
+		return discountType;
+	}
+
+	public void setDiscountType(DiscountType discountType) {
+		this.discountType = discountType;
+	}
+
 	public Discount() {
 	}
 
+	public Discount(String discountCode, Float discountValue, Event event) {
+		this.discountCode = discountCode;
+		this.discountValue = discountValue;
+		this.event = event;
+	}
 
-
+	public Discount(String discountCode, Float discountValue, DiscountType discountType, Organizer organizer, Event event) {
+		this.discountCode = discountCode;
+		this.discountValue = discountValue;
+		this.discountType = discountType;
+		this.organizer = organizer;
+		this.event = event;
+	}
 }
 

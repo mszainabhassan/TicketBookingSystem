@@ -20,62 +20,62 @@ import com.uol.smqa.model.Organizer;
 
 
 @Service
-<span class="nc" id="L23">public class AdminService {</span>
+public class AdminService {
 
+
+	private final CustomerRepository customerRepository;
+	private final OrganizerRepository organizerRepository;
+	private final OrganizerService organizerService;
+	private final EventService eventService;
 
 	@Autowired
-	private CustomerRepository customerRepository;
-
-	//private CustomerService customerService ;
+	public AdminService(CustomerRepository customerRepository, OrganizerRepository organizerRepository,
+<span class="nc" id="L33">						EventService eventService, OrganizerService organizerService) {</span>
+<span class="nc" id="L34">		this.customerRepository = customerRepository;</span>
+<span class="nc" id="L35">		this.organizerRepository = organizerRepository;</span>
+<span class="nc" id="L36">		this.eventService = eventService;</span>
+<span class="nc" id="L37">		this.organizerService = organizerService;</span>
+<span class="nc" id="L38">	}</span>
 
 	public Customer AdminCustomerRegistration(Customer customer) {
-<span class="nc" id="L32">		return this.customerRepository.save(customer);</span>
+<span class="nc" id="L41">		return this.customerRepository.save(customer);</span>
 	}
 
 	public String ChangeUserStatus(int customer_id, boolean isActive) {
 		// TODO Auto-generated method stub
-<span class="nc" id="L37">		Optional&lt;Customer&gt; customerOptional = this.customerRepository.findById(customer_id);</span>
+<span class="nc" id="L46">		Optional&lt;Customer&gt; customerOptional = this.customerRepository.findById(customer_id);</span>
 
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (customerOptional.isPresent()) {</span>
-<span class="nc" id="L40">			Customer customer = customerOptional.get();</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">		if (customerOptional.isPresent()) {</span>
+<span class="nc" id="L49">			Customer customer = customerOptional.get();</span>
 
-<span class="nc" id="L42">			customer.getUsers().setActive(isActive);</span>
-<span class="nc" id="L43">			this.customerRepository.save(customer);</span>
-<span class="nc" id="L44">			return &quot;Customer Account Status Changed&quot;;</span>
+<span class="nc" id="L51">			customer.getUsers().setActive(isActive);</span>
+<span class="nc" id="L52">			this.customerRepository.save(customer);</span>
+<span class="nc" id="L53">			return &quot;Customer Account Status Changed&quot;;</span>
 		} else {
 
-<span class="nc" id="L47">			return &quot;Customer ID not Present. Enter Valid Customer ID&quot;;</span>
+<span class="nc" id="L56">			return &quot;Customer ID not Present. Enter Valid Customer ID&quot;;</span>
 		}
 
 	}
 
-	@Autowired
-	private OrganizerRepository organizerRepository;
 
 	public String ChangeOrganizerStatus(int organizer_id, boolean isActive) {
 		// TODO Auto-generated method stub
-<span class="nc" id="L57">		Optional&lt;Organizer&gt; organizerOptional = this.organizerRepository.findById(organizer_id);</span>
+<span class="nc" id="L64">		Optional&lt;Organizer&gt; organizerOptional = this.organizerRepository.findById(organizer_id);</span>
 
-<span class="nc bnc" id="L59" title="All 2 branches missed.">		if (organizerOptional.isPresent()) {</span>
-<span class="nc" id="L60">			Organizer organizer = organizerOptional.get();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (organizerOptional.isPresent()) {</span>
+<span class="nc" id="L67">			Organizer organizer = organizerOptional.get();</span>
 
-<span class="nc" id="L62">			organizer.getUsers().setActive(isActive);</span>
-<span class="nc" id="L63">			this.organizerRepository.save(organizer);</span>
-<span class="nc" id="L64">			return &quot;Organizer Account Status Changed&quot;;</span>
+<span class="nc" id="L69">			organizer.getUsers().setActive(isActive);</span>
+<span class="nc" id="L70">			this.organizerRepository.save(organizer);</span>
+<span class="nc" id="L71">			return &quot;Organizer Account Status Changed&quot;;</span>
 		} else {
 
-<span class="nc" id="L67">			return &quot;Organizer ID not Present. Enter Valid Organizer ID&quot;;</span>
+<span class="nc" id="L74">			return &quot;Organizer ID not Present. Enter Valid Organizer ID&quot;;</span>
 		}
 
 	}
 
-
-
-    @Autowired
-    private EventService eventService;  // Assuming you have an EventService
-
-    @Autowired
-    private OrganizerService organizerService;
 
     public void handleEventCreationRequest(Event event, int organizerId) {
         // Your actual implementation to process the event creation request
@@ -101,4 +101,4 @@ import com.uol.smqa.model.Organizer;
 <span class="nc" id="L101">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

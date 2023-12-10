@@ -73,13 +73,13 @@ public class AdminController {
     }
 
     @PutMapping(&quot;/updateeventtype&quot;)
-    public ResponseEntity&lt;?&gt; updateEventType(@RequestParam Long id, @RequestBody EventType eventType) {
+    public ResponseEntity&lt;?&gt; updateEventType(@RequestParam(name = &quot;id&quot;) Long id, @RequestBody EventType eventType) {
 <span class="nc" id="L77">        ResponseEntity&lt;?&gt; updatedEventType = eventTypeService.updateEventType(id, eventType);</span>
 <span class="nc" id="L78">        return updatedEventType;</span>
     }
 
     @DeleteMapping(&quot;/deleteeventtype&quot;)
-    public ResponseEntity&lt;?&gt; deleteEventType(@RequestParam Long id) {
+    public ResponseEntity&lt;?&gt; deleteEventType(@RequestParam(name = &quot;id&quot;) Long id) {
 <span class="nc" id="L83">        ResponseEntity&lt;?&gt; DeletedEventType = eventTypeService.deleteEventType(id);</span>
 <span class="nc" id="L84">        return DeletedEventType;</span>
     }
@@ -106,13 +106,13 @@ public class AdminController {
 
     @PutMapping(&quot;/change_organizer_account_status&quot;)
 
-    public String ChangeOrganizerStatus(@RequestParam Integer organizer_id, @RequestParam Boolean isActive) {
+    public String ChangeOrganizerStatus(@RequestParam(name = &quot;organizer_id&quot;) Integer organizer_id, @RequestParam(name = &quot;isActive&quot;) Boolean isActive) {
 <span class="nc" id="L110">        return this.adminService.ChangeOrganizerStatus(organizer_id, isActive);</span>
 
     }
 
     @PutMapping(&quot;/change_user_status&quot;)
-    public String ChangeUserStatus(@RequestParam Integer customer_id, @RequestParam Boolean isActive) {
+    public String ChangeUserStatus(@RequestParam(name = &quot;customer_id&quot;) Integer customer_id, @RequestParam(name = &quot;isActive&quot;) Boolean isActive) {
 <span class="nc" id="L116">        return this.adminService.ChangeUserStatus(customer_id, isActive);</span>
 
     }
@@ -131,7 +131,7 @@ public class AdminController {
     }
 
     @PostMapping(&quot;/createEvent&quot;)
-    public ResponseEntity&lt;?&gt; createEvent(@RequestBody Event event) {
+    public ResponseEntity&lt;?&gt; createEvent(@RequestBody Event event) throws Exception {
         try {
 <span class="nc" id="L136">            String eventTypeName = event.getEventType().getEventTypeName();</span>
 <span class="nc" id="L137">            Optional&lt;EventType&gt; existingEventType = eventTypeService.getEventTypeByName(eventTypeName);</span>
@@ -183,13 +183,13 @@ public class AdminController {
     }
 
     @DeleteMapping(&quot;/deleteEvent&quot;)
-    public String deleteEvent(@RequestParam Integer eventId) {
+    public String deleteEvent(@RequestParam(name = &quot;eventId&quot;) Integer eventId) {
 <span class="nc" id="L187">        return this.eventService.deleteEvent(eventId);</span>
     }
 
 
     @PostMapping(&quot;/initiateEventCreation&quot;)
-    public String initiateEventCreation(@RequestBody Event event, @RequestParam int organizerId) {
+    public String initiateEventCreation(@RequestBody Event event, @RequestParam(name = &quot;organizerId&quot;) int organizerId) throws Exception {
         try {
 
 <span class="nc bnc" id="L195" title="All 2 branches missed.">            if (!organizerService.hasEventCreationRequest(organizerId)) {</span>
@@ -208,4 +208,4 @@ public class AdminController {
 }
 
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

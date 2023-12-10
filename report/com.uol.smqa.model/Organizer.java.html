@@ -138,11 +138,26 @@ public class Organizer {
 <span class="nc" id="L138">        this.regNo = regNo;</span>
 <span class="nc" id="L139">    }</span>
 
-<span class="nc" id="L141">    public Organizer() {</span>
-<span class="nc" id="L142">    }</span>
+<span class="nc" id="L141">    public Organizer(String name, String orgName, String email, LocalDate dob, Gender gender, String contactNumber, String regNo, Users user) {</span>
+<span class="nc" id="L142">        this.name = name;</span>
+<span class="nc" id="L143">        this.orgName = orgName;</span>
+<span class="nc" id="L144">        this.email = email;</span>
+<span class="nc" id="L145">        this.dob = dob;</span>
+<span class="nc" id="L146">        this.gender = gender;</span>
+<span class="nc" id="L147">        this.contactNumber = contactNumber;</span>
+<span class="nc" id="L148">        this.regNo = regNo;</span>
+<span class="nc" id="L149">        this.users = user;</span>
+<span class="nc" id="L150">    }</span>
+
+<span class="nc" id="L152">    public Organizer() {</span>
+<span class="nc" id="L153">    }</span>
+
+<span class="nc" id="L155">	public Organizer(int i) {</span>
+<span class="nc" id="L156">		this.organizerId=i;</span>
+<span class="nc" id="L157">	}</span>
 }
 
 
 
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

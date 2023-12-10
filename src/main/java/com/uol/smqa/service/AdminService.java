@@ -23,10 +23,19 @@ import com.uol.smqa.model.Organizer;
 public class AdminService {
 
 
-	@Autowired
-	private CustomerRepository customerRepository;
+	private final CustomerRepository customerRepository;
+	private final OrganizerRepository organizerRepository;
+	private final OrganizerService organizerService;
+	private final EventService eventService;
 
-	//private CustomerService customerService ;
+	@Autowired
+	public AdminService(CustomerRepository customerRepository, OrganizerRepository organizerRepository,
+						EventService eventService, OrganizerService organizerService) {
+		this.customerRepository = customerRepository;
+		this.organizerRepository = organizerRepository;
+		this.eventService = eventService;
+		this.organizerService = organizerService;
+	}
 
 	public Customer AdminCustomerRegistration(Customer customer) {
 		return this.customerRepository.save(customer);
@@ -49,8 +58,6 @@ public class AdminService {
 
 	}
 
-	@Autowired
-	private OrganizerRepository organizerRepository;
 
 	public String ChangeOrganizerStatus(int organizer_id, boolean isActive) {
 		// TODO Auto-generated method stub
@@ -69,13 +76,6 @@ public class AdminService {
 
 	}
 
-
-
-    @Autowired
-    private EventService eventService;  // Assuming you have an EventService
-
-    @Autowired
-    private OrganizerService organizerService;
 
     public void handleEventCreationRequest(Event event, int organizerId) {
         // Your actual implementation to process the event creation request

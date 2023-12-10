@@ -21,7 +21,7 @@ public class EmailController {
 <span class="nc" id="L21">    }</span>
 
     @PostMapping(&quot;/sendEventNotifications&quot;)
-    public String sendEventNotifications(@RequestBody Event event) {
+    public String sendEventNotifications(@RequestBody Event event) throws Exception {
         try {
 <span class="nc" id="L26">            eventService.sendEventNotifications(event);</span>
 <span class="nc" id="L27">            return &quot;Event notifications sent successfully.&quot;;</span>
@@ -30,4 +30,4 @@ public class EmailController {
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

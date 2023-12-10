@@ -55,7 +55,7 @@ public class OrganizerController {
     }
 
     @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+    public ResponseEntity<?> createEvent(@RequestBody Event event) throws Exception {
         String eventTypeName = event.getEventType().getEventTypeName();
         Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
@@ -150,7 +150,7 @@ public class OrganizerController {
     }
 
     @PostMapping("/requestEventCreation")
-    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam int adminId) {
+    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam(name = "adminId") int adminId) throws Exception {
         try {
             // Validate the organizer's request
             if (event == null || event.getEventName() == null || event.getEventType() == null) {
@@ -173,7 +173,7 @@ public class OrganizerController {
 
 
     @GetMapping("/events/{eventId}/reviews")
-    public ResponseEntity<?> getEventReviews(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> getEventReviews(@Validated @PathVariable(name = "eventId") int eventId, @Validated @RequestParam(name = "organizerId") int organizerId) {
 
         try {
             List<EventReview> reviewsByOrganizer = this.eventReviewService.getAllEventsReviewsByOrganizer(eventId, organizerId);
@@ -188,7 +188,7 @@ public class OrganizerController {
 
 
     @PostMapping("/event-reviews/{reviewId}/reply")
-    public ResponseEntity<?> replyEventReviews(@Validated @PathVariable int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+    public ResponseEntity<?> replyEventReviews(@Validated @PathVariable(name = "reviewId") int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
 
         try {
             ReviewReply savedReply = this.eventReviewService.replyEventReviewsByOrganizer(reviewId, reviewReply);
@@ -204,7 +204,7 @@ public class OrganizerController {
     }
 
     @PutMapping("/event-reviews/{reviewId}/reply")
-    public ResponseEntity<?> editEventReviewReply(@PathVariable int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+    public ResponseEntity<?> editEventReviewReply(@PathVariable(name = "reviewId") int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
 
         try {
             ReviewReply savedReply = this.eventReviewService.editReplyEventReviewsByOrganizer(reviewId, reviewReply);
@@ -220,7 +220,7 @@ public class OrganizerController {
 
 
     @DeleteMapping("/event-reviews/reply/{replyId}")
-    public ResponseEntity<?> deleteEventReviewReply(@PathVariable int replyId, @Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> deleteEventReviewReply(@PathVariable(name = "replyId") int replyId, @Validated @RequestParam(name = "organizerId") int organizerId) {
 
         try {
             this.eventReviewService.deleteReplyEventReviewsByOrganizer(replyId, organizerId);

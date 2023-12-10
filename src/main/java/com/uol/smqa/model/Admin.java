@@ -16,6 +16,17 @@ public class Admin {
     private Long adminId;
 
 
+    public Admin() {
+    }
+
+
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
+    }
 }
 
 

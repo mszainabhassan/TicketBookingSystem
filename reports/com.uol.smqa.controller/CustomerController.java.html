@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.uol.smqa.controller</a> &gt; <span class="el_source">CustomerController.java</span></div><h1>CustomerController.java</h1><pre class="source lang-java linenums">package com.uol.smqa.controller;
+
+import com.uol.smqa.model.*;
+import com.uol.smqa.service.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.uol.smqa.Enum.Gender;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import com.uol.smqa.dtos.response.BaseApiResponseDTO;
+import com.uol.smqa.exceptions.ResourceNotFoundException;
+
+import com.uol.smqa.model.Customer;
+import com.uol.smqa.model.CustomerBookEvent;
+
+import com.uol.smqa.model.Event;
+
+import com.uol.smqa.model.WishList;
+import com.uol.smqa.repository.EventRepository;
+import com.uol.smqa.repository.ReviewRepository;
+import com.uol.smqa.model.Event;
+import com.uol.smqa.model.Review;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.uol.smqa.service.CustomerService;
+import com.uol.smqa.model.CardDetails;
+import com.uol.smqa.service.CustomerBookEventService;
+import com.uol.smqa.service.WishListService;
+
+import java.util.List;
+
+import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+
+import java.util.Map;
+import java.util.Optional;
+
+import com.uol.smqa.service.WishListService;
+
+
+@RestController
+@RequestMapping(&quot;/customer&quot;)
+public class CustomerController {
+
+    private final CustomerService customerService;
+
+    private final CustomerBookEventService customerBookEventService;
+	private final WishListService wishlistService;
+	private final EventService eventService;
+    private final EventRepository eventRepository;
+	private final ReviewRepository reviewRepository;
+
+	@Autowired
+	public CustomerController(CustomerService customerService, CustomerBookEventService customerBookEventService,
+							  WishListService wishlistService, EventService eventService, EventRepository eventRepository,
+<span class="fc" id="L69">							  ReviewRepository reviewRepository) {</span>
+<span class="fc" id="L70">		this.customerService = customerService;</span>
+<span class="fc" id="L71">		this.customerBookEventService = customerBookEventService;</span>
+<span class="fc" id="L72">		this.wishlistService = wishlistService;</span>
+<span class="fc" id="L73">		this.eventService = eventService;</span>
+<span class="fc" id="L74">		this.eventRepository = eventRepository;</span>
+<span class="fc" id="L75">		this.reviewRepository = reviewRepository;</span>
+<span class="fc" id="L76">	}</span>
+
+	//zh177-ZainabHassan
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;?&gt; customerRegistration(@RequestBody Customer customer) {
+        try {
+<span class="nc" id="L82">        	Customer customer2= this.customerService.CustomerRegistration(customer);</span>
+<span class="nc" id="L83">         return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Customer Registered Successfully!&quot;, customer2, null),</span>
+				HttpStatus.OK);
+         }
+<span class="nc" id="L86">        catch (DataIntegrityViolationException e) {</span>
+<span class="nc" id="L87">        	 return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Duplicate customer Email!&quot;),</span>
+  					HttpStatus.CONFLICT);
+		}
+<span class="nc" id="L90">         catch (Exception e) {</span>
+<span class="nc" id="L91">        	 return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while registering customer&quot;),</span>
+ 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+    }
+
+    @GetMapping(&quot;/events&quot;)
+    public List&lt;CustomerBookEvent&gt; getAllBookedEvents(@RequestParam int customerId) {
+<span class="nc" id="L98">        Customer customer = this.customerService.getCustomerById(customerId);</span>
+<span class="nc" id="L99">        return this.customerBookEventService.getAllBookedEventsForCustomer(customer);</span>
+    }
+
+	@GetMapping(&quot;/upcoming-events&quot;)
+	public List&lt;Object[]&gt; getAllUpcomingEvents() {
+<span class="nc" id="L104">		return this.customerBookEventService.getAllEvents();</span>
+	}
+
+
+	@GetMapping(&quot;/all-events&quot;)
+	public List&lt;Event&gt; getAllEvents(CustomerEventsFilterSearchCriteria eventsFilterSearchCriteria) {
+<span class="nc" id="L110">		return this.eventService.getAllEventsBySearchCriteria(eventsFilterSearchCriteria);</span>
+	}
+     
+
+    @PostMapping(&quot;/bookEvent&quot;)
+    public ResponseEntity&lt;String&gt; bookEvent(@RequestBody Map&lt;String, Object&gt; requestBody) {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (!(requestBody.get(&quot;customerId&quot;) instanceof Integer)) {</span>
+<span class="nc" id="L117">            return ResponseEntity.badRequest().body(&quot;customerId should be an integer&quot;);</span>
+        }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (!(requestBody.get(&quot;eventId&quot;) instanceof Integer)) {</span>
+<span class="nc" id="L120">            return ResponseEntity.badRequest().body(&quot;eventId should be an integer&quot;);</span>
+        }
+<span class="nc" id="L122">        int customerId = (Integer) requestBody.get(&quot;customerId&quot;);</span>
+<span class="nc" id="L123">        int eventId = (Integer) requestBody.get(&quot;eventId&quot;);</span>
+
+<span class="nc" id="L125">        Customer customer = this.customerService.getCustomerById(customerId);</span>
+        Long bookingId;
+
+        try {
+<span class="nc" id="L129">            bookingId = customerBookEventService.bookEvent(eventId, customer);</span>
+<span class="nc" id="L130">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L131">            return ResponseEntity.badRequest().body(e.getMessage());</span>
+<span class="nc" id="L132">        }</span>
+
+<span class="nc" id="L134">        return ResponseEntity.ok(&quot;Event booked successfully! Booking ID: &quot; + bookingId);</span>
+    }
+
+    @DeleteMapping(&quot;/cancelBooking/{bookingId}&quot;)
+    public String cancelBooking(@PathVariable Long bookingId) {
+        try {
+<span class="nc" id="L140">            customerBookEventService.cancelEventBooking(bookingId);</span>
+<span class="nc" id="L141">            return &quot;Booking canceled successfully!&quot;;</span>
+<span class="nc" id="L142">        } catch (Exception e) {</span>
+<span class="nc" id="L143">            return &quot;Error canceling booking: &quot; + e.getMessage();</span>
+        }
+    }
+    @PostMapping(&quot;/provideRating/{bookingId}&quot;)
+    public String provideEventRating(@PathVariable Long bookingId, @RequestParam Integer rating, @RequestParam String review) {
+        try {
+<span class="nc" id="L149">            customerBookEventService.provideEventRating(bookingId, rating,review);</span>
+<span class="nc" id="L150">            return &quot;Rating and review provided successfully!&quot;;</span>
+<span class="nc" id="L151">        } catch (Exception e) {</span>
+<span class="nc" id="L152">            return &quot;Error providing rating and review: &quot; + e.getMessage();</span>
+        }
+    }
+
+    @GetMapping(&quot;/viewDetails/{customerId}&quot;)
+    public Customer viewCustomerDetails(@PathVariable int customerId) {
+<span class="nc" id="L158">        return customerService.getCustomerById(customerId);</span>
+    }
+
+    @PostMapping(&quot;/updateDetails/{customerId}&quot;)
+    public String updateCustomerDetails(
+            @PathVariable int customerId,
+            @RequestBody Map&lt;String, Object&gt; updates) {
+        try {
+<span class="nc" id="L166">            Customer existingCustomer = customerService.getCustomerById(customerId);</span>
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (existingCustomer == null) {</span>
+<span class="nc" id="L169">                return &quot;Customer not found with ID: &quot; + customerId;</span>
+            }
+
+
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (updates.containsKey(&quot;name&quot;)) {</span>
+<span class="nc" id="L174">                existingCustomer.setName((String) updates.get(&quot;name&quot;));</span>
+            }
+
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (updates.containsKey(&quot;gender&quot;)) {</span>
+<span class="nc" id="L178">                existingCustomer.setGender(Gender.valueOf((String) updates.get(&quot;gender&quot;)));</span>
+            }
+
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (updates.containsKey(&quot;dob&quot;)) {</span>
+<span class="nc" id="L182">                existingCustomer.setDob(LocalDate.parse((String) updates.get(&quot;dob&quot;)));</span>
+            }
+
+<span class="nc" id="L185">            customerService.updateCustomer(existingCustomer);</span>
+<span class="nc" id="L186">            return &quot;Customer details updated successfully!&quot;;</span>
+<span class="nc" id="L187">        } catch (Exception e) {</span>
+<span class="nc" id="L188">            return &quot;Error updating customer details: &quot; + e.getMessage();</span>
+        }
+    }
+    @GetMapping(&quot;/emailvalidation&quot;)
+    public ResponseEntity&lt;String&gt; validateEmail(
+            @RequestParam int customerId,
+            @RequestParam String email) {
+<span class="nc" id="L195">        return customerService.validateEmailFormat(customerId, email);</span>
+    }
+
+
+
+  //zh177-ZainabHassan
+    @PostMapping(&quot;/addEventInWishlist&quot;)
+	public ResponseEntity&lt;?&gt; addEventInWishList(@RequestParam(name = &quot;eventId&quot;) Integer eventId,
+			@RequestParam(name = &quot;customerId&quot;) Integer customerId) throws Exception {
+		try {
+<span class="nc" id="L205">			return this.wishlistService.addEventInWishList(eventId, customerId);</span>
+
+<span class="nc" id="L207">		} catch (Exception ex) {</span>
+<span class="nc" id="L208">			return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while saving event in wishlist&quot;),</span>
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	 @PostMapping(&quot;/buymembership&quot;)
+	    public ResponseEntity&lt;?&gt; buyMembership(@RequestParam int customerId, @RequestBody  CardDetails cardDetails) {
+	        try {
+	        	//  System.out.println(&quot;Received CardDetails: &quot; + cardDetails.toString());
+<span class="nc" id="L218">	            Customer updatedCustomer = customerService.buyMembership(customerId, cardDetails);</span>
+<span class="nc" id="L219">	            return ResponseEntity.ok(updatedCustomer);</span>
+<span class="nc" id="L220">	        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L221">	            return ResponseEntity.badRequest().body(e.getMessage());</span>
+	        }
+	 }
+
+	 @PostMapping(&quot;/cancelmembership&quot;)
+	 public ResponseEntity&lt;?&gt; cancelMembership(@RequestParam int customerId) {
+	     try {
+<span class="nc" id="L228">	         ResponseEntity&lt;?&gt; response = customerService.cancelMembership(customerId);</span>
+
+<span class="nc bnc" id="L230" title="All 2 branches missed.">	         if (response.getStatusCode() == HttpStatus.OK) {</span>
+<span class="nc" id="L231">	             return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Successfully Canceled membership&quot;, response.getBody(), null),</span>
+	                     HttpStatus.OK);
+	         } else {
+<span class="nc" id="L234">	             return ResponseEntity.badRequest().body(response.getBody());</span>
+	         }
+<span class="nc" id="L236">	     } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L237">	         return ResponseEntity.badRequest().body(e.getMessage());</span>
+	     }
+	 }
+
+	//zh177-ZainabHassan
+	@GetMapping(&quot;/getCustomerWishList&quot;)
+	public ResponseEntity&lt;?&gt; getCustomerWishList(@RequestParam(name = &quot;customerId&quot;) Integer customerId) {
+<span class="nc" id="L244">		return this.wishlistService.getCustomerWishList(customerId);</span>
+	}
+
+	//zh177-ZainabHassan
+	@DeleteMapping(&quot;/deleteEventFromWishList&quot;)
+	public ResponseEntity&lt;?&gt; deleteEventFromWishList(@RequestParam(name = &quot;wishlistId&quot;) Integer wishlistId) throws Exception{
+		try {
+<span class="nc" id="L251">            return this.wishlistService.deleteEventFromWishList(wishlistId);</span>
+<span class="nc" id="L252">        } catch (Exception e) {</span>
+<span class="nc" id="L253">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while deleting event from wishlist&quot;),</span>
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+	}
+	
+
+	
+	@PostMapping(&quot;/bookMultipleTickets&quot;)
+	public String bookMultipleTickets(@RequestBody List&lt;Map&lt;String, Object&gt;&gt; ticketDetailsList) {
+<span class="nc" id="L263">	    List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L265" title="All 2 branches missed.">	    for (Map&lt;String, Object&gt; ticketDetails : ticketDetailsList) {</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">	        if (!(ticketDetails.get(&quot;customerId&quot;) instanceof Integer)) {</span>
+<span class="nc" id="L267">	            errors.add(&quot;customerId should be an integer for one of the tickets&quot;);</span>
+	        }
+<span class="nc bnc" id="L269" title="All 2 branches missed.">	        if (!(ticketDetails.get(&quot;eventId&quot;) instanceof Integer)) {</span>
+<span class="nc" id="L270">	            errors.add(&quot;eventId should be an integer for one of the tickets&quot;);</span>
+	        }
+
+<span class="nc bnc" id="L273" title="All 2 branches missed.">	        if (errors.isEmpty()) {</span>
+<span class="nc" id="L274">	            int customerId = (Integer) ticketDetails.get(&quot;customerId&quot;);</span>
+<span class="nc" id="L275">	            int eventId = (Integer) ticketDetails.get(&quot;eventId&quot;);</span>
+
+<span class="nc" id="L277">	            Customer customer = this.customerService.getCustomerById(customerId);</span>
+<span class="nc" id="L278">	            customerBookEventService.bookEvent(eventId, customer);</span>
+	        }
+<span class="nc" id="L280">	    }</span>
+
+<span class="nc bnc" id="L282" title="All 2 branches missed.">	    if (!errors.isEmpty()) {</span>
+<span class="nc" id="L283">	        return String.join(&quot;, &quot;, errors);</span>
+	    }
+
+<span class="nc" id="L286">	    return &quot;Tickets booked successfully!&quot;;</span>
+	}
+
+
+
+	//zh177-ZainabHassan
+	@GetMapping(&quot;/getAnalytics&quot;)
+    public String getAnalytics(@RequestParam Integer customerId) {
+        try {
+<span class="nc" id="L295">        	 Map&lt;String, Integer&gt; map= this.customerService.getAnalytics(customerId);</span>
+<span class="nc" id="L296">            return &quot;Customer Analytics for CustomerId: &quot; + customerId + &quot;\n  &quot;+map;</span>
+<span class="nc" id="L297">        } catch (Exception e) {</span>
+<span class="nc" id="L298">            return &quot;Error retrieving customer analytics: &quot; + e.getMessage();</span>
+        }
+    }
+
+    @PostMapping(&quot;/transferticket&quot;)
+    public ResponseEntity&lt;?&gt; transferTicket(@RequestParam Long bookingId, @RequestParam int fromCustomerId, @RequestParam int toCustomerId) {
+        try {
+<span class="nc" id="L305">            customerBookEventService.transferTicket(bookingId, fromCustomerId, toCustomerId);</span>
+<span class="nc" id="L306">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Booking transferred successfully&quot;, null, null), HttpStatus.OK);</span>
+<span class="nc" id="L307">        } catch (ResourceNotFoundException ex) {</span>
+<span class="nc" id="L308">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);</span>
+<span class="nc" id="L309">        } catch (Exception ex) {</span>
+<span class="nc" id="L310">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred during ticket transfer&quot;), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+        }
+    }
+	//zh177-ZainabHassan
+	@PostMapping(value = &quot;/bookPriortyTicketForEvent&quot;)
+	public String PriortyTicketForEvent(@RequestParam Integer eventId,@RequestParam Integer customerId) {
+		
+<span class="nc" id="L317">		return this.customerBookEventService.PriortyTicketForEvent(eventId, customerId);</span>
+       
+	}
+
+	@GetMapping(&quot;/acknowledgeBooking&quot;)
+    public ResponseEntity&lt;?&gt; acknowledgeBooking(@RequestParam Long bookingId) {
+        try {
+<span class="nc bnc" id="L324" title="All 4 branches missed.">            if (bookingId == null || bookingId &lt;= 0) {</span>
+<span class="nc" id="L325">                return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Invalid booking ID&quot;), HttpStatus.BAD_REQUEST);</span>
+            }
+
+<span class="nc" id="L328">            CustomerBookEvent booking = customerBookEventService.getBookingById(bookingId);</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            if (booking == null) {</span>
+<span class="nc" id="L330">                return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;Booking not found with ID: &quot; + bookingId), HttpStatus.NOT_FOUND);</span>
+            }
+
+<span class="nc" id="L333">            Event event = booking.getEvent();</span>
+<span class="nc" id="L334">            String acknowledgmentMessage = &quot;Thanks for booking! Event Details: &quot; + event.toString();</span>
+
+<span class="nc" id="L336">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(acknowledgmentMessage, null, null), HttpStatus.OK);</span>
+<span class="nc" id="L337">        } catch (Exception ex) {</span>
+<span class="nc" id="L338">            return new ResponseEntity&lt;&gt;(new BaseApiResponseDTO(&quot;An error occurred while acknowledging booking&quot;), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+        }
+    }
+
+    @GetMapping(&quot;/past_reviews&quot;)
+    public List&lt;Event&gt; getPastEvents() {
+<span class="nc" id="L344">        LocalDate currentDate = LocalDate.now();</span>
+<span class="nc" id="L345">        return eventRepository.findByeventDateTime(currentDate);</span>
+    }
+
+    @GetMapping(&quot;/{eventId}/reviews&quot;)
+    public List&lt;Review&gt; getEventReviews(@PathVariable int eventId) {
+<span class="nc" id="L350">        Optional&lt;Event&gt; eventOptional = Optional.of(this.eventRepository.findById(eventId));</span>
+<span class="nc" id="L351">        return eventOptional.map(event -&gt; reviewRepository.findByEvent(event)).orElse(Collections.emptyList());</span>
+    }
+
+    @PostMapping(&quot;/{eventId}/reviews&quot;)
+    public ResponseEntity&lt;String&gt; createReview(@PathVariable Integer eventId, @RequestBody Review review) {
+<span class="nc" id="L356">        Optional&lt;Event&gt; eventOptional = eventRepository.findById(eventId);</span>
+
+<span class="nc bnc" id="L358" title="All 2 branches missed.">        if (eventOptional.isPresent()) {</span>
+<span class="nc" id="L359">            Event event = eventOptional.get();</span>
+<span class="nc" id="L360">            review.setEvent(event);</span>
+<span class="nc" id="L361">            reviewRepository.save(review);</span>
+<span class="nc" id="L362">            return ResponseEntity.status(HttpStatus.CREATED).body(&quot;Review created successfully&quot;);</span>
+        } else {
+<span class="nc" id="L364">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Event not found&quot;);</span>
+        }
+    }
+
+    @PutMapping(&quot;/{reviewId}&quot;)
+    public ResponseEntity&lt;String&gt; updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody Review updatedReview
+    ) {
+<span class="nc" id="L373">        Optional&lt;Review&gt; existingReviewOptional = reviewRepository.findById(reviewId);</span>
+
+<span class="nc bnc" id="L375" title="All 2 branches missed.">        if (existingReviewOptional.isPresent()) {</span>
+<span class="nc" id="L376">            Review existingReview = existingReviewOptional.get();</span>
+<span class="nc" id="L377">            existingReview.setComment(updatedReview.getComment());</span>
+<span class="nc" id="L378">            existingReview.setRating(updatedReview.getRating());</span>
+
+            // Assuming you want to update only comment and rating; you can add more fields as needed.
+
+<span class="nc" id="L382">            reviewRepository.save(existingReview);</span>
+<span class="nc" id="L383">            return ResponseEntity.ok(&quot;Review updated successfully&quot;);</span>
+        } else {
+<span class="nc" id="L385">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Review not found&quot;);</span>
+        }
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

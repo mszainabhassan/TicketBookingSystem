@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">com.uol.smqa.service.impl</a> &gt; <span class="el_source">AuthServiceImpl.java</span></div><h1>AuthServiceImpl.java</h1><pre class="source lang-java linenums">package com.uol.smqa.service.impl;
+
+import com.uol.smqa.dtos.response.LoginResponseDTO;
+import com.uol.smqa.model.Users;
+import com.uol.smqa.service.AuthService;
+import com.uol.smqa.service.UsersService;
+import com.uol.smqa.utils.JwtUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.naming.AuthenticationException;
+
+import static com.uol.smqa.utils.Constants.INVALID_LOGIN_CREDENTIALS_MESSAGE;
+import static com.uol.smqa.utils.Constants.SUCCESS_LOGIN_CREDENTIALS_MESSAGE;
+
+@Service
+public class AuthServiceImpl implements AuthService {
+
+<span class="fc" id="L27">    private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);</span>
+    private final UsersService usersService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtils jwtUtils;
+
+    @Autowired
+<span class="fc" id="L35">    public AuthServiceImpl(UsersService usersService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {</span>
+<span class="fc" id="L36">        this.usersService = usersService;</span>
+<span class="fc" id="L37">        this.authenticationManager = authenticationManager;</span>
+<span class="fc" id="L38">        this.jwtUtils = jwtUtils;</span>
+<span class="fc" id="L39">    }</span>
+
+
+    public LoginResponseDTO loginUser(String userName, String password) throws AuthenticationException {
+        try {
+<span class="nc" id="L44">            Users user = usersService.findByEmail(userName).orElseThrow(() -&gt; new AuthenticationException(INVALID_LOGIN_CREDENTIALS_MESSAGE));</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            if (!user.isActive()) throw new AuthenticationException(&quot;User is inactive. Kindly contact admin&quot;);</span>
+<span class="nc" id="L46">            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));</span>
+<span class="nc" id="L47">            SecurityContextHolder.getContext().setAuthentication(authenticate);</span>
+<span class="nc" id="L48">            String jwtToken = jwtUtils.generateJwtToken(authenticate);</span>
+
+<span class="nc" id="L50">            return new LoginResponseDTO(SUCCESS_LOGIN_CREDENTIALS_MESSAGE, null, user, jwtToken, jwtUtils.convertJwtExpiryToMilliSeconds());</span>
+<span class="nc" id="L51">        } catch (BadCredentialsException ex) {</span>
+<span class="nc" id="L52">            log.error(&quot;An error occurred while logging in user {}&quot;, ex.getMessage());</span>
+<span class="nc" id="L53">            throw new AuthenticationException(INVALID_LOGIN_CREDENTIALS_MESSAGE);</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
