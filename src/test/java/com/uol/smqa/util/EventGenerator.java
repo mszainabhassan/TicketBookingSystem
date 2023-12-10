@@ -47,7 +47,7 @@ public class EventGenerator {
 
 
 
-    private EventType getOrCreateEventType() {
+   EventType getOrCreateEventType() {
         Random random = new Random();
         final List<String> eventTypeNames = Arrays.asList("GRADUATE JOB FAIR", "CONCERT", "BOOK READING", "PROGRAMMING",
                 "NETWORKING");
@@ -77,13 +77,13 @@ public class EventGenerator {
                 eventFees, eventType, isLimitedSeats, eventFrequency, status, organizer);
     }
 
-    private Organizer getRandomOrganizer(List<Organizer> organizerList) {
+    Organizer getRandomOrganizer(List<Organizer> organizerList) {
         Random random = new Random();
         return organizerList.get(random.nextInt(organizerList.size()));
     }
 
 
-    private List<Organizer> generateOrganizers() {
+   List<Organizer> generateOrganizers() {
         List<Organizer> organizerList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             organizerList.add(generateRandomOrganizer(i));

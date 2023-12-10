@@ -11,6 +11,12 @@ public class WishList {
 	@Column(name = "wishlist_id")
 	private int wishlist_id;
 	
+	
+	
+	public WishList() {
+		super();
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "event_id", nullable = false)
 	private Event event;
@@ -18,6 +24,11 @@ public class WishList {
 	@ManyToOne
 	@JoinColumn(name = "customer_id", nullable = false)
 	private Customer customer;
+
+	public WishList(Customer customer2, Event event2) {
+		this.customer=customer2;
+		this.event=event2;
+	}
 
 	public int getWishlist_id() {
 		return wishlist_id;

@@ -155,4 +155,14 @@ public class Customer{
 
 	public Customer() {
 	}
+	public Customer(String name, String email, LocalDate dob, Gender gender, String contactNumber, Boolean isMember, Boolean isNotificationOn) {
+		this.name = name;
+		this.email = email;
+		this.dob = dob;
+		this.gender = gender;
+		this.contactNumber = contactNumber;
+		this.isMember = isMember;
+		this.isNotificationOn = isNotificationOn;
+	}
+
 }
