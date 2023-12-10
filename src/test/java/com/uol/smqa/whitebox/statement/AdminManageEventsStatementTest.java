@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -45,7 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AdminManageEventsStatementTest extends TicketBookingSystemApplicationTests {
 
-    @Autowired
     private AdminController adminController;
 
     @SpyBean
@@ -86,6 +86,9 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
     @Autowired
     private OrganizerRepository organizerRepository;
+
+    @Autowired
+    private CustomerBookEventRepository customerBookEventRepository;
 
     private MockMvc mockMvc;
     private List<Event> eventList = new ArrayList<>();
@@ -266,8 +269,13 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
     @Test
     public void adminUpdateEvent_WithInvalidEventType_thenReturnBadRequestResponse() throws Exception {
-        Event eventToEdit = eventList.get(eventList.size() - 1);
+        Event event = eventList.get(eventList.size() - 1);
+
+
+        Event eventToEdit = new Event();
+        BeanUtils.copyProperties(event, eventToEdit, "eventType");
         eventToEdit.setEventType(new EventType("Non existing event name"));
+
         mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(eventToEdit)))
@@ -276,7 +284,7 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$").value("Invalid event type"));
 
-        verify(eventService, times(1)).updateEvent(any(Event.class));
+        verify(eventService, times(0)).updateEvent(any(Event.class));
 
     }
 
@@ -301,5 +309,97 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
         verify(eventService, times(0)).createEventByAdmin(any(Event.class));
 
+    }
+
+
+    @Test
+    public void adminDeleteEvent_WithValidRequest_ReturnSuccess() throws Exception {
+        Event event = eventList.get(eventList.size() - 1);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/deleteEvent")
+                        .param("eventId", String.valueOf(event.getEventId()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$", containsString("deleted Successfully!")));
+
+        verify(eventService, times(1)).deleteEvent(anyInt());
+
+    }
+
+
+    @Test
+    public void adminDeleteEvent_WithInvalidEventId_ReturnNotFoundMessage() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/deleteEvent")
+                        .param("eventId", String.valueOf(999999))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$", containsString("Event not found!")));
+
+        verify(eventService, times(1)).deleteEvent(anyInt());
+
+    }
+
+
+    @Test
+    public void adminDeleteEvent_WithBookings_ReturnErrorMessage() throws Exception {
+        Customer customer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+        this.customerRepository.save(customer);
+
+        Event eventToBook = eventList.get(eventList.size() - 1);
+        CustomerBookEvent customerBookEvent = new CustomerBookEvent(eventToBook, customer);;
+        eventToBook.getBookedCustomers().add(customerBookEvent);
+        this.customerBookEventRepository.save(customerBookEvent);
+        eventRepository.save(eventToBook);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/deleteEvent")
+                        .param("eventId", String.valueOf(eventToBook.getEventId()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$", containsString("Event can't be deleted as customers have booked it")));
+
+        verify(eventService, times(1)).deleteEvent(anyInt());
+    }
+
+
+    @Test
+    public void adminViewAllEvents_ReturnSuccessMessage() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/getAllEvents")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.length()").value(eventRepository.count()));
+
+        verify(eventService, times(1)).getAllEvents();
+    }
+
+
+    @Test
+    public void adminCustomerRegistration_ValidRequest_ReturnSuccessMessage() throws Exception {
+
+        Customer newCustomer = new Customer("Random Customer", "customer@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/admin-register-customer")
+                        .content(objectMapper.writeValueAsString(newCustomer))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.name").value(newCustomer.getName()))
+                .andExpect(jsonPath("$.email").value(newCustomer.getEmail()))
+                .andExpect(jsonPath("$.contactNumber").value(newCustomer.getContactNumber()))
+                .andExpect(jsonPath("$.gender").value(newCustomer.getGender().toString()));
+
+        verify(customerService, times(1)).CustomerRegistration(any(Customer.class));
     }
 }

@@ -35,6 +35,14 @@ public class CustomerBookEvent {
     @Column(name = "is_priority_ticket" )
     private Boolean isPriority=false;
 
+    public Integer getTicketCount() {
+        return ticketCount;
+    }
+
+    public void setTicketCount(Integer ticketCount) {
+        this.ticketCount = ticketCount;
+    }
+
     public CustomerBookEvent(Event eventToBook, Customer existingCustomer) {
 		this.event=eventToBook;
 		this.customer=existingCustomer;
@@ -81,14 +89,6 @@ public class CustomerBookEvent {
 
     public void setReview(String review) {
         this.review = review;
-    }
-    
-    public Integer getticketCount() {
-        return ticketCount;
-    }
-
-    public void setticketCount(Integer ticketCount) {
-        this.ticketCount = ticketCount;
     }
 
 

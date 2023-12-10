@@ -2,7 +2,10 @@ package com.uol.smqa.service;
 
 
 import com.uol.smqa.dtos.request.CustomerEventsFilterSearchCriteria;
+import com.uol.smqa.dtos.request.DiscountRequestDTO;
+import com.uol.smqa.dtos.response.DiscountResponseDTO;
 import com.uol.smqa.model.*;
+import com.uol.smqa.repository.DiscountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uol.smqa.repository.EventRepository;
@@ -17,14 +20,15 @@ import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
+import com.uol.smqa.repository.*;
 
-import com.uol.smqa.repository.CustomerBookEventRepository;
-import com.uol.smqa.repository.CustomerRepository;
+import com.uol.smqa.model.Event;
 
 import static com.uol.smqa.dtos.specifications.EventSpecification.buildSearchPredicate;
 
 @Service
 public class EventService {
+
 
     private final EventTypeService eventTypeService;
     private final EventRepository eventRepository;
@@ -32,20 +36,24 @@ public class EventService {
     private final OrganizerServiceInterface organizerService;
     private final CustomerBookEventRepository customerBookEventRepository;
     private final EmailService emailService;
+    private final DiscountRepository discountRepository;
+
 
     @Autowired
-    public EventService(EventRepository eventRepository,
-                        CustomerRepository customerRepository,
-                        EventTypeService eventTypeService,
+    public EventService(EventRepository eventRepository, CustomerRepository customerRepository,
+                        EventTypeService eventTypeService, OrganizerServiceInterface organizerService,
                         CustomerBookEventRepository customerBookEventRepository,
-                        OrganizerServiceInterface organizerService, EmailService emailService) {
+                        DiscountRepository discountRepository, EmailService emailService) {
+
         this.eventRepository = eventRepository;
-        this.organizerService = organizerService;
         this.customerRepository = customerRepository;
         this.eventTypeService = eventTypeService;
+        this.organizerService = organizerService;
         this.customerBookEventRepository = customerBookEventRepository;
+        this.discountRepository = discountRepository;
         this.emailService = emailService;
     }
+
 
     public String ChangeEventStatus(int eventId, Boolean status) {
         Event event = this.eventRepository.findById(eventId);
@@ -60,10 +68,6 @@ public class EventService {
     }
 
     public Event createEvent(Event event) throws Exception {
-        return eventRepository.save(event);
-    }
-
-    public Event createEventByAdmin(Event event)throws Exception {
         return eventRepository.save(event);
     }
 
@@ -102,12 +106,6 @@ public class EventService {
         List<String> eventFrequencies = Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.toList());
         if (eventRequest.getEventFrequency() != null && !eventFrequencies.contains(eventRequest.getEventFrequency())) {
             throw new BadRequestException("Invalid event frequency. Valid values are " + Arrays.stream(EventFrequency.values()).map(Enum::name).collect(Collectors.joining(", ")));
-        }
-        if (eventRequest.getEventType().getEventTypeName() == null) {
-            throw new BadRequestException("The event type name is required");
-        } else {
-            EventType eventType = eventTypeService.getEventTypeByName(eventRequest.getEventType().getEventTypeName()).orElseThrow(() -> new BadRequestException("Invalid event type"));
-            eventRequest.setEventType(eventType);
         }
         organizerService.findById(eventRequest.getOrganizer().getOrganizerId()).orElseThrow(() -> new ResourceNotFoundException("Organizer with id does not exist"));
 
@@ -172,6 +170,37 @@ public class EventService {
     public Event getEventById(Integer eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
+    }
+
+    public DiscountResponseDTO applyCouponCode(DiscountRequestDTO discountRequestDTO) throws Exception {
+
+        Discount discount = discountRepository.findByEvent_EventIdAndDiscountCodeAndIsActive(discountRequestDTO.getEventId(),
+                discountRequestDTO.getCouponCode(), true).orElseThrow(() -> new ResourceNotFoundException("Invalid coupon code. Kindly check and try again"));
+
+        if (!discount.isActive() || discount.getEvent() == null)
+            throw new ResourceNotFoundException("Invalid coupon code");
+        if (discount.getEvent().getEventFees() == null)
+            throw new BadRequestException("Invalid event fees. Kindly contact administrator");
+
+        Float discountAmount = computeDiscountAmount(discount, discount.getEvent());
+
+        discount.setActive(false);
+        discountRepository.save(discount);
+        return new DiscountResponseDTO("Successfully applied discount", discountAmount);
+    }
+
+    public Float computeDiscountAmount(Discount discount, Event event) {
+        switch (discount.getDiscountType()) {
+            case PERCENTAGE:
+                return event.getEventFees() * (discount.getDiscountValue() / 100.0f);
+            case FIXED_AMOUNT:
+            default:
+                return discount.getDiscountValue();
+        }
+    }
+
+    public Event createEventByAdmin(Event event)throws Exception {
+        return eventRepository.save(event);
     }
 
     public void sendEventNotifications(Event event) throws Exception {

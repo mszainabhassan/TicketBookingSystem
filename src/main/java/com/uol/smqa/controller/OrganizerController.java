@@ -72,7 +72,7 @@ public class OrganizerController {
 
 
     @GetMapping("/events")
-    public ResponseEntity<?> getAllEvents(@Validated @RequestParam(name = "organizerId") int organizerId) {
+    public ResponseEntity<?> getAllEvents(@Validated @RequestParam(name = "organizerId") int organizerId) throws Exception {
 
         try {
             List<Event> organizerList = this.eventService.getAllEventsByOrganizerId(organizerId);
@@ -105,7 +105,7 @@ public class OrganizerController {
 
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<?> editEvent(@Valid @PathVariable(name = "eventId") int eventId, @Validated @RequestBody Event event, BindingResult bindingResult) {
+    public ResponseEntity<?> editEvent(@Valid @PathVariable(name = "eventId") int eventId, @Validated @RequestBody Event event, BindingResult bindingResult) throws Exception {
 
         try {
             if (bindingResult != null && bindingResult.hasErrors()) {
