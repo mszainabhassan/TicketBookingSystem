@@ -69,7 +69,7 @@ public class OrganizerController {
     
    @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {
-        String eventTypeName = event.getEventType().getTypeName();
+        String eventTypeName = event.getEventType().getEventTypeName();
         Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
         if (existingEventType.isPresent()) {

@@ -29,8 +29,8 @@ public class CustomerBookEventService {
     @Autowired
     private CustomerService customerService;
 
-    public List<CustomerBookEvent> getAllBookedEventsForCustomer(Customer customer) {
-        return customerBookEventRepository.findByCustomer(customer);
+    public List<Object[]> getAllEvents() {
+        return eventRepository.findAllEvents();
     }
 
     public long bookEvent(Integer eventId, Customer customer) {
@@ -69,7 +69,7 @@ public class CustomerBookEventService {
         customerBookEventRepository.delete(booking);
         
     }
-    public void provideEventRating(Long bookingId, Integer rating) {
+    public void provideEventRating(Long bookingId, Integer rating, String review) {
     	if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating should be between 1 and 5.");
         }
@@ -78,6 +78,7 @@ public class CustomerBookEventService {
                 .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
 
         booking.setRating(rating);
+        booking.setReview(review);
         customerBookEventRepository.save(booking);
     }
 

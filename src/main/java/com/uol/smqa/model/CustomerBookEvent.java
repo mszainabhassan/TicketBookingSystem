@@ -22,6 +22,10 @@ public class CustomerBookEvent {
     @Column(name = "rating")
     private Integer rating; 
     
+    @Column(name = "review")
+    private String review; 
+    
+    
     @Column(name="ticket_count")
     private Integer ticketCount;
     
@@ -70,6 +74,15 @@ public class CustomerBookEvent {
     public void setRating(Integer rating) {
         this.rating = rating;
     }
+    
+    public String getReview() {
+        return review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
+    }
+    
     public Integer getticketCount() {
         return ticketCount;
     }
