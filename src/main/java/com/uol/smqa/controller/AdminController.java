@@ -170,7 +170,7 @@ public class AdminController {
             Event event2 = this.eventService.getEventById(event.getEventId());
             Optional<Organizer> organizer = this.organizerService.findById(event.getOrganizer().getOrganizerId());
             if (!organizer.isPresent()) {
-                throw new ResourceNotFoundException("Organizer not found");
+                return new ResponseEntity<>(new BaseApiResponseDTO("Organizer not found"), HttpStatus.NOT_FOUND);
             }
             Event updatedEvent = this.eventService.updateEvent(event);
             return new ResponseEntity<>(new BaseApiResponseDTO("Event updated successfully", updatedEvent, null), HttpStatus.OK);

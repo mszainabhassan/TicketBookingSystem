@@ -33,3 +33,10 @@ build/
 .vscode/
 bin/
 classes/
+oop.sh
+testRunner.sh
+report/
+reports/
+
+
+

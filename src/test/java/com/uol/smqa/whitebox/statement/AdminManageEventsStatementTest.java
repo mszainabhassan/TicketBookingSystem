@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AdminManageEventsStatementTest extends TicketBookingSystemApplicationTests {
 
-	@Autowired
+    @Autowired
     private AdminController adminController;
 
     @SpyBean
@@ -65,7 +65,7 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
     @SpyBean
     private OrganizerService organizerService;
-    
+
     @SpyBean
     private AdminService adminService;
 
@@ -77,13 +77,13 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private CustomerRepository customerRepository;
-    
+
     @Autowired
     private EventTypeRepository eventTypeRepository;
-    
+
     @Autowired
     private OrganizerRepository organizerRepository;
 
@@ -93,7 +93,7 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        adminController = new AdminController(eventService,eventTypeService, organizerService,  adminService,customerService);
+        adminController = new AdminController(eventService, eventTypeService, organizerService, adminService, customerService);
         mockMvc = MockMvcBuilders.standaloneSetup(adminController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())
@@ -102,11 +102,11 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
         eventList = eventGenerator.generateEvents();
     }
-    
+
     @Test
     public void testAdminCreateEvent_Success() throws Exception {
-  
-    	EventType eventType = eventTypeRepository.findAll().get(0);
+
+        EventType eventType = eventTypeRepository.findAll().get(0);
         Organizer organizer = organizerRepository.findAll().get(0);
         Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
                 900, 50, 788, 800f,
@@ -125,6 +125,7 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
 
         verify(eventService, times(1)).createEventByAdmin(any(Event.class));
     }
+
     @Test
     public void adminCreateEvent_WithInvalidEventType_thenReturnBadRequestResponse() throws Exception {
 
@@ -148,34 +149,34 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
     @Test
     @Transactional
     public void adminCreateEvent_ButOrganizerNotFound_ReturnOrganizerNotFound() throws Exception {
-    	EventType eventType = eventTypeRepository.findAll().get(0);
-    	Organizer organizer=new Organizer(1000);
-    	Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
-            900, 50, 788, 800f,
-            700f, eventType, false, EventFrequency.MONTHLY.name(), true, organizer);
+        EventType eventType = eventTypeRepository.findAll().get(0);
+        Organizer organizer = new Organizer(1000);
+        Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
+                900, 50, 788, 800f,
+                700f, eventType, false, EventFrequency.MONTHLY.name(), true, organizer);
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/admin/createEvent")
-                    .content(objectMapper.writeValueAsString(eventToCreate))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$").isNotEmpty())
-            .andExpect(jsonPath("$.message").value("Organizer not found"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/createEvent")
+                        .content(objectMapper.writeValueAsString(eventToCreate))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Organizer not found"));
 
-    verify(eventService, times(0)).createEventByAdmin(any(Event.class));
+        verify(eventService, times(0)).createEventByAdmin(any(Event.class));
 
     }
-    
+
     @Test
     public void testCreateEvent_InternalServerError() throws Exception {
-    	EventType eventType = eventTypeRepository.findAll().get(0);
+        EventType eventType = eventTypeRepository.findAll().get(0);
         Organizer organizer = organizerRepository.findAll().get(0);
         Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
                 900, 50, 788, 800f,
                 700f, eventType, false, EventFrequency.MONTHLY.name(), true, organizer);
 
         doThrow(new Exception("An error occurred during creating an event"))
-    	.when(eventService).createEventByAdmin(any(Event.class));
+                .when(eventService).createEventByAdmin(any(Event.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/admin/createEvent")
                         .content(objectMapper.writeValueAsString(eventToCreate))
@@ -184,64 +185,65 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("An error occurred during creating an event"));
 
-      
+
         verify(eventService, times(1)).createEventByAdmin(any(Event.class));
-   }
-    
+    }
+
     @Test
     public void AdminChangeEventStatus_Approve_ValidEventId_thenReturnSuccess() throws Exception {
-    	Event eventToEdit = eventList.get(eventList.size() - 1);
-    	boolean newStatus = true;
-    	eventToEdit.setStatus(newStatus);
- 	
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        boolean newStatus = true;
+        eventToEdit.setStatus(newStatus);
+
         String expectedResponse = "Event Status Changed!";
 
         mockMvc.perform(MockMvcRequestBuilders.put("/admin/change-event-status")
-                .param("eventId", String.valueOf(eventToEdit.getEventId()))
-                .param("status", String.valueOf(newStatus)))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
+                        .param("eventId", String.valueOf(eventToEdit.getEventId()))
+                        .param("status", String.valueOf(newStatus)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
 
         verify(eventService, times(1)).ChangeEventStatus(anyInt(), anyBoolean());
     }
-    
+
     @Test
     public void AdminChangeEventStatus_Reject_ValidEventId_thenReturnSuccess() throws Exception {
-    	Event eventToEdit = eventList.get(eventList.size() - 1);
-    	boolean newStatus = false;
-    	eventToEdit.setStatus(newStatus);
- 	
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        boolean newStatus = false;
+        eventToEdit.setStatus(newStatus);
+
         String expectedResponse = "Event Status Changed!";
 
         mockMvc.perform(MockMvcRequestBuilders.put("/admin/change-event-status")
-                .param("eventId", String.valueOf(eventToEdit.getEventId()))
-                .param("status", String.valueOf(newStatus)))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
+                        .param("eventId", String.valueOf(eventToEdit.getEventId()))
+                        .param("status", String.valueOf(newStatus)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
 
         verify(eventService, times(1)).ChangeEventStatus(anyInt(), anyBoolean());
     }
+
     @Test
     public void AdminChangeEventStatus_Approve_WithInValidEventId_thenReturnErrorMessage() throws Exception {
-    	boolean newStatus = false;
-    	int eventId=100;
+        boolean newStatus = false;
+        int eventId = 100;
         String expectedResponse = "Event Id not present!";
 
         mockMvc.perform(MockMvcRequestBuilders.put("/admin/change-event-status")
-                .param("eventId", String.valueOf(eventId))
-                .param("status", String.valueOf(newStatus)))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
+                        .param("eventId", String.valueOf(eventId))
+                        .param("status", String.valueOf(newStatus)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(expectedResponse));
 
         verify(eventService, times(1)).ChangeEventStatus(anyInt(), anyBoolean());
     }
-    
+
     @Test
     public void adminUpdateEvent_WithValidRequestBody_thenReturnSuccess() throws Exception {
-    	EventType eventType = eventTypeRepository.findAll().get(0);
+        EventType eventType = eventTypeRepository.findAll().get(0);
         Organizer organizer = organizerRepository.findAll().get(0);
         Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
                 900, 50, 788, 800f,
@@ -261,43 +263,43 @@ public class AdminManageEventsStatementTest extends TicketBookingSystemApplicati
         Assertions.assertNotNull(updatedEventFromDatabase);
         Assertions.assertEquals(eventToCreate.getEventName(), updatedEventFromDatabase.getEventName());
     }
-    
-//    @Test
-//    public void adminUpdateEvent_WithInvalidEventType_thenReturnBadRequestResponse() throws Exception {
-//    	Event eventToEdit = eventList.get(eventList.size() - 1);
-//    	eventToEdit.setEventType(new EventType("Non existing event name"));
-//        mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                        .content(objectMapper.writeValueAsString(eventToEdit)))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$").isNotEmpty())
-//                .andExpect(jsonPath("$").value("Invalid event type"));
-//        
-//        verify(eventService, times(1)).updateEvent(any(Event.class));
-//    
-//    }
 
-//    @Test
-//    @Transactional
-//    public void adminUpdateEvent_ButOrganizerNotFound_ReturnOrganizerNotFound() throws Exception {
-//    	EventType eventType = eventTypeRepository.findAll().get(0);
-//    	Organizer organizer=new Organizer(100);
-//    	Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
-//            900, 50, 788, 800f,
-//            700f, eventType, false, EventFrequency.MONTHLY.name(), true, organizer);
-//    	Event eventToEdit= this.eventRepository.save(eventToCreate);
-//    	System.out.println(eventToEdit.getEventId()+"--"+eventToEdit.getEventName());
-//    	eventToEdit.setEventName("Edited Name");
-//    mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
-//                    .content(objectMapper.writeValueAsString(eventToEdit))
-//                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-//            .andDo(print())
-//            .andExpect(status().isNotFound())
-//            .andExpect(jsonPath("$").isNotEmpty())
-//            .andExpect(jsonPath("$.message").value("Organizer not found"));
-//
-//    verify(eventService, times(0)).createEventByAdmin(any(Event.class));
-//
-//    }
+    @Test
+    public void adminUpdateEvent_WithInvalidEventType_thenReturnBadRequestResponse() throws Exception {
+        Event eventToEdit = eventList.get(eventList.size() - 1);
+        eventToEdit.setEventType(new EventType("Non existing event name"));
+        mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventToEdit)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$").value("Invalid event type"));
+
+        verify(eventService, times(1)).updateEvent(any(Event.class));
+
+    }
+
+    @Test
+    @Transactional
+    public void adminUpdateEvent_ButOrganizerNotFound_ReturnOrganizerNotFound() throws Exception {
+        EventType eventType = eventTypeRepository.findAll().get(0);
+        Organizer validOrganizer = organizerRepository.findAll().get(0);
+        Event eventToCreate = new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
+                900, 50, 788, 800f,
+                700f, eventType, false, EventFrequency.MONTHLY.name(), true, validOrganizer);
+        Event eventToEdit = this.eventRepository.save(eventToCreate);
+        eventToEdit.setEventName("Edited Name");
+        eventToEdit.setOrganizer(new Organizer(100));
+        mockMvc.perform(MockMvcRequestBuilders.put("/admin/updateEvent")
+                        .content(objectMapper.writeValueAsString(eventToEdit))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Organizer not found"));
+
+        verify(eventService, times(0)).createEventByAdmin(any(Event.class));
+
+    }
 }
