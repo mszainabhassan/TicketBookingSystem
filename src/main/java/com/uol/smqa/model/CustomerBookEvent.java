@@ -35,7 +35,15 @@ public class CustomerBookEvent {
     @Column(name = "is_priority_ticket" )
     private Boolean isPriority=false;
 
-    public Long getBookingId() {
+    public CustomerBookEvent(Event eventToBook, Customer existingCustomer) {
+		this.event=eventToBook;
+		this.customer=existingCustomer;
+	}
+
+	public CustomerBookEvent() {
+	}
+
+	public Long getBookingId() {
         return bookingId;
     }
 

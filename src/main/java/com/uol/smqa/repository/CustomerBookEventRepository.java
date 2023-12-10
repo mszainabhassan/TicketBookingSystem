@@ -14,11 +14,12 @@ import org.springframework.stereotype.Repository;
 public interface CustomerBookEventRepository extends JpaRepository<CustomerBookEvent, Long> {
     // Add custom query methods if needed
 
-    List<CustomerBookEvent> findByCustomer(Customer customer);
-
+	List<CustomerBookEvent> findByCustomer(Customer customer);
     List<CustomerBookEvent> findByCustomerAndEvent(Customer customer, Event event);
 
     List<CustomerBookEvent> findByIsPriorityAndCustomer(Boolean isPriority, Customer customer);
+
+    boolean existsByEvent(Event event);
 
 
 }

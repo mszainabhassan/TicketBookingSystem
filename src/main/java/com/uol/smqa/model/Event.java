@@ -1,6 +1,7 @@
 package com.uol.smqa.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,11 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity(name = "events")
-public class Event implements Serializable {
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,23 +37,7 @@ public class Event implements Serializable {
 
     @Column(name = "seats_available")
     private Integer seatsAvailable;
-
-
-    @OneToMany
-    private List<Discount> discount = new ArrayList<>();
-    
-//    @OneToOne
-//    @JoinColumn(name="review_id")
-//    private Review review;
-    
-    public List<Discount> getDiscount() {
-		return discount;
-	}
-	public void setDiscount(List<Discount> discount) {
-		this.discount = discount;
-	}
-
-	@Column(name = "no_of_priority_seats")
+    @Column(name = "no_of_priority_seats")
     private Integer noOfPrioritySeats;
 
     @Column(name = "available_priority_seats")
@@ -66,6 +52,7 @@ public class Event implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "event_type_name", nullable = false)
+    @NotNull(message = "Event type is required")
     private EventType eventType;
 
 
@@ -76,7 +63,7 @@ public class Event implements Serializable {
     private String eventFrequency;
 
     @Column
-    private Boolean status=false;
+    public Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = false)
@@ -84,15 +71,13 @@ public class Event implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event")
-    private List<CustomerBookEvent> bookedCustomers;
-    @Override
-    public String toString() {
-    	return "Event{" +
-    			 " name='" + eventName + '\'' +
-    		        "location='" + eventLocation + '\'' +
-    		        " Description='" + eventDescription + '\'' +
-    		        "}";
-    }
+    private List<CustomerBookEvent> bookedCustomers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event")
+    private List<Discount> discounts = new ArrayList<>();
+
+    private boolean isDeleted = false;
+
     public int getEventId() {
         return eventId;
     }
@@ -207,7 +192,9 @@ public class Event implements Serializable {
     }
 
     public void setPrioritySeatFees(Float prioritySeatFees) {
-        this.prioritySeatFees = getEventFees() + (eventFees / 10);
+        if (prioritySeatFees != null && eventFees != null) {
+            this.prioritySeatFees = prioritySeatFees + (eventFees / 10);
+        }
     }
 
     public void setAvailablePrioritySeatsInteger(Integer availablePrioritySeatsInteger) {
@@ -223,6 +210,53 @@ public class Event implements Serializable {
     }
 
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public List<Discount> getDiscounts() {
+        return discounts;
+    }
+
+    public void setDiscounts(List<Discount> discounts) {
+        this.discounts = discounts;
+    }
+
+    public Event(String eventName, String eventDescription, String eventLocation, LocalDateTime eventDateTime, Integer seatsAvailable, Integer noOfPrioritySeats, Integer availablePrioritySeatsInteger, Float prioritySeatFees, Float eventFees, EventType eventType, Boolean isLimitedSeats, String eventFrequency, Boolean status, Organizer organizer) {
+        this.eventName = eventName;
+        this.eventDescription = eventDescription;
+        this.eventLocation = eventLocation;
+        this.eventDateTime = eventDateTime;
+        this.seatsAvailable = seatsAvailable;
+        this.noOfPrioritySeats = noOfPrioritySeats;
+        this.availablePrioritySeatsInteger = availablePrioritySeatsInteger;
+        this.prioritySeatFees = prioritySeatFees;
+        this.eventFees = eventFees;
+        this.eventType = eventType;
+        this.isLimitedSeats = isLimitedSeats;
+        this.eventFrequency = eventFrequency;
+        this.status = status;
+        this.organizer = organizer;
+        isDeleted = false;
+    }
+
+    public Event() {
+        isDeleted = false;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                " name='" + eventName + '\'' +
+                "location='" + eventLocation + '\'' +
+                " Description='" + eventDescription + '\'' +
+                "}";
+    }
 }
 
 

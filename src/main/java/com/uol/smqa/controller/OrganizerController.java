@@ -1,10 +1,12 @@
 package com.uol.smqa.controller;
-import com.uol.smqa.model.CustomerBookEvent;
-import com.uol.smqa.model.EventType;
-import com.uol.smqa.service.EventTypeService;
+
+import com.uol.smqa.model.*;
+import com.uol.smqa.service.*;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,62 +15,47 @@ import com.uol.smqa.dtos.response.BaseApiResponseDTO;
 import com.uol.smqa.exceptions.AuthorizationException;
 import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.exceptions.ResourceNotFoundException;
-import com.uol.smqa.model.Event;
-import com.uol.smqa.model.Organizer;
-import com.uol.smqa.service.AdminService;
-import com.uol.smqa.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.uol.smqa.utils.RequestValidatorUtil.getErrorMessages;
-import com.uol.smqa.service.OrganizerService;
 
-
-import com.uol.smqa.model.Discount;
 
 @RestController
 @RequestMapping("/organizer")
 public class OrganizerController {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizerController.class);
-     @Autowired
-    private EventTypeService eventTypeService;
+    private final EventTypeService eventTypeService;
+    private final OrganizerService organizerService;
+    private final EventService eventService;
+    private final AdminService adminService;
+    private final EventReviewService eventReviewService;
+
     @Autowired
-	  private OrganizerService organizerService;
-    @Autowired
-    private EventService eventService;
-    @Autowired
-    private AdminService adminService;
+    public OrganizerController(EventTypeService eventTypeService, OrganizerService organizerService,
+                               EventService eventService,
+                               AdminService adminService, EventReviewService eventReviewService) {
+        this.eventTypeService = eventTypeService;
+        this.organizerService = organizerService;
+        this.eventService = eventService;
+        this.adminService = adminService;
+        this.eventReviewService = eventReviewService;
+    }
+
 
     @PostMapping("/set_discount")
-	public Discount setDiscount(@Validated @RequestBody Discount discount, BindingResult bindingResult) {
-    	if (bindingResult.hasErrors()) {
-    		System.out.print(bindingResult);
-    	}
-		return this.organizerService.setDiscount(discount);
-		
-		
-	}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-   @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+    public Discount setDiscount(@Valid @RequestBody Discount discount) {
+        return this.organizerService.setDiscount(discount);
+    }
+
+    @PostMapping("/createEvent")
+    public ResponseEntity<?> createEvent(@RequestBody Event event) throws Exception {
         String eventTypeName = event.getEventType().getEventTypeName();
         Optional<EventType> existingEventType = eventTypeService.getEventTypeByName(eventTypeName);
 
@@ -77,20 +64,20 @@ public class OrganizerController {
             event.setEventType(existingEventType.get());
         } else {
             // If the event type does not exist, create a new one and set it in the event
-           return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Invalid event type", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(eventService.createEvent(event), HttpStatus.CREATED);
-    	
-    	}
-        
+
+    }
+
 
     @GetMapping("/events")
-    public ResponseEntity<?> getAllEvents(@Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> getAllEvents(@Validated @RequestParam(name = "organizerId") int organizerId) {
 
         try {
             List<Event> organizerList = this.eventService.getAllEventsByOrganizerId(organizerId);
 
-            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully retrieved all organizers",  organizerList, null), HttpStatus.OK);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully retrieved all organizers", organizerList, null), HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
@@ -98,8 +85,9 @@ public class OrganizerController {
         }
 
     }
+
     @GetMapping("/eventAnalytics/{eventId}")
-    public String getEventAnalytics(@PathVariable Integer eventId) {
+    public String getEventAnalytics(@PathVariable(name = "eventId") Integer eventId) {
         try {
             // Get the event
             Event event = eventService.getEventById(eventId);
@@ -117,13 +105,13 @@ public class OrganizerController {
 
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<?> editEvent(@Validated @PathVariable int eventId, @RequestBody Event event, BindingResult bindingResult) {
+    public ResponseEntity<?> editEvent(@Valid @PathVariable(name = "eventId") int eventId, @Validated @RequestBody Event event, BindingResult bindingResult) {
 
         try {
-            if (bindingResult.hasErrors())  {
-                return new ResponseEntity<>(new BaseApiResponseDTO("One or more validation errors occurred", null, getErrorMessages(bindingResult)) , HttpStatus.BAD_REQUEST);
+            if (bindingResult != null && bindingResult.hasErrors()) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("One or more validation errors occurred", null, getErrorMessages(bindingResult)), HttpStatus.BAD_REQUEST);
             }
-            eventService.validateEventUpdateRequest(eventId, event);
+            this.eventService.validateEventUpdateRequest(eventId, event);
             this.eventService.updateEvent(event);
             return new ResponseEntity<>(new BaseApiResponseDTO("Successfully updated event"), HttpStatus.NO_CONTENT);
         } catch (BadRequestException ex) {
@@ -141,7 +129,7 @@ public class OrganizerController {
 
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<?> deleteEvent(@Validated @PathVariable int eventId, @Validated @RequestParam int organizerId) {
+    public ResponseEntity<?> deleteEvent(@Validated @PathVariable(name = "eventId") int eventId, @Validated @RequestParam(name = "organizerId") int organizerId) throws Exception {
 
         try {
             this.eventService.deleteEventByOrganizerId(eventId, organizerId);
@@ -155,33 +143,95 @@ public class OrganizerController {
 
     }
 
-	@PostMapping("/register")
-	public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
+    @PostMapping("/register")
+    public Organizer OrganizerRegistration(@RequestBody Organizer organizer) {
 
-		return this.organizerService.OrganizerRegistration(organizer);
-	}
-	 @PostMapping("/requestEventCreation")
-	    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam int adminId) {
-	        try {
-	            // Validate the organizer's request
-	            if (event == null || event.getEventName() == null || event.getEventType() == null) {
-	                return new ResponseEntity<>(new BaseApiResponseDTO("Invalid event data"), HttpStatus.BAD_REQUEST);
-	            }
+        return this.organizerService.OrganizerRegistration(organizer);
+    }
 
-	            // Check if the organizer exists (You may need to implement an organizerService for this)
-	            if (!organizerService.organizerExists(adminId)) {
-	                return new ResponseEntity<>(new BaseApiResponseDTO("Admin not found"), HttpStatus.NOT_FOUND);
-	            }
+    @PostMapping("/requestEventCreation")
+    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam(name = "adminId") int adminId) throws Exception {
+        try {
+            // Validate the organizer's request
+            if (event == null || event.getEventName() == null || event.getEventType() == null) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Invalid event data"), HttpStatus.BAD_REQUEST);
+            }
 
-	            // Notify the admin about the event creation request
-	            adminService.handleEventCreationRequest(event, adminId);
+            // Check if the organizer exists (You may need to implement an organizerService for this)
+            if (!organizerService.organizerExists(adminId)) {
+                return new ResponseEntity<>(new BaseApiResponseDTO("Admin not found"), HttpStatus.NOT_FOUND);
+            }
 
-	            return new ResponseEntity<>(new BaseApiResponseDTO("Event creation request sent to admin"), HttpStatus.OK);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>(new BaseApiResponseDTO("Failed to send event creation request"), HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
-  
+            // Notify the admin about the event creation request
+            adminService.handleEventCreationRequest(event, adminId);
 
-	
+            return new ResponseEntity<>(new BaseApiResponseDTO("Event creation request sent to admin"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new BaseApiResponseDTO("Failed to send event creation request"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/events/{eventId}/reviews")
+    public ResponseEntity<?> getEventReviews(@Validated @PathVariable(name = "eventId") int eventId, @Validated @RequestParam(name = "organizerId") int organizerId) {
+
+        try {
+            List<EventReview> reviewsByOrganizer = this.eventReviewService.getAllEventsReviewsByOrganizer(eventId, organizerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully retrieved reviews", reviewsByOrganizer, null), HttpStatus.OK);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @PostMapping("/event-reviews/{reviewId}/reply")
+    public ResponseEntity<?> replyEventReviews(@Validated @PathVariable(name = "reviewId") int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+
+        try {
+            ReviewReply savedReply = this.eventReviewService.replyEventReviewsByOrganizer(reviewId, reviewReply);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully replied to review", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PutMapping("/event-reviews/{reviewId}/reply")
+    public ResponseEntity<?> editEventReviewReply(@PathVariable(name = "reviewId") int reviewId, @Validated @RequestBody ReviewReply reviewReply) throws Exception {
+
+        try {
+            ReviewReply savedReply = this.eventReviewService.editReplyEventReviewsByOrganizer(reviewId, reviewReply);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully updated review reply", savedReply, null), HttpStatus.OK);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/event-reviews/reply/{replyId}")
+    public ResponseEntity<?> deleteEventReviewReply(@PathVariable(name = "replyId") int replyId, @Validated @RequestParam(name = "organizerId") int organizerId) {
+
+        try {
+            this.eventReviewService.deleteReplyEventReviewsByOrganizer(replyId, organizerId);
+            return new ResponseEntity<>(new BaseApiResponseDTO("Successfully deleted review reply"), HttpStatus.NO_CONTENT);
+        } catch (BadRequestException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new BaseApiResponseDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }

@@ -3,20 +3,11 @@ package com.uol.smqa.model;
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import com.uol.smqa.Enum.DiscountType;
+import jakarta.persistence.*;
 
 @Entity
-public class Discount implements Serializable{
+public class Discount {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,33 +18,19 @@ public class Discount implements Serializable{
 	private String discountCode = "";
 	
 	@Column(name = "discount_value", nullable = false)
-	private int discountValue = 0;
+	private Float discountValue = 0f;
+
+	@Enumerated(EnumType.STRING)
+	private DiscountType discountType;
+
+	@ManyToOne
+	@JoinColumn(name = "organizer_id")
+	private Organizer organizer;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name="event_id")
 	private Event event;
-//	
-//	/*
-//	 * @OneToMany(cascade = CascadeType.ALL)
-//	 * 
-//	 * @JoinColumn(name = "discount_id", referencedColumnName = "event_id", unique =
-//	 * true) private List<Event> events;
-//	 */
-//
-//	
-//	    public Event getEvent() {
-//		return event;
-//	}
-//
-//	public void setEvent(Event event) {
-//		this.event = event;
-//	}
 
-	
-		@OneToMany(mappedBy = "discount", cascade = CascadeType.ALL)
-		private List<Event> events;
-
-	
 	public int getDiscountId() {
 		return DiscountId;
 	}
@@ -70,21 +47,14 @@ public class Discount implements Serializable{
 		this.discountCode = discountCode;
 	}
 
-	public int getDiscountValue() {
+	public Float getDiscountValue() {
 		return discountValue;
 	}
 
-	public void setDiscountValue(int discountValue) {
+	public void setDiscountValue(Float discountValue) {
 		this.discountValue = discountValue;
 	}
 
-	public List<Event> getEvents() {
-		return events;
-	}
-
-	public void setEvents(List<Event> events) {
-		this.events = events;
-	}
 
 	public Event getEvent() {
 		return event;
@@ -93,12 +63,31 @@ public class Discount implements Serializable{
 	public void setEvent(Event event) {
 		this.event = event;
 	}
-	
-	
-	
-
-	
 
 
+	public DiscountType getDiscountType() {
+		return discountType;
+	}
+
+	public void setDiscountType(DiscountType discountType) {
+		this.discountType = discountType;
+	}
+
+	public Discount() {
+	}
+
+	public Discount(String discountCode, Float discountValue, Event event) {
+		this.discountCode = discountCode;
+		this.discountValue = discountValue;
+		this.event = event;
+	}
+
+	public Discount(String discountCode, Float discountValue, DiscountType discountType, Organizer organizer, Event event) {
+		this.discountCode = discountCode;
+		this.discountValue = discountValue;
+		this.discountType = discountType;
+		this.organizer = organizer;
+		this.event = event;
+	}
 }
 

@@ -95,7 +95,6 @@ public class Users {
 	}
 
 	@JsonIgnore
-
 	public Customer getCustomer() {
 
 		return customer;
@@ -128,12 +127,15 @@ public class Users {
 	}
 
 	public void setCustomer(Customer customer) {
-
 		this.customer = customer;
-
 	}
 
 
+	public Users() {
+	}
 
-
+	public Users(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 }

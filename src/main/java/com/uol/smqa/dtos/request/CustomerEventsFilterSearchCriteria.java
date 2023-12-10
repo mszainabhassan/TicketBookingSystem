@@ -47,4 +47,11 @@ public class CustomerEventsFilterSearchCriteria {
 
     public CustomerEventsFilterSearchCriteria() {
     }
+
+    public CustomerEventsFilterSearchCriteria(String location, String eventType, String name, Long eventDate) {
+        this.location = location;
+        this.eventType = eventType;
+        this.name = name;
+        this.eventDate = eventDate;
+    }
 }
