@@ -37,12 +37,6 @@ public class Event {
 
     @Column(name = "seats_available")
     private Integer seatsAvailable;
-
-
-    @OneToMany
-    private List<Discount> discounts = new ArrayList<>();
-    
-
     @Column(name = "no_of_priority_seats")
     private Integer noOfPrioritySeats;
 
@@ -78,6 +72,9 @@ public class Event {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<CustomerBookEvent> bookedCustomers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event")
+    private List<Discount> discounts = new ArrayList<>();
 
     private boolean isDeleted = false;
 
@@ -212,6 +209,22 @@ public class Event {
         this.eventFees = eventFees;
     }
 
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public List<Discount> getDiscounts() {
+        return discounts;
+    }
+
+    public void setDiscounts(List<Discount> discounts) {
+        this.discounts = discounts;
+    }
 
     public Event(String eventName, String eventDescription, String eventLocation, LocalDateTime eventDateTime, Integer seatsAvailable, Integer noOfPrioritySeats, Integer availablePrioritySeatsInteger, Float prioritySeatFees, Float eventFees, EventType eventType, Boolean isLimitedSeats, String eventFrequency, Boolean status, Organizer organizer) {
         this.eventName = eventName;

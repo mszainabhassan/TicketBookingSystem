@@ -150,7 +150,7 @@ public class OrganizerController {
     }
 
     @PostMapping("/requestEventCreation")
-    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam int adminId) {
+    public ResponseEntity<?> requestEventCreation(@RequestBody Event event, @RequestParam int adminId) throws Exception {
         try {
             // Validate the organizer's request
             if (event == null || event.getEventName() == null || event.getEventType() == null) {
