@@ -40,6 +40,9 @@ public class CustomerBookEvent {
 		this.customer=existingCustomer;
 	}
 
+	public CustomerBookEvent() {
+	}
+
 	public Long getBookingId() {
         return bookingId;
     }
