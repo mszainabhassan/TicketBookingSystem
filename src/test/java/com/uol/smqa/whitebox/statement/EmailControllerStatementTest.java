@@ -6,11 +6,16 @@ import com.uol.smqa.TicketBookingSystemApplicationTests;
 import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.AuthController;
+import com.uol.smqa.controller.EmailController;
 import com.uol.smqa.dtos.request.LoginRequestDTO;
+import com.uol.smqa.model.Event;
 import com.uol.smqa.service.AuthService;
+import com.uol.smqa.service.EventService;
+import com.uol.smqa.util.EventGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -18,82 +23,79 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.uol.smqa.utils.Constants.INVALID_LOGIN_CREDENTIALS_MESSAGE;
 import static com.uol.smqa.utils.Constants.SUCCESS_LOGIN_CREDENTIALS_MESSAGE;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class EmailControllerStatementTest extends TicketBookingSystemApplicationTests {
 
-    private AuthController authController;
+    private EmailController emailController;
 
     @SpyBean
-    private AuthService authService;
+    private EventService eventService;
+
+    @Autowired
+    private EventGenerator eventGenerator;
+
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private MockMvc mockMvc;
+
+    private List<Event> eventsList = new ArrayList<>();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        authController = new AuthController(authService);
-        mockMvc = MockMvcBuilders.standaloneSetup(authController)
+        emailController = new EmailController(eventService);
+        mockMvc = MockMvcBuilders.standaloneSetup(emailController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new CustomExceptionHandler(), new GlobalControllerAdvice())
                 .build();
+
+        eventsList = eventGenerator.generateEvents();
     }
 
     @Test
-    public void loginCustomer_WithValidCredentials_thenReturnSuccess() throws Exception {
+    public void sendEventNotifications_WithValidRequest_thenReturnSuccess() throws Exception {
 
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("admin@tbs.com", "password");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+        Event event = eventsList.get(0);
+        mockMvc.perform(MockMvcRequestBuilders.post("/organizer/email/sendEventNotifications")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
+                        .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(SUCCESS_LOGIN_CREDENTIALS_MESSAGE))
-                .andExpect(jsonPath("$.user").isNotEmpty())
-                .andExpect(jsonPath("$.user.username").value(loginRequestDTO.getUsername()));
+                .andExpect(jsonPath("$").value("Event notifications sent successfully."));
 
-        verify(authService, times(1)).loginUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+        verify(eventService, times(1)).sendEventNotifications(any(Event.class));
     }
 
 
 
     @Test
-    public void loginCustomer_WithInvalidCredentials_thenReturnUnauthorizedError() throws Exception {
+    public void sendEventNotifications_WithUnexpectedError_thenReturnMessage() throws Exception {
 
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("randomuser@tbs.com", "password");
+        Event event = eventsList.get(0);
+        doThrow(new Exception("An unexpected error occurred while sending notification"))
+                .when(eventService).sendEventNotifications(any(Event.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/organizer/email/sendEventNotifications")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
+                        .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(INVALID_LOGIN_CREDENTIALS_MESSAGE));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", containsString("Failed to send event notifications. Error:")));
 
-        verify(authService, times(1)).loginUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
-    }
-
-
-    @Test
-    public void loginCustomer_WithUnexpectedCredentials_thenReturnBadRequest() throws Exception {
-
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("randomuser", "password");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.message").value("One or more validation errors occurred"))
-                .andExpect(jsonPath("$.errors[0]").value("Invalid email format"));
-
-        verify(authService, times(0)).loginUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
-
+        verify(eventService, times(1)).sendEventNotifications(any(Event.class));
     }
 
 }

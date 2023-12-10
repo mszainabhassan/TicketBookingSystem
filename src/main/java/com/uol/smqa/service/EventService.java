@@ -174,7 +174,7 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
     }
 
-    public void sendEventNotifications(Event event) {
+    public void sendEventNotifications(Event event) throws Exception {
         List<Customer> optedInCustomers = customerRepository.findByIsNotificationOn(true);
 
         for (Customer customer : optedInCustomers) {

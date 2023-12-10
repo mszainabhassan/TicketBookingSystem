@@ -21,7 +21,7 @@ public class EmailController {
     }
 
     @PostMapping("/sendEventNotifications")
-    public String sendEventNotifications(@RequestBody Event event) {
+    public String sendEventNotifications(@RequestBody Event event) throws Exception {
         try {
             eventService.sendEventNotifications(event);
             return "Event notifications sent successfully.";
