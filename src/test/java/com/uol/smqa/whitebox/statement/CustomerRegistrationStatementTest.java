@@ -30,6 +30,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,6 +39,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +49,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -260,5 +264,73 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
     }
+//    @Test
+//    public void whenBookPriorityTicketForEvent_InvalidCustomer_thenReturnCustomerNotFound() throws Exception {
+//    	
+//       Event eventToBook = eventList.get(eventList.size() - 1);
+//    	int eventId = eventToBook.getEventId();
+//        int customerId =100;
+//        System.out.println(customerId+"......");
+//        String expectedResponse = "Customer not found with ID:  "+customerId;
+//       
+//        mockMvc.perform(MockMvcRequestBuilders.post("/customer/bookPriortyTicketForEvent")
+//                .param("eventId", String.valueOf(eventId))
+//                .param("customerId", String.valueOf(customerId))
+//        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//        .andDo(print())
+//        .andExpect(status().isInternalServerError())
+//        .andExpect(jsonPath("$").isNotEmpty())
+//        .andExpect(jsonPath("$.message").value(expectedResponse));
+//
+//         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
+//    }
+//    
+//    @Test
+//    public void whenBookPriorityTicketForEvent_InvalidEvent_thenReturnEventNotFound() throws Exception {
+//    	 Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+//                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+//         this.customerRepository.save(existingCustomer);
+//       
+//    	int eventId = 100;
+//        int customerId =existingCustomer.getCustomerId();
+//        System.out.println(customerId+"......");
+//        String expectedResponse = "Event not found with ID:   "+eventId;
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post("/customer/bookPriortyTicketForEvent")
+//                .param("eventId", String.valueOf(eventId))
+//                .param("customerId", String.valueOf(customerId))
+//        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//        .andDo(print())
+//        .andExpect(status().isInternalServerError())
+//        .andExpect(jsonPath("$").isNotEmpty())
+//        .andExpect(jsonPath("$.message").value(expectedResponse));
+//
+//         verify(customerBookEventService, times(1)).PriortyTicketForEvent(anyInt(), anyInt());
+//    }
     
+    @Test
+    public void whenGetAllBookedEvents_thenReturnBookedEvents() throws Exception {
+    	Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
+        this.customerRepository.save(existingCustomer);
+      int customerId=existingCustomer.getCustomerId();
+      Event eventToBook = eventList.get(eventList.size() - 1);
+      Event eventToBook2 = eventList.get(eventList.size() - 2);
+      CustomerBookEvent customerBookEvent = new CustomerBookEvent(eventToBook,existingCustomer);;
+      CustomerBookEvent customerBookEvent1 = new CustomerBookEvent(eventToBook2,existingCustomer);;
+      List<CustomerBookEvent> list= new ArrayList<>();
+      list.add(customerBookEvent);
+      list.add(customerBookEvent1);
+      this.customerBookEventRepository.saveAll(list);
+     
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/events")
+                .param("customerId", String.valueOf(customerId)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(list.size()));
+               
+
+      verify(customerBookEventService, times(1)).getAllBookedEventsForCustomer(any(Customer.class));
+    }
 }
