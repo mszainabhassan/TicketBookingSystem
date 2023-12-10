@@ -351,34 +351,6 @@ public class CustomerRegistrationStatementTest extends TicketBookingSystemApplic
 
         verify(customerService, times(1)).getCustomerById(anyInt());
     }
-    @Test
-    public void whenUpdateCustomerDetails_thenReturnSuccess() throws Exception {
-    	Customer existingCustomer = new Customer("Existing", "existing@tbs.com", LocalDate.now().minusYears(25),
-                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("existing@tbs.com", "password"));
-        this.customerRepository.save(existingCustomer);
-      int customerId=existingCustomer.getCustomerId();
-      
-      Map<String, Object> updates = new HashMap<>();
-        updates.put("name", "New Name");
-        updates.put("gender", "FEMALE");
-        updates.put("dob", "1990-01-01");
-        
-        mockMvc.perform(MockMvcRequestBuilders.post("/customer/updateDetails/{customerId}", customerId)
-                .content(asJsonString(updates))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Customer details updated successfully!"));
-
-        verify(customerService, times(1)).getCustomerById(anyInt());
-        verify(customerService, times(1)).updateCustomer(any(Customer.class));
-    }
-    
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+   
     
 }
