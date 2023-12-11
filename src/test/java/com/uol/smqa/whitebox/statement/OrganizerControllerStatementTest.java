@@ -8,7 +8,6 @@ import com.uol.smqa.Enum.Gender;
 import com.uol.smqa.TicketBookingSystemApplicationTests;
 import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
-import com.uol.smqa.controller.EmailController;
 import com.uol.smqa.controller.OrganizerController;
 import com.uol.smqa.model.*;
 import com.uol.smqa.repository.*;
@@ -49,16 +48,7 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
     private EventGenerator eventGenerator;
 
     @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private ReviewReplyRepository reviewReplyRepository;
-
-    @Autowired
     private OrganizerRepository organizerRepository;
-
-    @Autowired
-    private EventTypeRepository eventTypeRepository;
 
     @SpyBean
     private EventTypeService eventTypeService;
@@ -70,7 +60,7 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
     private AdminService adminService;
 
     @Autowired
-    private EventRepository eventRepository;
+    private DiscountRepository discountRepository;
 
     @Autowired
     private AdminRepository adminRepository;
@@ -116,17 +106,13 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
         verify(organizerService, times(1)).OrganizerRegistration(any(Organizer.class));
     }
 
-    private Event buildEventRequest(Organizer organizer) {
-        return new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
-                900, 50, 788, 800f,
-                700f, new EventType("Non existing event name"), false, EventFrequency.MONTHLY.name(), true, organizer);
-    }
+
 
     @Test
     public void organizerRequestEventCreation_WithValidRequest_thenReturnSuccess() throws Exception {
 
         Organizer organizer = organizerRepository.findAll().get(0);
-        Event eventToCreate = buildEventRequest(organizer);
+        Event eventToCreate = eventGenerator.buildEventRequest(organizer);
 
         Admin admin = adminRepository.findAll().get(0);
         mockMvc.perform(MockMvcRequestBuilders.post("/organizer/requestEventCreation")
@@ -145,7 +131,7 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
     public void organizerRequestEventCreation_WithInvalidAdminId_thenReturnNotFoundError() throws Exception {
 
         Organizer organizer = organizerRepository.findAll().get(0);
-        Event eventToCreate = buildEventRequest(organizer);
+        Event eventToCreate = eventGenerator.buildEventRequest(organizer);
         mockMvc.perform(MockMvcRequestBuilders.post("/organizer/requestEventCreation")
                         .param("adminId", String.valueOf(999099))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +169,7 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
     public void organizerRequestEventCreation_WithUnexpectedError_thenReturnInternalServerError() throws Exception {
 
         Organizer organizer = organizerRepository.findAll().get(0);
-        Event eventToCreate = buildEventRequest(organizer);
+        Event eventToCreate = eventGenerator.buildEventRequest(organizer);
 
         doThrow(new Exception("An error occurred"))
                 .when(organizerService).organizerExists(anyInt());
@@ -219,6 +205,25 @@ public class OrganizerControllerStatementTest extends TicketBookingSystemApplica
                 .andExpect(jsonPath("$.discountCode").value(discount.getDiscountCode()))
                 .andExpect(jsonPath("$.discountValue").value(discount.getDiscountValue()))
                 .andExpect(jsonPath("$.discountType").value(discount.getDiscountType().toString()));
+
+        verify(organizerService, times(1)).setDiscount(any(Discount.class));
+    }
+
+    @Test
+    public void organizerSetDiscount_WithDuplicateDiscountCode_thenReturnSuccess() throws Exception {
+
+        Event event = eventsList.get(eventsList.size() - 1);
+        Organizer organizer = organizerRepository.findAll().get(0);
+        Discount discount = new Discount("000999", 900f, DiscountType.FIXED_AMOUNT, organizer, event);
+        discountRepository.save(discount);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/organizer/set_discount")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(discount)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$", containsString("Discount code already exists")));
 
         verify(organizerService, times(1)).setDiscount(any(Discount.class));
     }

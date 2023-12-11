@@ -1,5 +1,6 @@
 package com.uol.smqa.controller;
 
+import com.uol.smqa.exceptions.DiscountCodeAlreadyExistsException;
 import com.uol.smqa.model.*;
 import com.uol.smqa.service.*;
 import jakarta.validation.Valid;
@@ -50,8 +51,12 @@ public class OrganizerController {
 
 
     @PostMapping("/set_discount")
-    public Discount setDiscount(@Valid @RequestBody Discount discount) {
-        return this.organizerService.setDiscount(discount);
+    public ResponseEntity<?> setDiscount(@Valid @RequestBody Discount discount) {
+        try {
+            return ResponseEntity.ok(this.organizerService.setDiscount(discount));
+        } catch (DiscountCodeAlreadyExistsException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
     @PostMapping("/createEvent")

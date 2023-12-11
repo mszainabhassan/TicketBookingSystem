@@ -7,22 +7,25 @@ import com.uol.smqa.advice.CustomExceptionHandler;
 import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.AuthController;
 import com.uol.smqa.dtos.request.LoginRequestDTO;
+import com.uol.smqa.exceptions.BadRequestException;
 import com.uol.smqa.service.AuthService;
 
+import com.uol.smqa.service.UsersService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.uol.smqa.utils.Constants.INVALID_LOGIN_CREDENTIALS_MESSAGE;
 import static com.uol.smqa.utils.Constants.SUCCESS_LOGIN_CREDENTIALS_MESSAGE;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,7 +36,13 @@ public class AuthControllerStatementTest extends TicketBookingSystemApplicationT
 
     @SpyBean
     private AuthService authService;
+
+    @SpyBean
+    private UsersService usersService;
+
     private MockMvc mockMvc;
+
+
 
     @Before
     public void setup() {
@@ -81,7 +90,27 @@ public class AuthControllerStatementTest extends TicketBookingSystemApplicationT
 
 
     @Test
-    public void loginCustomer_WithUnexpectedCredentials_thenReturnBadRequest() throws Exception {
+    public void loginCustomer_WithBadCredentials_thenReturnUnauthorized() throws Exception {
+
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("randomuser@tbs.com", "password");
+
+        doThrow(new BadCredentialsException("Invalid username or password"))
+                .when(usersService).findByEmail(anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(INVALID_LOGIN_CREDENTIALS_MESSAGE));
+
+        verify(authService, times(1)).loginUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+
+    }
+
+
+    @Test
+    public void loginCustomer_WithUnexpectedCredentials_thenReturnUnprocessibleEntity() throws Exception {
 
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO("randomuser", "password");
 
