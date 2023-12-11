@@ -34,24 +34,24 @@ In Eclipse,
 
 
 # Running tests
-Right click on the project 
-Run as JUnit Tests
+- Right click on the project 
+- Run as JUnit Tests
 
 # Test Coverage Report
-Right click on the project
+- Right click on the project
 Click on Coverage As JUnit Test
 
 
 # Contributors
-Zainab Hassan (zh177@student.le.ac.uk)
+- Zainab Hassan (zh177@student.le.ac.uk)
 
-Shital Patil (ssp39@student.le.ac.uk)
+- Shital Patil (ssp39@student.le.ac.uk)
 
-Olatunde Ogunboyejo (ojo9@student.le.ac.uk) 
+- Olatunde Ogunboyejo (ojo9@student.le.ac.uk) 
 
-Sridivya Jampa (sj445@student.le.ac.uk) 
+- Sridivya Jampa (sj445@student.le.ac.uk) 
 
-SaiKiranGupta Jayanthi (skgj1@student.le.ac.uk) 
+- SaiKiranGupta Jayanthi (skgj1@student.le.ac.uk) 
 
 
 
