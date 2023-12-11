@@ -417,5 +417,6 @@ public class CustomerController {
         String details1 = "Tickets Booked Successfully. Booking ID: " + newBooking.getBookingId() + "  Total Tickets Booked : " + newBooking.getTicketCount();
         return ResponseEntity.ok(details1);
     }
+    
 }
 
