@@ -26,13 +26,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
 import org.springframework.test.web.servlet.MvcResult;
+
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +52,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import static org.mockito.Mockito.when;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -166,6 +177,7 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
         this.customerRepository.save(customer);
 
+
         Event event = eventList.get(eventList.size() - 1);
         CustomerBookEvent booking = new CustomerBookEvent(event, customer);
         customerBookEventRepository.save(booking);
@@ -276,4 +288,35 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
     }
 
     
+
+    @Test
+    public void testBookEvent_SuccessfulBooking() throws Exception {
+
+        Event eventToBookTicket = eventList.get(eventList.size() - 1);
+
+    	Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("customerId", 1);
+        requestBody.put("eventId", eventToBookTicket.getEventId());
+    	 Customer customer = new Customer("Random Customer", "customer@tbs.com", LocalDate.now().minusYears(25),
+                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
+         this.customerRepository.save(customer);
+
+         mockMvc.perform( MockMvcRequestBuilders.post("/customer/bookEvent")
+        		 .contentType(MediaType.APPLICATION_JSON)
+        		 .content(asJsonString(requestBody)))
+         	    .andExpect(status().isOk())
+         	   .andExpect(jsonPath("$", containsString("Event booked successfully! Booking ID: ")));
+                 
+
+         verify(customerBookEventService, times(1)).bookEvent(anyInt(),any(Customer.class));
+   
+    }
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
