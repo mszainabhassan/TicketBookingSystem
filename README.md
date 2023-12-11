@@ -42,6 +42,10 @@ In Eclipse,
 Click on Coverage As JUnit Test
 
 
+# Link to Video Recording
+https://drive.google.com/file/d/1xU98F46zjuTy1gtDil6d6MHlgIkIKNwy/view?usp=sharing
+
+
 # Contributors
 - Zainab Hassan (zh177@student.le.ac.uk)
 
