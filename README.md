@@ -15,6 +15,15 @@ mvn test
 
 
 # Contributors
+Zainab Hassan (zh177@student.le.ac.uk)
+
+Shital Patil (ssp39@student.le.ac.uk)
+
+Olatunde Ogunboyejo (ojo9@student.le.ac.uk) 
+
+Sridivya Jampa (sj445@student.le.ac.uk) 
+
+SaiKiranGupta Jayanthi (skgj1@student.le.ac.uk) 
 
 
 
