@@ -346,13 +346,13 @@ public class CustomerController {
     }
 
     @GetMapping("/{eventId}/reviews")
-    public List<Review> getEventReviews(@PathVariable int eventId) {
+    public List<Review> getEventReviews(@PathVariable(name = "eventId") int eventId) {
         Optional<Event> eventOptional = Optional.of(this.eventRepository.findById(eventId));
         return eventOptional.map(event -> reviewRepository.findByEvent(event)).orElse(Collections.emptyList());
     }
 
     @PostMapping("/{eventId}/reviews")
-    public ResponseEntity<String> createReview(@PathVariable Integer eventId, @RequestBody Review review) {
+    public ResponseEntity<String> createReview(@PathVariable(name = "eventId") Integer eventId, @RequestBody Review review) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
@@ -367,7 +367,7 @@ public class CustomerController {
 
     @PutMapping("/{reviewId}")
     public ResponseEntity<String> updateReview(
-            @PathVariable Long reviewId,
+            @PathVariable(name = "reviewId") Long reviewId,
             @RequestBody Review updatedReview
     ) {
         Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
@@ -388,7 +388,7 @@ public class CustomerController {
 
 
     @PostMapping("/bookMultipleTicketforEvent/{eventId}")
-    public ResponseEntity<String> bookMultipleEvents(@PathVariable Integer eventId, @RequestBody Customer customer) {
+    public ResponseEntity<String> bookMultipleEvents(@PathVariable(name = "eventId") Integer eventId, @RequestBody Customer customer) {
         // Validate customer ID
         if (customer == null || customer.getCustomerId() == 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid customer ID");

@@ -1,5 +1,6 @@
 package com.uol.smqa.util;
 
+import com.uol.smqa.Enum.EventFrequency;
 import com.uol.smqa.Enum.Gender;
 import com.uol.smqa.model.Event;
 import com.uol.smqa.model.EventType;
@@ -108,5 +109,11 @@ public class EventGenerator {
         organizerRepository.save(organizer);
         usersRepository.save(organizerUser);
         return organizer;
+    }
+
+    public Event buildEventRequest(Organizer organizer) {
+        return new Event("Test Event Name", "TEst Event Description", "Test Event Location", LocalDateTime.now().plusYears(1),
+                900, 50, 788, 800f,
+                700f, new EventType("Non existing event name"), false, EventFrequency.MONTHLY.name(), true, organizer);
     }
 }

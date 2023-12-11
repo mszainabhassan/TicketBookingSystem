@@ -62,9 +62,6 @@ public class AdminControllerStatementTest extends TicketBookingSystemApplication
     private EventGenerator eventGenerator;
 
     @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private ObjectMapper objectMapper;
     
     @Autowired

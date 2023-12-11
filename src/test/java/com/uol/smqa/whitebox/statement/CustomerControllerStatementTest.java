@@ -9,11 +9,7 @@ import com.uol.smqa.advice.GlobalControllerAdvice;
 import com.uol.smqa.controller.AuthController;
 import com.uol.smqa.controller.CustomerController;
 import com.uol.smqa.dtos.request.LoginRequestDTO;
-import com.uol.smqa.model.CardDetails;
-import com.uol.smqa.model.Customer;
-import com.uol.smqa.model.CustomerBookEvent;
-import com.uol.smqa.model.Event;
-import com.uol.smqa.model.Users;
+import com.uol.smqa.model.*;
 import com.uol.smqa.repository.CustomerRepository;
 import com.uol.smqa.repository.EventRepository;
 import com.uol.smqa.repository.ReviewRepository;
@@ -85,7 +81,7 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
+    @SpyBean
     private ReviewRepository reviewRepository;
 
     @Autowired
@@ -97,6 +93,7 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
 
     private MockMvc mockMvc;
     private List<Event> eventList = new ArrayList<>();
+
 
     @Before
     public void setup() {
@@ -293,13 +290,14 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
     public void testBookEvent_SuccessfulBooking() throws Exception {
 
         Event eventToBookTicket = eventList.get(eventList.size() - 1);
+        Customer customer = new Customer("Random Customer", "customer@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
+        this.customerRepository.save(customer);
 
     	Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("customerId", 1);
+        requestBody.put("customerId", customer.getCustomerId());
         requestBody.put("eventId", eventToBookTicket.getEventId());
-    	 Customer customer = new Customer("Random Customer", "customer@tbs.com", LocalDate.now().minusYears(25),
-                 Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
-         this.customerRepository.save(customer);
+
 
          mockMvc.perform( MockMvcRequestBuilders.post("/customer/bookEvent")
         		 .contentType(MediaType.APPLICATION_JSON)
@@ -311,6 +309,64 @@ public class CustomerControllerStatementTest extends TicketBookingSystemApplicat
          verify(customerBookEventService, times(1)).bookEvent(anyInt(),any(Customer.class));
    
     }
+
+
+    @Test
+    public void testViewReviews_ThenReturnSuccess() throws Exception {
+
+        Event eventToBookTicket = eventList.get(eventList.size() - 1);
+
+        mockMvc.perform( MockMvcRequestBuilders.get("/customer/{eventId}/reviews", eventToBookTicket.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+
+        verify(reviewRepository, times(1)).findByEvent(any(Event.class));
+
+    }
+
+    @Test
+    public void testCreateReview_ThenReturnSuccess() throws Exception {
+
+        Event eventToBookTicket = eventList.get(eventList.size() - 1);
+
+
+        Review review = new Review(eventToBookTicket, "Nice event", 5);
+
+        mockMvc.perform( MockMvcRequestBuilders.post("/customer/{eventId}/reviews", eventToBookTicket.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(review)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", containsString("Review created successfully")));
+
+
+        verify(reviewRepository, times(1)).save(any(Review.class));
+
+    }
+
+    @Test
+    public void testCreateReview_InvalidEventId_ThenReturnNotFound() throws Exception {
+
+        Event eventToBookTicket = eventList.get(eventList.size() - 1);
+        Customer customer = new Customer("Random Customer", "customer@tbs.com", LocalDate.now().minusYears(25),
+                Gender.FEMALE, "+99 888 777 6666", true, true, new Users("customer@tbs.com", "password"));
+        this.customerRepository.save(customer);
+
+        Review review = new Review(eventToBookTicket, "Nice event", 8);
+
+
+        mockMvc.perform( MockMvcRequestBuilders.post("/customer/{eventId}/reviews", 9999)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(review)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$", containsString("Event not found")));
+
+
+        verify(reviewRepository, times(0)).save(any(Review.class));
+
+    }
+
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
