@@ -5,7 +5,7 @@ and buy tickets to a wide range of events, such as webinars and conferences
 
 
 # Installation
-mvn clean install -U
+mvn clean install -U  
 
 # Running the project
 mvn spring-boot:run
