@@ -10,6 +10,9 @@ mvn clean install -U
 # Running the project
 mvn spring-boot:run
 
+# Running tests
+mvn test
+
 
 # Contributors
 

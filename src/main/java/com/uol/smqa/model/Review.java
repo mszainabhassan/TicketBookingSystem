@@ -65,6 +65,11 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-   
+
+	public Review(Event event, String comment, Integer rating) {
+		this.event = event;
+		this.comment = comment;
+		this.rating = rating;
+	}
 }
 
